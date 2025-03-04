@@ -1,5 +1,6 @@
 (ns oph.ehoks.utils
-  (:require [medley.core :refer [dissoc-in map-keys]]))
+  (:require [medley.core :refer [dissoc-in map-keys]]
+            [clojure.string]))
 
 (defn apply-when
   "Apply function `f` to value `v` if predicate `(pred v)` returns `true`.
@@ -36,3 +37,14 @@
   "Return same map, but without keys pointing to nil values"
   [m]
   (into {} (filter (fn [[k v]] (some? v)) m)))
+
+(defn get-in-and-propagate-fields
+  "Hakee tietorakenteesta tietyn (listamuotoisen) kentän ja lisää
+  listan joka kohtaan tietyt kentät alkuperäisestä, eli propagoi
+  tietyt kentät syvemmälle tietorakenteessa."
+  [obj field-to-get fields-to-propagate]
+  (map #(merge % (select-keys obj fields-to-propagate))
+       (get-in obj field-to-get)))
+
+(defn koodiuri->koodi [koodiuri]
+  (some-> koodiuri (clojure.string/split #"_") (last)))

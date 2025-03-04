@@ -34,7 +34,7 @@
 
 (defn get-osaamisalat
   "Hakee voimassa olevat osaamisalat suorituksesta haluttuna päivämääränä."
-  [suoritus opiskeluoikeus-oid pvm]
+  [suoritus pvm]
   (->> (:osaamisala suoritus)
        (filter #(and (or (nil? (:loppu %1))
                          (>= (compare (:loppu %1)

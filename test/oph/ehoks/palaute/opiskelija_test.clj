@@ -24,6 +24,7 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate LocalDateTime)))
@@ -290,6 +291,13 @@
           (are [kysely-type] (nil? (op/initiate-if-needed! ctx kysely-type))
             :aloituskysely :paattokysely))))))
 
+(defn create-arvo-kyselylinkki!
+  [palaute]
+  (-> palaute
+      (vt/build-ctx)
+      (op/build-kyselylinkki-request-body)
+      (arvo/create-kyselytunnus!)))
+
 (deftest test-create-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 koski/get-oppija-opiskeluoikeudet
@@ -309,8 +317,9 @@
                  {:hoks hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
-          (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
-            db/spec {:heratepvm (LocalDate/of 2024 4 20)})]
+          (palaute/get-palautteet-waiting-for-vastaajatunnus!
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
+                     :hoks-id nil :palaute-id nil})]
       (testing "HOKS creation marks correct palautteet as actionable"
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
@@ -333,7 +342,7 @@
              (let [herate (find-first
                             (comp (partial = kysely-type) :kyselytyyppi)
                             heratteet)
-                   resp (op/create-arvo-kyselylinkki! herate)]
+                   resp (create-arvo-kyselylinkki! herate)]
                (= [:kysely_linkki :tunnus :voimassa_loppupvm]
                   (sort (keys resp))))
           "aloittaneet" "valmistuneet")
@@ -344,18 +353,21 @@
                         (fn [request] (reset! saved-req request) {:tunnus "a"})]
             (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (op/create-arvo-kyselylinkki!))
+                 (create-arvo-kyselylinkki!))
             (is (= (:tutkinnonosat_hankkimistavoittain @saved-req)
                    {:oppisopimus
-                    ["tutkinnonosat_300268" "tutkinnonosat_300271"]
+                    ["tutkinnonosat_300271" "tutkinnonosat_300268"]
                     :koulutussopimus
-                    ["tutkinnonosat_300269" "tutkinnonosat_300270"]
+                    ["tutkinnonosat_300270" "tutkinnonosat_300269"]
                     :oppilaitosmuotoinenkoulutus
-                    ["tutkinnonosat_300268" "tutkinnonosat_300270"]}))
+                    ["tutkinnonosat_300270" "tutkinnonosat_300268"]}))
             (is (= ((juxt :koulutustoimija_oid :kyselyn_tyyppi :tutkintotunnus
                           :tutkinnon_suorituskieli :toimipiste_oid) @saved-req)
                    ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
                     "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
+
+(def arvo-error-body
+  "{\"error\": \"required-fields-missing\", \"msg\": \"Huonosti menee\"}")
 
 (deftest test-create-and-save-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -377,13 +389,15 @@
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           vastauslinkki-counter (atom 0)
           heratteet
-          (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
-            db/spec {:heratepvm (LocalDate/of 2024 4 20)})]
+          (palaute/get-palautteet-waiting-for-vastaajatunnus!
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
+                     :hoks-id nil :palaute-id nil})]
       (testing "successful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (swap! vastauslinkki-counter inc)
+              (is (not (empty? (get-in options [:form-params :request_id]))))
               {:status 200
                :body {:tunnus (str "foo" @vastauslinkki-counter)
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/foo"
@@ -391,8 +405,8 @@
                       :voimassa_loppupvm "2024-10-10"}})))
         (is (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (op/create-and-save-arvo-kyselylinkki!)
-                 (nil?)))
+                 (vt/handle-palaute-waiting-for-heratepvm!)
+                 (some?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -445,22 +459,17 @@
                          @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
           (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
           (is (= "https://arvovastaus.csc.fi/v/foo1" (:kyselylinkki ddb-item)))
+          (is (not (empty? (:request-id ddb-item))))
           (is (= 351407 (:tutkintotunnus ddb-item)))))
       (testing "unsuccessful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (throw
-                (ex-info "not found"
-                         {:status 404
-                          :body {:error "ei_kyselykertaa"
-                                 :msg "Huonosti menee"}})))))
-        (is (thrown?
-              clojure.lang.ExceptionInfo
-              (->> heratteet
-                   (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-                   (op/create-and-save-arvo-kyselylinkki!)
-                   (keys))))
+                (ex-info "bad request" {:status 400 :body arvo-error-body})))))
+        (->> heratteet
+             (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
+             (vt/handle-palaute-waiting-for-heratepvm!))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -470,15 +479,38 @@
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
                  {:ensikertainen-hyvaksyminen "2023-04-16"}]
                 ["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:errormsg "HTTP request error: not found"
-                  :body {:msg "Huonosti menee", :error "ei_kyselykertaa"}}]]
+                 {:errormsg "HTTP request error: bad request"
+                  :body arvo-error-body}]]
+               (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                    (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                      db/spec)
+                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+        (client/reset-functions!))
+      (testing "non-recoverable error in Arvo call"
+        (client/set-post!
+          (fn [^String url options]
+            (when (.endsWith url "/api/vastauslinkki/v1")
+              (throw
+                (ex-info "not found"
+                         {:status 404 :body "{\"error\": \"ei-kyselya\"}"})))))
+        (->> heratteet
+             (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
+             (vt/handle-palaute-waiting-for-heratepvm!))
+        (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:ensikertainen-hyvaksyminen "2023-04-16"}]
+                ["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:errormsg "HTTP request error: bad request"
+                  :body arvo-error-body}]
+                ["odottaa_kasittelya" "ei_laheteta"
+                 {:heratepvm "2023-04-16"
+                  :opiskeluoikeus-oid "1.2.246.562.15.10000000009"}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
         (client/reset-functions!)))))
 
-(deftest test-create-and-save-arvo-kyselylinkki-for-all-needed!
+(deftest test-handle-amis-palautteet-on-heratepvm!
   (with-redefs [date/now (constantly (LocalDate/of 2024 12 18))
                 koski/get-oppija-opiskeluoikeudet
                 (fn [_]
@@ -497,7 +529,7 @@
                  {:hoks hoks-test/hoks-4
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           vastauslinkki-counter (atom 0)]
-      (testing "create-and-save-arvo-kyselylinkki-for-all-needed!"
+      (testing "handle-amis-palautteet-on-heratepvm!"
         (client/set-post!
           (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
@@ -507,7 +539,7 @@
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/bar"
                                           @vastauslinkki-counter)
                       :voimassa_loppupvm "2024-10-10"}})))
-        (op/create-and-save-arvo-kyselylinkki-for-all-needed! {})
+        (vt/handle-amis-palautteet-on-heratepvm! {})
         (is (= [["kysely_muodostettu" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)

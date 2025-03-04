@@ -1,5 +1,6 @@
 (ns oph.ehoks.palaute.handler
-  (:require [compojure.api.sweet :as c-api]
+  (:require [medley.core :refer [find-first]]
+            [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [compojure.core :refer [GET]]
             [clojure.java.jdbc :as jdbc]
@@ -11,6 +12,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as restful]
@@ -36,22 +38,24 @@
 
             (c-api/POST "/:hoks-id/kyselylinkki" [hoks-id]
               :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
-              (let [palautteet
-                    (palaute/get-by-hoks-id-and-kyselytyypit!
-                      hoks-id
-                      ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
-                (->> palautteet
-                     (map amis/create-and-save-arvo-kyselylinkki!)
-                     (hash-map :kyselylinkit)
-                     (restful/ok)
-                     (assoc ::audit/target {:palautteet palautteet}))))
+              (let [amis-palautteet
+                    (palaute/get-palautteet-waiting-for-vastaajatunnus!
+                      db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"
+                                              "osia_suorittaneet"]
+                               :hoks-id hoks-id
+                               :palaute-id nil})
+                    vastaajatunnukset
+                    (map vt/handle-palaute-waiting-for-heratepvm!
+                         amis-palautteet)]
+                (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
+                       ::audit/target {:vastaajatunnukset vastaajatunnukset
+                                       :hoks-id hoks-id})))
 
             (c-api/POST "/kyselylinkit" []
               :summary "Luo kyselylinkit niille palautteille, jotka
                        odottavat käsittelyä."
               (let [palautteet
-                    (amis/create-and-save-arvo-kyselylinkki-for-all-needed!
-                      {})]
+                    (vt/handle-amis-palautteet-on-heratepvm! {})]
                 (-> {:kyselylinkit palautteet}
                     (restful/ok)
                     (assoc ::audit/target {:palautteet palautteet})))))
@@ -59,32 +63,35 @@
           (c-api/context "/tyoelamapalaute" []
             :tags ["tyoelamapalaute"]
 
+            (c-api/POST "/:palaute-id/vastaajatunnus" []
+              :summary "Luo vastaajatunnuksen yksittäiselle palautteelle."
+              :header-params [caller-id :- s/Str
+                              ticket :- s/Str]
+              :path-params [palaute-id :- s/Int]
+              (let [tep-palautteet
+                    (palaute/get-palautteet-waiting-for-vastaajatunnus!
+                      db/spec
+                      {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
+                       :palaute-id palaute-id
+                       :hoks-id nil})
+                    vastaajatunnukset
+                    (map vt/handle-palaute-waiting-for-heratepvm!
+                         tep-palautteet)]
+                (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
+                       ::audit/target {:vastaajatunnukset vastaajatunnukset
+                                       :hoks-id nil
+                                       :palaute-id palaute-id})))
+
             (c-api/POST "/vastaajatunnukset" []
               :summary "Luo vastaajatunnukset niille palautteille, jotka
                         odottavat käsittelyä."
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               (let [vastaajatunnukset
-                    (tep/handle-all-palautteet-waiting-for-vastaajatunnus! {})]
+                    (vt/handle-tep-palautteet-on-heratepvm! {})]
                 (assoc
                   (restful/ok {:vastaajatunnukset vastaajatunnukset})
-                  ::audit/target {:vastaajatunnukset vastaajatunnukset})))
-
-            (c-api/POST "/:palaute-id/vastaajatunnus" []
-              :summary "Luo vastaajatunnuksen yksittäiselle palautteelle."
-              :header-params [caller-id :- s/Str
-                              ticket :- s/Str]
-              :path-params [palaute-id :- s/Int]
-              (if-let [tep-palaute
-                       (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
-                         db/spec {:palaute-id palaute-id})]
-                (let [vastaajatunnus
-                      (tep/handle-palaute-waiting-for-vastaajatunnus!
-                        tep-palaute)]
-                  (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
-                         ::audit/target {:vastaajatunnus vastaajatunnus
-                                         :palaute-id palaute-id}))
-                (response/not-found {:message "Palaute not found"})))))))
+                  ::audit/target {:vastaajatunnukset vastaajatunnukset})))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
