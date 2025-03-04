@@ -145,8 +145,10 @@
                 :tx              tx
                 :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
                 :existing-palaute (existing-palaute! tx ctx kysely-type))
-          [state field reason]
+          [proposed-state field reason]
           (initial-palaute-state-and-reason ctx kysely-type)
+          state
+          (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
           lisatiedot (map-vals str (select-keys hoks [field]))]
       (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
                 "will be" (or state :ei-luoda-ollenkaan)
