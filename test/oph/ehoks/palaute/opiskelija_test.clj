@@ -414,16 +414,19 @@
                     (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                     (map (juxt :tila :kyselytyyppi)))))
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:osaamisen-saavuttamisen-pvm "2024-02-05"}]
+                 {:request-id 0
+                  :osaamisen-saavuttamisen-pvm "2024-02-05"}]
                 ["odottaa_kasittelya" "kysely_muodostettu"
-                 {:arvo_response
+                 {:request-id 36
+                  :arvo_response
                   {:tunnus "foo1"
                    :kysely_linkki "https://arvovastaus.csc.fi/v/foo1"
                    :voimassa_loppupvm "2024-10-10"}}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["valmistuneet"]}
                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
-                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+                    (map (juxt :vanha-tila :uusi-tila
+                               #(update (:lisatiedot %) :request-id count))))))
         (client/reset-functions!))
       (testing "get kyselylinkit returns linkki from palaute"
         (let [loppupvm (.plusMonths (LocalDateTime/now) 1)]
@@ -477,14 +480,17 @@
                     (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                     (map (juxt :tila :kyselytyyppi)))))
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:ensikertainen-hyvaksyminen "2023-04-16"}]
+                 {:request-id 0
+                  :ensikertainen-hyvaksyminen "2023-04-16"}]
                 ["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:errormsg "HTTP request error: bad request"
+                 {:request-id 36
+                  :errormsg "HTTP request error: bad request"
                   :body arvo-error-body}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
-                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+                    (map (juxt :vanha-tila :uusi-tila
+                               #(update (:lisatiedot %) :request-id count))))))
         (client/reset-functions!))
       (testing "non-recoverable error in Arvo call"
         (client/set-post!
@@ -497,17 +503,21 @@
              (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
              (vt/handle-palaute-waiting-for-heratepvm!))
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:ensikertainen-hyvaksyminen "2023-04-16"}]
+                 {:request-id 0
+                  :ensikertainen-hyvaksyminen "2023-04-16"}]
                 ["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:errormsg "HTTP request error: bad request"
+                 {:request-id 36
+                  :errormsg "HTTP request error: bad request"
                   :body arvo-error-body}]
                 ["odottaa_kasittelya" "ei_laheteta"
                  {:heratepvm "2023-04-16"
+                  :request-id 36
                   :opiskeluoikeus-oid "1.2.246.562.15.10000000009"}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
-                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+                    (map (juxt :vanha-tila :uusi-tila
+                               #(update (:lisatiedot %) :request-id count))))))
         (client/reset-functions!)))))
 
 (deftest test-handle-amis-palautteet-on-heratepvm!
