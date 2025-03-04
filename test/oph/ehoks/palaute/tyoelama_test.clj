@@ -2,7 +2,7 @@
   (:require [clojure.set :as s]
             [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
-            [medley.core :refer [find-first remove-vals]]
+            [medley.core :refer [remove-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -19,7 +19,6 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
-            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date]
             [taoensso.faraday :as far])
@@ -68,6 +67,7 @@
     :jakso_loppupvm "2023-12-05"
     :ohjaaja_puhelinnumero "0401111111"
     :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hato"
     :yksiloiva_tunniste "1"
     :tutkinnonosa_koodi "tutkinnonosat_300268"
     :tpk-niputuspvm "ei_maaritelty"
@@ -75,6 +75,7 @@
     :oppilaitos "1.2.246.562.10.12944436166"
     :ohjaaja_ytunnus_kj_tutkinto
     "Olli Ohjaaja/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 1
     :niputuspvm "2024-07-01"
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
@@ -83,10 +84,12 @@
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2023-12-01"
     :ohjaaja_email "olli.ohjaaja@esimerkki.com"
+    :hankkimistapa_id 12
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-01-14"}
+    :viimeinen_vastauspvm "2024-02-14"
+    :kasittelytila "ei_niputettu"}
    {:osa_aikaisuus 100
     :ohjaaja_nimi "Olli Ohjaaja"
     :tutkinnonosa_nimi "Testiosa"
@@ -98,12 +101,14 @@
     :jakso_loppupvm "2024-01-06"
     :ohjaaja_puhelinnumero "0401111111"
     :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hpto"
     :yksiloiva_tunniste "4"
     :tpk-niputuspvm "ei_maaritelty"
     :tallennuspvm "2024-06-30"
     :oppilaitos "1.2.246.562.10.12944436166"
     :ohjaaja_ytunnus_kj_tutkinto
     "Olli Ohjaaja/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 1
     :niputuspvm "2024-07-01"
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
@@ -112,10 +117,12 @@
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2024-01-01"
     :ohjaaja_email "olli.ohjaaja@esimerkki.com"
+    :hankkimistapa_id 10
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-02-14"}
+    :viimeinen_vastauspvm "2024-03-16"
+    :kasittelytila "ei_niputettu"}
    {:osa_aikaisuus 80
     :ohjaaja_nimi "Matti Meikäläinen"
     :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
@@ -126,6 +133,7 @@
     :jakso_loppupvm "2023-11-25"
     :ohjaaja_puhelinnumero "0402222222"
     :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hato"
     :yksiloiva_tunniste "3"
     :tutkinnonosa_koodi "tutkinnonosat_300269"
     :tpk-niputuspvm "ei_maaritelty"
@@ -133,6 +141,7 @@
     :oppilaitos "1.2.246.562.10.12944436166"
     :ohjaaja_ytunnus_kj_tutkinto
     "Matti Meikäläinen/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 2
     :niputuspvm "2024-07-01"
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
@@ -141,10 +150,12 @@
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2023-11-01"
     :ohjaaja_email "matti.meikalainen@esimerkki.com"
+    :hankkimistapa_id 14
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2023-12-30"}
+    :viimeinen_vastauspvm "2024-01-30"
+    :kasittelytila "ei_niputettu"}
    {:osa_aikaisuus 60
     :ohjaaja_nimi "Matti Meikäläinen"
     :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
@@ -155,6 +166,7 @@
     :jakso_loppupvm "2024-01-25"
     :ohjaaja_puhelinnumero "0402222222"
     :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hyto"
     :yksiloiva_tunniste "7"
     :tutkinnonosa_koodi "tutkinnonosat_300270"
     :tpk-niputuspvm "ei_maaritelty"
@@ -162,6 +174,7 @@
     :oppilaitos "1.2.246.562.10.12944436166"
     :ohjaaja_ytunnus_kj_tutkinto
     "Matti Meikäläinen/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 4
     :niputuspvm "2024-07-01"
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
@@ -170,10 +183,12 @@
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2024-01-01"
     :ohjaaja_email "matti.meikalainen@esimerkki.com"
+    :hankkimistapa_id 16
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-03-01"}
+    :viimeinen_vastauspvm "2024-04-01"
+    :kasittelytila "ei_niputettu"}
    {:osa_aikaisuus 80
     :ohjaaja_nimi "Olli Ohjaaja"
     :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
@@ -185,6 +200,7 @@
     :jakso_loppupvm "2024-04-05"
     :ohjaaja_puhelinnumero "0401111111"
     :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hyto"
     :yksiloiva_tunniste "9"
     :tutkinnonosa_koodi "tutkinnonosat_300271"
     :tpk-niputuspvm "ei_maaritelty"
@@ -192,6 +208,7 @@
     :oppilaitos "1.2.246.562.10.12944436166"
     :ohjaaja_ytunnus_kj_tutkinto
     "Olli Ohjaaja/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 6
     :niputuspvm "2024-07-01"
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
@@ -200,10 +217,12 @@
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2024-04-01"
     :ohjaaja_email "olli.ohjaaja@esimerkki.com"
+    :hankkimistapa_id 18
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-05-15"}])
+    :viimeinen_vastauspvm "2024-06-15"
+    :kasittelytila "ei_niputettu"}])
 
 (def expected-ddb-niput
   [{:tyopaikka                   "Ohjaus Oy"
@@ -275,22 +294,19 @@
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
                     :jakso          test-jakso
                     :existing-palaute {:yksiloiva-tunniste "asd"
-                                       :tila "vastaajatunnus_muodostettu"}}
-                   :ohjaajakysely)
+                                       :tila "vastaajatunnus_muodostettu"}})
                  [nil :yksiloiva-tunniste :jo-lahetetty])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-5
-                    :jakso test-jakso}
-                   :ohjaajakysely)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt])))
         (testing "osa-aikaisuus is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
-                    :jakso (dissoc test-jakso :osa-aikaisuustieto)}
-                   :ohjaajakysely)
+                    :jakso (dissoc test-jakso :osa-aikaisuustieto)})
                  [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
         (testing "workplace information is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
@@ -299,8 +315,7 @@
                     :jakso (update test-jakso
                                    :tyopaikalla-jarjestettava-koulutus
                                    dissoc
-                                   :tyopaikan-y-tunnus)}
-                   :ohjaajakysely)
+                                   :tyopaikan-y-tunnus)})
                  [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
                   :puuttuva-yhteystieto])))
         (testing "työpaikkajakso is interrupted on it's end date"
@@ -310,22 +325,19 @@
                     :jakso (assoc-in test-jakso
                                      [:keskeytymisajanjaksot 1]
                                      {:alku  (LocalDate/of 2023 12 1)
-                                      :loppu (LocalDate/of 2023 12 15)})}
-                   :ohjaajakysely)
+                                      :loppu (LocalDate/of 2023 12 15)})})
                  [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt])))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-2
-                    :jakso test-jakso}
-                   :ohjaajakysely)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen])))
         (testing "there is a feedback preventing code in opiskeluoikeusjakso."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-4
-                    :jakso test-jakso}
-                   :ohjaajakysely)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu])))
         (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
           (doseq [test-hoks [(assoc hoks-test/hoks-1
@@ -337,8 +349,7 @@
             (is (= (tep/initial-palaute-state-and-reason
                      {:hoks           test-hoks
                       :opiskeluoikeus oo-test/opiskeluoikeus-1
-                      :jakso test-jakso}
-                     :ohjaajakysely)
+                      :jakso test-jakso})
                    [:ei-laheteta
                     :tuva-opiskeluoikeus-oid
                     :tuva-opiskeluoikeus]))))
@@ -347,22 +358,19 @@
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus (assoc-in oo-test/opiskeluoikeus-1
                                               [:tyyppi :koodiarvo] "tuva")
-                    :jakso test-jakso}
-                   :ohjaajakysely)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus])))
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-3
-                    :jakso test-jakso}
-                   :ohjaajakysely)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  {:hoks           hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1
-                  :jakso test-jakso}
-                 :ohjaajakysely)
+                  :jakso test-jakso})
                [:odottaa-kasittelya :loppu :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
@@ -477,19 +485,22 @@
     :opiskeluoikeus_oid
     :oppija_oid
     :hoks_id
-    :hankkimistapa_tyyppi
     :yksiloiva_tunniste
+    :hankkimistapa_tyyppi
     :tyopaikan_nimi
     :tyopaikan_ytunnus
     :jakso_loppupvm
     :ohjaaja_puhelinnumero
     :osaamisala
     :osa_aikaisuus
+    :tutkinnonosa_tyyppi
     :tpk-niputuspvm
     :tallennuspvm
     :oppilaitos
     :tunnus
     :ohjaaja_ytunnus_kj_tutkinto
+    :kasittelytila
+    :tutkinnonosa_id
     :niputuspvm
     :tyopaikan_normalisoitu_nimi
     :toimipiste_oid
@@ -507,12 +518,9 @@
 (def optional-jakso-keys
   #{:tutkinnonosa_koodi
     :tutkinnonosa_nimi
-    :tutkinnonosa_id
-    :kasittelytila
-    :tutkinnonosa_tyyppi
     :oppisopimuksen_perusta})
 
-(deftest test-handle-tep-palautteet-on-heratepvm!
+(deftest test-handle-all-palautteet-waiting-for-vastaajatunnus!
   (clear-ddb-jakso-table!)
   (clear-ddb-tpo-nippu-table!)
   (testing (str "create-and-save-arvo-vastaajatunnus-for-all-needed! "
@@ -526,7 +534,7 @@
                   arvo/create-jaksotunnus! hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
-      (vt/handle-tep-palautteet-on-heratepvm! {})
+      (tep/handle-all-palautteet-waiting-for-vastaajatunnus! {})
       (let [palautteet (hoks-utils/palautteet-joissa-vastaajatunnus)
             ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
             ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
@@ -536,18 +544,14 @@
                                "'vastaajatunnus_muodostettu'")])]
         (is (= (count palautteet) 5))
         (is (= (count ddb-jaksot) 5))
-        (test-utils/eq
-          (sort-by :yksiloiva_tunniste
-                   (map #(dissoc % :tunnus :request_id :hankkimistapa_id)
-                        ddb-jaksot))
-          (sort-by :yksiloiva_tunniste expected-ddb-jaksot))
+        (is (= (map #(dissoc % :tunnus :request_id) ddb-jaksot)
+               expected-ddb-jaksot))
         (is (= ddb-niput expected-ddb-niput))
         (is (= (count tapahtumat) 5))
         (is (= (set (map :arvo_tunniste palautteet))
                (set (map :tunnus ddb-jaksot))))
         (doseq [jakso ddb-jaksot]
-          (is (every? some? (map #(get jakso %) required-jakso-keys))
-              (map #(vector % (get jakso %)) required-jakso-keys))
+          (is (every? some? (map #(get jakso %) required-jakso-keys)))
           (is (empty? (s/difference
                         (set (keys jakso))
                         (set (concat required-jakso-keys
@@ -557,29 +561,12 @@
   (clear-ddb-jakso-table!)
   (clear-ddb-tpo-nippu-table!)
   ; Test initialization
-  (is (-> #(assoc-in % [:hankittavat-ammat-tutkinnon-osat 0
-                        :osaamisen-hankkimistavat 0
-                        :keskeytymisajanjaksot]
-                     [{:alku  (LocalDate/of 2023 11 1)
-                       :loppu (LocalDate/of 2023 11 16)}
-                      {:alku  (LocalDate/of 2023 11 20)}])
-          (hoks-utils/create-hoks-in-the-past!)
-          :status
-          (= 200)))
-  ;; to ensure that the keskeytynyt jakso is not already marked non-handleable
-  (db-helpers/query
-    ["UPDATE palautteet SET tila='odottaa_kasittelya'
-     WHERE jakson_yksiloiva_tunniste='1' RETURNING *"])
+  (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
 
-  (let [initial-palautteet (hoks-utils/palautteet)
-        palautteet
-        (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
-              :hoks-id nil :palaute-id nil}
-             (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec))
-        tep-palaute (find-first
-                      #(= (:jakson-yksiloiva-tunniste %) "4") palautteet)
-        kesk-palaute (find-first
-                       #(= (:jakson-yksiloiva-tunniste %) "1") palautteet)
+  (let [initial-palautteet  (hoks-utils/palautteet)
+        tep-palaute (nth
+                      (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
+                        db/spec {:heratepvm (str (date/now))}) 1)
         create-jaksotunnus-counter (atom 0)
         arvo-tunnukset (atom [])
         check-current-state-is-same-as-initial-state
@@ -605,30 +592,30 @@
         (testing "Arvo call for vastaajatunnus creation fails."
           (with-redefs [arvo/create-jaksotunnus!
                         (fn [_] (throw (ex-info "Arvo error" {})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
-          (is (contains?
-                (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
-                      :hoks-id (:hoks-id tep-palaute)}
-                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec)
-                     (map :syy) (set))
-                "arvo_kutsu_epaonnistui"))
+            (is (thrown-with-msg?
+                  ExceptionInfo
+                  #"Arvo error"
+                  (tep/handle-palaute-waiting-for-vastaajatunnus!
+                    tep-palaute))))
           (check-current-state-is-same-as-initial-state))
         (testing "jakso sync to Herätepalvelu fails."
           (with-redefs [heratepalvelu/sync-jakso!*
                         (fn [_] (throw (ex-info "Jakso sync error" {})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
-          (is (contains?
-                (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
-                      :hoks-id (:hoks-id tep-palaute)}
-                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec)
-                     (map :syy) (set))
-                "heratepalvelu_sync_epaonnistui"))
+            (is (thrown-with-msg?
+                  ExceptionInfo
+                  #"Failed to sync jakso"
+                  (tep/handle-palaute-waiting-for-vastaajatunnus!
+                    tep-palaute))))
           (check-current-state-is-same-as-initial-state))
         (testing "nippu sync to Herätepalvelu fails."
           (with-redefs
            [heratepalvelu/sync-tpo-nippu!*
             (fn [_] (throw (ex-info "TPO-nippu sync failed" {})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (thrown-with-msg?
+                  ExceptionInfo
+                  #"Failed to sync TPO-nippu"
+                  (tep/handle-palaute-waiting-for-vastaajatunnus!
+                    tep-palaute))))
           (check-current-state-is-same-as-initial-state)))
       (let [counter-value-before-fn-call @create-jaksotunnus-counter]
         (testing (str "When getting other than \"404 Not found\" error from "
@@ -641,33 +628,28 @@
                        "Koski error"
                        {:status 500
                         :type   ::koski/opiskeluoikeus-fetching-error})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
-          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
+            (is (thrown-with-msg?
+                  ExceptionInfo
+                  #"Error while fetching opiskeluoikeus"
+                  (tep/handle-palaute-waiting-for-vastaajatunnus! tep-palaute)))
+            (is (= counter-value-before-fn-call @create-jaksotunnus-counter)))
           (check-current-state-is-same-as-initial-state))
         (testing (str "When opiskeluoikeus for palaute is not found from from "
                       "Koski, `tila` for it should be marked as `ei_laheteta`. "
                       "No call to Arvo should be made.")
           (with-redefs [koski/get-opiskeluoikeus! (fn [_] nil)]
-            (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+            (tep/handle-palaute-waiting-for-vastaajatunnus! tep-palaute)
             (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
             (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                    "ei_laheteta"))))
-        (testing (str "If jakso has disappeared before checks, "
-                      "it should be marked as `ei_laheteta`.")
-          (db-helpers/query ["UPDATE osaamisen_hankkimistavat
-                             SET deleted_at=now()
-                             WHERE yksiloiva_tunniste='4' RETURNING *"])
-          (db-helpers/query ["UPDATE palautteet
-                             SET tila='odottaa_kasittelya'
-                             WHERE jakson_yksiloiva_tunniste='4' RETURNING *"])
-          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
-          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
-          (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
-                 "ei_laheteta")))
         (testing (str "Palaute should be marked as \"ei_laheteta\" when there "
                       "are one or more open keskeytymisajanjakso. No call to "
                       "Arvo should be made.")
-          (vt/handle-palaute-waiting-for-heratepvm! kesk-palaute)
-          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
-          (is (= (:tila (palaute/get-by-id! db/spec {:id (:id kesk-palaute)}))
-                 "ei_laheteta")))))))
+          (with-redefs [oht/get-keskeytymisajanjaksot!
+                        (fn [_ __] [{:alku  (LocalDate/of 2023 11 1)
+                                     :loppu (LocalDate/of 2023 11 16)}
+                                    {:alku  (LocalDate/of 2024 02 5)}])]
+            (tep/handle-palaute-waiting-for-vastaajatunnus! tep-palaute)
+            (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
+            (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
+                   "ei_laheteta"))))))))

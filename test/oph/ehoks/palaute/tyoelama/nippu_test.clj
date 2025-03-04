@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama.nippu-test
   (:require [clojure.test :refer [deftest is testing]]
-            [oph.ehoks.test-utils :as util]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu])
   (:import [java.time LocalDate]))
 ;
@@ -17,17 +16,14 @@
    :niputuspvm                  (LocalDate/of 2024 12 16)})
 
 (deftest test-build-tpo-nippu-for-heratepalvelu
-  (let [jakso
-        {:tyopaikalla-jarjestettava-koulutus
-         {:tyopaikan-nimi "Meikäläisen Murkinat Oy"
-          :tyopaikan-y-tunnus "1234567-1"
-          :vastuullinen-tyopaikka-ohjaaja
-          {:nimi "Matti Meikäläinen"
-           :sahkoposti "poks@foks"}}}
-        ctx {:jakso           jakso
+  (let [tep-palaute
+        {:vastuullinen-tyopaikka-ohjaaja-nimi "Matti Meikäläinen"
+         :tyopaikan-y-tunnus                  "1234567-1"
+         :tyopaikan-nimi                      "Meikäläisen Murkinat Oy"}
+        ctx {:existing-palaute tep-palaute
              :koulutustoimija "1.2.246.562.10.346830761110"
              :suoritus        {:koulutusmoduuli
                                {:tunniste {:koodiarvo "12345"}}}
              :niputuspvm      (LocalDate/of 2024 12 16)}]
-    (util/eq (nippu/build-tpo-nippu-for-heratepalvelu ctx)
-             expected-tpo-nippu-data)))
+    (is (= (nippu/build-tpo-nippu-for-heratepalvelu ctx)
+           expected-tpo-nippu-data))))

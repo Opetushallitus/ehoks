@@ -5,6 +5,8 @@
             [environ.core :refer [env]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.palaute :refer
+             [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
             [taoensso.faraday :as far])
@@ -100,4 +102,38 @@
                      {:update-expr update-expr :expr-attr-names attr-names
                       :expr-attr-vals attr-values})))
 
-(def sync-amis-herate! (partial sync-item! :amis))
+(def map-keys-to-ddb
+  (some-fn {:toimija-oppija :toimija_oppija, :tyyppi-kausi :tyyppi_kausi}
+           identity))
+
+(defn sync-amis-herate!
+  "Update the herätepalvelu AMISheratetable to have the same content
+  for given heräte as palaute-backend has in its own database.
+  sync-amis-herate! only updates fields it 'owns': currently that
+  means that the messaging tracking fields are left intact (because
+  herätepalvelu will update those)."
+  [{:keys [existing-palaute] :as ctx}]
+  (if-not (contains? (set (:heratepalvelu-responsibities config))
+                     :sync-amis-heratteet)
+    (log/warn "sync-amis-herate!: configured to not do anything")
+    (let [hoks-id      (:hoks-id existing-palaute)
+          kyselytyyppi (:kyselytyyppi existing-palaute)
+          palautteet (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!
+                       db/spec {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]})
+          palaute (-> (not-empty palautteet)
+                      (or (throw (ex-info "palaute not found"
+                                          {:hoks-id      hoks-id
+                                           :kyselytyyppi kyselytyyppi})))
+                      (first))]
+      (try (-> palaute
+               (utils/remove-nils)
+               (update-keys map-keys-to-ddb)
+               (dissoc :internal-kyselytyyppi)
+               (->> (sync-item! :amis)))
+           (catch Exception e
+             (log/error e "while processing palaute" palaute)
+             (tapahtuma/build-and-insert!
+               (assoc ctx :tapahtumatyyppi :heratepalvelu-sync)
+               :synkronointi-epaonnistui
+               {:errormsg (.getMessage e) :body (:body (ex-data e))})
+             (throw e))))))

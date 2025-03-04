@@ -1,20 +1,31 @@
 (ns oph.ehoks.palaute.tyoelama.nippu
-  (:require [oph.ehoks.utils :as utils]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]))
+  (:require [oph.ehoks.utils :as utils]))
+
+(defn tunniste
+  [ctx tep-palaute]
+  {:pre [(or (:vastuullinen-tyopaikka-ohjaaja-nimi tep-palaute)
+             (:ohjaaja-nimi tep-palaute))
+         (or (:tyopaikan-y-tunnus tep-palaute)
+             (:tyopaikan-ytunnus tep-palaute))
+         (:koulutustoimija ctx)
+         (get-in (:suoritus ctx) [:koulutusmoduuli :tunniste :koodiarvo])]}
+  (format "%s/%s/%s/%s"
+          (or (:vastuullinen-tyopaikka-ohjaaja-nimi tep-palaute)
+              (:ohjaaja-nimi tep-palaute))
+          (or (:tyopaikan-y-tunnus tep-palaute)
+              (:tyopaikan-ytunnus tep-palaute))
+          (:koulutustoimija ctx)
+          (get-in (:suoritus ctx) [:koulutusmoduuli :tunniste :koodiarvo])))
 
 (defn build-tpo-nippu-for-heratepalvelu
-  [{:keys [jakso suoritus koulutustoimija niputuspvm] :as ctx}]
-  {:pre [(:tyopaikalla-jarjestettava-koulutus jakso)]}
-  (let [tutkinto           (suoritus/tutkintotunnus suoritus)
-        tjk                (:tyopaikalla-jarjestettava-koulutus jakso)
-        tyopaikan-nimi     (:tyopaikan-nimi tjk)
-        tyopaikan-y-tunnus (:tyopaikan-y-tunnus tjk)
-        ohjaaja            (:nimi (:vastuullinen-tyopaikka-ohjaaja tjk))]
-    (-> {:ohjaaja-ytunnus-kj-tutkinto (format "%s/%s/%s/%s"
-                                              ohjaaja
-                                              tyopaikan-y-tunnus
-                                              koulutustoimija
-                                              tutkinto)
+  [{:keys [existing-palaute suoritus koulutustoimija niputuspvm] :as ctx}]
+  {:pre [(:tyopaikan-nimi existing-palaute)]}
+  (let [tutkinto (get-in suoritus [:koulutusmoduuli :tunniste :koodiarvo])
+        tyopaikan-nimi     (:tyopaikan-nimi existing-palaute)
+        tyopaikan-y-tunnus (:tyopaikan-y-tunnus existing-palaute)
+        ohjaaja            (:vastuullinen-tyopaikka-ohjaaja-nimi
+                             existing-palaute)]
+    (-> {:ohjaaja-ytunnus-kj-tutkinto (tunniste ctx existing-palaute)
          :ohjaaja                     ohjaaja
          :tyopaikka                   tyopaikan-nimi
          :ytunnus                     tyopaikan-y-tunnus
@@ -25,6 +36,3 @@
          :niputuspvm                  niputuspvm}
         (utils/remove-nils)
         (utils/to-underscore-keys))))
-
-(defn tunniste [ctx]
-  (:ohjaaja_ytunnus_kj_tutkinto (build-tpo-nippu-for-heratepalvelu ctx)))
