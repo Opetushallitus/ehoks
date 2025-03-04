@@ -420,7 +420,8 @@
                   :heratepvm    (LocalDate/of 2023 12 15)
                   :tyyppi       "hoks_tallennus"
                   :syy          "hoks_tallennettu"
-                  :lisatiedot   {:loppu "2023-12-15"}}))))
+                  :lisatiedot   {:request-id nil
+                                 :loppu "2023-12-15"}}))))
       (testing
        "doesn't initiate tyoelamapalaute if it has already been initiated"
         (with-log
