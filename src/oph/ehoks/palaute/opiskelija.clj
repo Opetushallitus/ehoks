@@ -73,9 +73,7 @@
                        :koulutustoimija  koulutustoimija}]
     (->> (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
          (vec)
-         (log/spyf :info "existing-heratteet!: before rk filtering: %s")
          (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
-         (log/spyf :info "existing-heratteet!: after rk filtering: %s")
          ((fn [existing-palautteet]
             (when (> (count existing-palautteet) 1)
               (log/errorf (str "Found more than one existing herate for "
