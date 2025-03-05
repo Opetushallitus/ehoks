@@ -73,24 +73,26 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [jakso] :as ctx} kysely-type]
-  (or
-    (palaute/initial-palaute-state-and-reason-if-not-kohderyhma ctx :loppu)
-    (cond
-      (nil? jakso)
-      [nil :osaamisen-hankkimistapa :ei-ole]
+  [{:keys [jakso existing-palaute] :as ctx} kysely-type]
+  (cond
+    (not (palaute/nil-or-unhandled? existing-palaute))
+    [nil :yksiloiva-tunniste :jo-lahetetty]
 
-      (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
-      [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
+    (nil? jakso)
+    [nil :osaamisen-hankkimistapa :ei-ole]
 
-      (not (oht/has-required-osa-aikaisuustieto? jakso))
-      [:ei-laheteta :osa-aikaisuustieto :ei-ole]
+    (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
+    [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 
-      (fully-keskeytynyt? jakso)
-      [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
+    (not (oht/has-required-osa-aikaisuustieto? jakso))
+    [:ei-laheteta :osa-aikaisuustieto :ei-ole]
 
-      :else
-      [:odottaa-kasittelya :loppu :hoks-tallennettu])))
+    (fully-keskeytynyt? jakso)
+    [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
+
+    :else
+    (or (palaute/initial-palaute-state-and-reason-if-not-kohderyhma ctx :loppu)
+        [:odottaa-kasittelya :loppu :hoks-tallennettu])))
 
 (defn build!
   "Builds tyoelamapalaute to be inserted to DB. Uses `palaute/build!` to build

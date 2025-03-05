@@ -182,17 +182,17 @@
    herate-date-field]
   (let [herate-date (get (or jakso hoks) herate-date-field)]
     (cond
-      (not (nil-or-unhandled? existing-palaute))
-      [nil (if jakso :yksiloiva-tunniste :id) :jo-lahetetty]
-
-      (not opiskeluoikeus)
-      [nil :opiskeluoikeus-oid :ei-loydy]
-
       (not herate-date)
       [nil herate-date-field :ei-ole]
 
       (not (valid-herate-date? herate-date))
       [:ei-laheteta herate-date-field :eri-rahoituskaudella]
+
+      (hoks/tuva-related? hoks)
+      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
+      (not opiskeluoikeus)
+      [nil :opiskeluoikeus-oid :ei-loydy]
 
       (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
       [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
@@ -208,9 +208,6 @@
 
       (opiskeluoikeus/tuva? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-      (hoks/tuva-related? hoks)
-      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
