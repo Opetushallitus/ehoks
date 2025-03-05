@@ -100,4 +100,10 @@
                      {:update-expr update-expr :expr-attr-names attr-names
                       :expr-attr-vals attr-values})))
 
-(def sync-amis-herate! (partial sync-item! :amis))
+(defn sync-amis-herate!
+  "Put information for single opiskelijapalaute to herätepalvelu DDB."
+  [kyselyrecord]
+  (if-not (contains? (set (:heratepalvelu-responsibities config))
+                     :sync-amis-heratteet)
+    (log/info "sync-amis-herate!: configured to not write to DDB.")
+    (sync-item! :amis kyselyrecord)))
