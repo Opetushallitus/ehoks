@@ -89,6 +89,14 @@
 (def sync-jakso!*     (partial ddb/sync-item! :jakso))
 (def sync-tpo-nippu!* (partial ddb/sync-item! :nippu))
 
+(defn sync-jakso!
+  "Put information about single työelämäpalaute to herätepalvelu DDB."
+  [jaksorecord]
+  (if-not (contains? (set (:heratepalvelu-responsibities config))
+                     :sync-jakso-heratteet)
+    (log/info "sync-jakso!: configured to not write to DDB.")
+    (sync-jakso!* jaksorecord)))
+
 (defn sync-tpo-nippu!
   "Update the Herätepalvelu nipputable to have the same content for given heräte
   as palaute-backend has in its own database."
