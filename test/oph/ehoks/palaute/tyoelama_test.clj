@@ -265,7 +265,7 @@
     (is (= (map :yksiloiva-tunniste (tep/tyopaikkajaksot hoks-test/hoks-1))
            '("1" "3" "4" "7" "9")))))
 
-(deftest test-initial-palaute-and-reason
+(deftest test-initial-palaute-state-and-reason
   (testing "On HOKS creation or update"
     (with-redefs [date/now #(LocalDate/of 2023 7 1)]
       (testing "don't initiate kysely if"
@@ -430,10 +430,28 @@
                   db/spec
                   {:hoks-id (:id hoks-test/hoks-1)
                    :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})]
-            (palaute/update! db/spec (assoc existing :tila "lahetetty"))
+            (palaute/update-tila! {:existing-palaute existing
+                                   :tapahtumatyyppi :arvo-luonti}
+                                  "lahetetty" :arvo-kutsu-onnistui {})
             (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
                                       :opiskeluoikeus oo-test/opiskeluoikeus-1}
                                      test-jakso)
+            (is (= (db-helpers/query
+                     [(str "select vanha_tila, uusi_tila, tyyppi, syy "
+                           " from palaute_tapahtumat where palaute_id = "
+                           (:id existing))])
+                   [{:vanha_tila "odottaa_kasittelya",
+                     :uusi_tila "odottaa_kasittelya",
+                     :tyyppi "hoks_tallennus",
+                     :syy "hoks_tallennettu"}
+                    {:vanha_tila "odottaa_kasittelya",
+                     :uusi_tila "lahetetty",
+                     :tyyppi "arvo_luonti",
+                     :syy "arvo_kutsu_onnistui"}
+                    {:vanha_tila "lahetetty",
+                     :uusi_tila "lahetetty",
+                     :tyyppi "hoks_tallennus",
+                     :syy "jo_lahetetty"}]))
             (is (logged? 'oph.ehoks.palaute.tyoelama
                          :info
                          #":jo-lahetetty"))))))))
