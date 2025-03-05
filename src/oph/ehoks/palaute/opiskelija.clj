@@ -43,17 +43,19 @@
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [hoks] :as ctx} kysely-type]
+  [{:keys [hoks existing-palaute] :as ctx} kysely-type]
   (let [herate-basis (herate-date-basis kysely-type)]
-    (or
-      (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
-        ctx herate-basis)
-      (cond
-        (not (:osaamisen-hankkimisen-tarve hoks))
-        [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
+    (cond
+      (not (palaute/nil-or-unhandled? existing-palaute))
+      [nil herate-basis :jo-lahetetty]
 
-        :else
-        [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
+      (not (:osaamisen-hankkimisen-tarve hoks))
+      [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
+
+      :else
+      (or (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
+            ctx herate-basis)
+          [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
 
 (def kysely-kasittely-field-mapping
   {:aloituskysely :aloitusherate_kasitelty
@@ -145,8 +147,10 @@
                 :tx              tx
                 :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
                 :existing-palaute (existing-palaute! tx ctx kysely-type))
-          [state field reason]
+          [proposed-state field reason]
           (initial-palaute-state-and-reason ctx kysely-type)
+          state
+          (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
           lisatiedot (map-vals str (select-keys hoks [field]))]
       (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
                 "will be" (or state :ei-luoda-ollenkaan)
