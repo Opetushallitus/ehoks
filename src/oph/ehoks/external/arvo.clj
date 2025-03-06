@@ -45,7 +45,7 @@
   [kyselylinkki-params]
   (if-not (contains? (set (:arvo-responsibilities config)) :create-kyselytunnus)
     (do (log/info "create-kyselytunnus!: configured to not call Arvo")
-        {:tunnus "<nothing>"})
+        {:tunnus (str "<dummy-" (java.util.UUID/randomUUID) ">")})
     (call! :post "/vastauslinkki/v1"
            {:form-params kyselylinkki-params :content-type :json})))
 
@@ -90,7 +90,7 @@
   [request]
   (if-not (contains? (set (:arvo-responsibilities config)) :create-jaksotunnus)
     (do (log/info "create-jaksotunnus!: configured to not call Arvo")
-        {:tunnus "<nothing>"})
+        {:tunnus (str "<dummy-" (java.util.UUID/randomUUID) ">")})
     (call! :post "/tyoelamapalaute/v1/vastaajatunnus"
            {:form-params request :content-type :json})))
 
