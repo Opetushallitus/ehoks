@@ -155,10 +155,12 @@
       (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
                 "will be" (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
-      (when state
+      (if state
         (initiate!
           (assoc ctx :state state :reason reason :lisatiedot lisatiedot)
-          kysely-type))
+          kysely-type)
+        (when (:existing-palaute ctx)
+          (tapahtuma/build-and-insert! ctx reason lisatiedot)))
       state)))
 
 (defn initiate-every-needed!
