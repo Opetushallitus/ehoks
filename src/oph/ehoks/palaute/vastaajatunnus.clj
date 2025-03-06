@@ -81,7 +81,10 @@
         (tapahtuma/build-and-insert!
           ctx ex-type {:errormsg (ex-message ddb-ex)
                        :body     (ex-data ddb-ex)})
-        (heratepalvelu/delete-jakso-herate! existing-palaute))
+        (try
+          (heratepalvelu/delete-jakso-herate! existing-palaute)
+          (catch Exception e
+            (log/error e "While cleaning up jakso from Herätepalvelu"))))
 
       (let [cause-ex (ex-cause ex)]
         (log/error "Unknown exception while processing palaute "
