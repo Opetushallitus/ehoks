@@ -7,9 +7,14 @@
 (defn daily-actions!
   "Run all palaute checks that need to be run on a daily basis."
   [opts]
-  (palaute/handle-palautteet-waiting-for-heratepvm!
-    ["aloittaneet" "valmistuneet" "osia_suorittaneet"
-     "tyopaikkajakson_suorittaneet"])
+  (log/info "Commencing palaute daily actions.")
+  (try
+    (log/info "Handling palautteet that have reached their heratepvm.")
+    (palaute/handle-palautteet-waiting-for-heratepvm!
+      ["aloittaneet" "valmistuneet" "osia_suorittaneet"
+       "tyopaikkajakson_suorittaneet"])
+    (catch Exception e
+      (log/error e "Unhandled exception in daily-actions!.")))
   true)
 
 (defn run-scheduler!
