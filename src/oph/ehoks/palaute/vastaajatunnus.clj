@@ -49,9 +49,12 @@
         (if (:jakson-yksiloiva-tunniste existing-palaute)
           arvo/delete-jaksotunnus arvo/delete-kyselytunnus)]
     (log/infof ex "Handling exception in tunnus handling")
-    (when tunnus
-      (log/infof "Trying to delete jaksotunnus `%s` from Arvo" tunnus)
-      (tunnus-cleanup-handler tunnus))
+    (when (and tunnus (not (.startsWith ^String tunnus "<dummy-")))
+      (try
+        (log/infof "Trying to delete vastaajatunnus `%s` from Arvo" tunnus)
+        (tunnus-cleanup-handler tunnus)
+        (catch Exception e
+          (log/error e "While trying to clean up tunnus from Arvo"))))
     (case ex-type
       (::koski/opiskeluoikeus-not-found ::arvossa-ei-kyselya)
       (do (log/warnf "%s. Setting `tila` to `ei_laheteta` for palaute `%d`."
