@@ -130,11 +130,13 @@
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be" (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
-      (when state
+      (if state
         (->> (build! ctx state)
              (palaute/upsert! tx)
              (tapahtuma/build-and-insert! ctx state reason lisatiedot))
-        state))))
+        (when (:existing-palaute ctx)
+          (tapahtuma/build-and-insert! ctx reason lisatiedot)))
+      state)))
 
 (defn initiate-all-uninitiated!
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
