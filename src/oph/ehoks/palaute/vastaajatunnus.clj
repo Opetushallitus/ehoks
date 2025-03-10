@@ -93,11 +93,25 @@
                                      {:errormsg (ex-message ex)
                                       :causemsg (ex-message cause-ex)})))))
 
+(def hoks-cache-amount
+  "How many HOKSes we cache.  Palautteet from
+  palaute/get-palautteet-waiting-for-vastaajatunnus! are ordered by
+  hoks-id, so 1 should suffice."
+  2)
+
+(def hoks-cache-time
+  "Handling a palaute should not take longer than 15 seconds"
+  15000)
+
+(def get-hoks-by-id!
+  (utils/with-fifo-ttl-cache
+    hoks/get-by-id hoks-cache-time hoks-cache-amount {}))
+
 (defn build-ctx
   "Creates a full information context (i.e. background information)
   for a given palaute."
   [palaute]
-  (let [hoks (hoks/get-by-id (:hoks-id palaute))
+  (let [hoks (get-hoks-by-id! (:hoks-id palaute))
         jakso (some->>
                 (:jakson-yksiloiva-tunniste palaute)
                 (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))]
