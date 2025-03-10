@@ -12,9 +12,9 @@
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
-            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
@@ -591,6 +591,8 @@
           (is (= @arvo-tunnukset [])))]
     (with-redefs [organisaatio/get-organisaatio!
                   hoks-utils/mock-get-organisaatio!
+                  vt/get-hoks-by-id!
+                  hoks/get-by-id
                   koski/get-opiskeluoikeus-info-raw
                   hoks-utils/mock-get-opiskeluoikeus!
                   arvo/create-jaksotunnus!

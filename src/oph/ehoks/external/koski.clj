@@ -5,6 +5,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.oph-url :as u]
+            [oph.ehoks.utils :as utils]
             [ring.util.http-status :as status])
   (:import (clojure.lang ExceptionInfo)))
 
@@ -14,16 +15,9 @@
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
-(defn- with-fifo-ttl-cache
-  [f ttl-millis fifo-threshold seed]
-  (let [cache (-> {}
-                  (cache/fifo-cache-factory :threshold fifo-threshold)
-                  (cache/ttl-cache-factory :ttl ttl-millis))]
-    (memo/memoizer f cache seed)))
-
 (def get-oppijat-opiskeluoikeudet
   "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
-  (with-fifo-ttl-cache
+  (utils/with-fifo-ttl-cache
     (fn [oppija-oids]
       (:body
         (c/with-api-headers
@@ -61,7 +55,7 @@
 
 (def get-opiskeluoikeus-info-raw
   "Get opiskeluoikeus info"
-  (with-fifo-ttl-cache
+  (utils/with-fifo-ttl-cache
     (fn [oid]
       (:body
         (c/with-api-headers
