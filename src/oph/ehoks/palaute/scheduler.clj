@@ -15,6 +15,7 @@
        "tyopaikkajakson_suorittaneet"])
     (catch Exception e
       (log/error e "Unhandled exception in daily-actions!.")))
+  (log/info "Done palaute daily actions.")
   true)
 
 (defn run-scheduler!
