@@ -1,5 +1,7 @@
 (ns oph.ehoks.utils
   (:require [medley.core :refer [dissoc-in map-keys]]
+            [clojure.core.cache :as cache]
+            [clojure.core.memoize :as memo]
             [clojure.string]))
 
 (defn apply-when
@@ -32,6 +34,13 @@
     (if-let [value (get-in m sks)]
       (dissoc-in (assoc-in m dks value) sks)
       m)))
+
+(defn with-fifo-ttl-cache
+  [f ttl-millis fifo-threshold seed]
+  (let [cache (-> {}
+                  (cache/fifo-cache-factory :threshold fifo-threshold)
+                  (cache/ttl-cache-factory :ttl ttl-millis))]
+    (memo/memoizer f cache seed)))
 
 (defn remove-nils
   "Return same map, but without keys pointing to nil values"
