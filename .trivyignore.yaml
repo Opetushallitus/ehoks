@@ -1,0 +1,4 @@
+vulnerabilities:
+  - id: CVE-2024-6763
+    statement: https://github.com/ring-clojure/ring/issues/512
+    expired_at: 2025-05-01
