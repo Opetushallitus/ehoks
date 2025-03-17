@@ -26,3 +26,4 @@ on (h.opiskeluoikeus_oid = o."oid")
 where p.kyselytyyppi in ('aloittaneet', 'valmistuneet', 'osia_suorittaneet')
 and p.heratepvm >= :alkupvm
 and p.heratepvm <= :loppupvm
+and p.tila in (:tilat)

@@ -47,7 +47,7 @@ AND	hatooh.deleted_at IS NULL
 AND	oht.deleted_at IS null
 and p.deleted_at is null
 and p.kyselytyyppi = 'tyopaikkajakson_suorittaneet'
-and p.tila = 'odottaa_kasittelya'
+and p.tila in (:tilat)
 union all
 select
     hpto.hoks_id,
@@ -91,7 +91,7 @@ AND	hptooh.deleted_at IS NULL
 AND	oht.deleted_at IS null
 and p.deleted_at is null
 and p.kyselytyyppi = 'tyopaikkajakson_suorittaneet'
-and p.tila = 'odottaa_kasittelya'
+and p.tila in (:tilat)
 union all
 select
     hyto.hoks_id,
@@ -138,4 +138,4 @@ AND	ytooaoh.deleted_at IS NULL
 AND	oht.deleted_at IS null
 and p.deleted_at is null
 and p.kyselytyyppi = 'tyopaikkajakson_suorittaneet'
-and p.tila = 'odottaa_kasittelya'
+and p.tila in (:tilat)

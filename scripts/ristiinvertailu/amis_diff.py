@@ -3,50 +3,34 @@ import json
 
 import common
 
-with open('outputs/ddb_amis_kyselyt.json', 'r') as file:
-    ddb_heratteet_list = json.load(file)['Items']
+
+def format_ehoks_herate(herate):
+    del herate['voimassa-loppupvm']
+    herate['rahoituskausi'] = \
+        common.determine_rahoituskausi(herate['heratepvm'])
+    herate['ehoks-id'] = int(herate['ehoks-id'])
+    return herate
 
 
 ehoks_heratteet = {}
 num_of_duplicates_in_ehoks = 0
+id_keys = ['koulutustoimija', 'oppija-oid', 'kyselytyyppi', 'rahoituskausi']
 
-with open('outputs/ehoks_amis_kyselyt.csv', 'r') as file:
-    csv_reader = csv.DictReader(file)
-    for herate in csv_reader:
-        rahoituskausi = common.determine_rahoituskausi(herate['heratepvm'])
-        ids = (int(herate['ehoks-id']), herate['kyselytyyppi'], rahoituskausi)
-        if ids in ehoks_heratteet:
-            num_of_duplicates_in_ehoks += 1
-        else:
-            new_herate = herate.copy()
-            for key, val in herate.items():
-                if val == '':
-                    del new_herate[key]
+ehoks_heratteet, ehoks_duplicates = common.get_heratteet_and_duplicates(
+    lambda file: csv.DictReader(file),
+    'outputs/ehoks_amis_kyselyt.csv',
+    id_keys,
+    format_ehoks_herate)
 
-            del new_herate['voimassa-loppupvm']
-            new_herate['ehoks-id'] = int(new_herate['ehoks-id'])
-            new_herate['rahoituskausi'] = rahoituskausi
-            ehoks_heratteet[ids] = new_herate
+heratepalvelu_heratteet, heratepalvelu_duplicates = \
+        common.get_heratteet_and_duplicates(
+            lambda file: json.load(file)['Items'],
+            'outputs/ddb_amis_kyselyt.json',
+            id_keys,
+            lambda x: common.remove_ddb_attr_types(x))
 
-heratepalvelu_heratteet = {}
-num_of_duplicates_in_hp = 0
-
-for herate in ddb_heratteet_list:
-    rahoituskausi = common.determine_rahoituskausi(herate['heratepvm']['S'])
-    ids = (int(herate['ehoks-id']['N']), herate['kyselytyyppi']['S'], rahoituskausi)
-    if ids in heratepalvelu_heratteet:
-        num_of_duplicates_in_hp += 1
-    else:
-        new_herate = herate.copy()
-        for key, val in herate.items():
-            if val == '':
-                del new_herate[key]
-
-        heratepalvelu_heratteet[ids] = \
-            common.remove_ddb_attr_types(new_herate)
-
-common.diff('outputs/amis_diff.json',
-            ehoks_heratteet,
-            heratepalvelu_heratteet,
-            num_of_duplicates_in_ehoks,
-            num_of_duplicates_in_hp)
+common.print_statistics_and_output_to_csvs('amis',
+                                           ehoks_heratteet,
+                                           ehoks_duplicates,
+                                           heratepalvelu_heratteet,
+                                           heratepalvelu_duplicates)
