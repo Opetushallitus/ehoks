@@ -79,7 +79,7 @@
     [nil :yksiloiva-tunniste :jo-lahetetty]
 
     (nil? jakso)
-    [nil :osaamisen-hankkimistapa :ei-ole]
+    [nil :osaamisen-hankkimistapa :poistunut]
 
     (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
     [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
