@@ -278,6 +278,13 @@
                                        :tila "vastaajatunnus_muodostettu"}}
                    :ohjaajakysely)
                  [nil :yksiloiva-tunniste :jo-lahetetty])))
+        (testing "the jakso has been deleted from HOKS"
+          (is (= (tep/initial-palaute-state-and-reason
+                   {:hoks           hoks-test/hoks-1
+                    :opiskeluoikeus oo-test/opiskeluoikeus-5
+                    :jakso nil}
+                   :ohjaajakysely)
+                 [nil :osaamisen-hankkimistapa :poistunut])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
