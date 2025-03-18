@@ -21,5 +21,7 @@ returning id
 select p.kyselytyyppi, p.heratepvm, pt.*
 from palaute_tapahtumat pt
 join palautteet p on (pt.palaute_id = p.id)
-where p.hoks_id = :hoks-id and p.kyselytyyppi in (:v*:kyselytyypit)
+where p.hoks_id = :hoks-id
+  and p.kyselytyyppi in (:v*:kyselytyypit)
+  and p.deleted_at is null
 

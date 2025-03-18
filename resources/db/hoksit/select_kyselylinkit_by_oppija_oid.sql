@@ -34,3 +34,4 @@ WHERE p.kyselytyyppi IN ('aloittaneet', 'valmistuneet', 'osia_suorittaneet')
   AND h.oppija_oid = ?
   AND p.voimassa_alkupvm <= now()
   AND p.kyselylinkki IS NOT NULL
+  AND p.deleted_at IS NULL
