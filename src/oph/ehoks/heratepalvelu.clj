@@ -105,19 +105,16 @@
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-jakso-heratteet)
     (log/warn "sync-tpo-nippu!: configured to not do anything")
-    (let [tunnisteet (select-keys nippu [:ohjaaja_ytunnus_kj_tutkinto
-                                         :niputuspvm])]
-      (try
-        (if (ddb/get-item! :nippu tunnisteet)
-          (log/infof "Nippu `%s` already exists" tunnisteet)
-          (sync-tpo-nippu!* nippu))
-        (catch Exception e
-          (throw (ex-info (format (str "Failed to sync TPO-nippu with "
-                                       "tunnisteet %s to Herätepalvelu")
-                                  tunnisteet)
-                          {:type        ::tpo-nippu-sync-failed
-                           :arvo-tunnus tunnus}
-                          e)))))))
+    (try
+      (if (ddb/get-item! :nippu nippu)
+        (log/infof "Nippu already exists:" nippu)
+        (sync-tpo-nippu!* nippu))
+      (catch Exception e
+        (throw (ex-info (str "Failed to sync TPO-nippu to Herätepalvelu: "
+                             nippu)
+                        {:type        ::tpo-nippu-sync-failed
+                         :arvo-tunnus tunnus}
+                        e))))))
 
 (defn delete-jakso-herate!
   [tep-palaute]
