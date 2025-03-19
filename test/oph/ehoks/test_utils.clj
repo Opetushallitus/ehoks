@@ -11,6 +11,8 @@
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.migrations :as m]
+            [oph.ehoks.db.dynamodb :as ddb]
+            [taoensso.faraday :as far]
             [clojure.java.jdbc :as jdbc]))
 
 (def base-url "/ehoks-oppija-backend/api/v1/oppija/session")
@@ -361,6 +363,24 @@
 (defn empty-database-after-test [f]
   (f)
   (clear-db))
+
+(defn clear-dynamodb! []
+  (doseq [[table-id table] ddb/tables
+          item (far/scan @ddb/faraday-opts @table
+                         {:return (ddb/table-keys table-id)})]
+    (far/delete-item @ddb/faraday-opts @table item)))
+
+(defn empty-both-dbs-after-test [f]
+  (f)
+  (clear-db)
+  (clear-dynamodb!))
+
+(defn with-clean-database-and-clean-dynamodb [f]
+  (m/clean!)
+  (m/migrate!)
+  (clear-dynamodb!)
+  (f)
+  (clear-dynamodb!))
 
 (defmacro with-db [& body]
   `(do (do ~@body)

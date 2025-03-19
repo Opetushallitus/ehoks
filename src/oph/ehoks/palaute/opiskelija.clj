@@ -64,7 +64,7 @@
 (defn existing-palaute!
   "Returns an existing palaute if one already exists for `kysely-type` and
   for rahoituskausi corresponding to herate date."
-  [tx {:keys [hoks koulutustoimija] :as ctx} kysely-type]
+  [{:keys [tx hoks koulutustoimija] :as ctx} kysely-type]
   (let [rahoituskausi (palaute/rahoituskausi
                         (get hoks (herate-date-basis kysely-type)))
         kyselytyypit  (case kysely-type
@@ -132,6 +132,25 @@
          :puhelinnumero      (:puhelinnumero hoks)
          :alkupvm            (str heratepvm)}))))
 
+(defn enrich-ctx!
+  "Add information needed by opiskelijapalaute initiation into context."
+  [{:keys [hoks opiskeluoikeus tx] :as ctx} kysely-type]
+  (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+        heratepvm (get hoks (herate-date-basis kysely-type))
+        toimija-oppija (str koulutustoimija "/" (:oppija-oid hoks))
+        kyselytyyppi (translate-kyselytyyppi
+                       (palaute/kyselytyyppi kysely-type opiskeluoikeus))
+        rahoituskausi (palaute/rahoituskausi heratepvm)
+        tyyppi-kausi (str kyselytyyppi "/" rahoituskausi)
+        ddb-key {:toimija_oppija toimija-oppija :tyyppi_kausi tyyppi-kausi}
+        existing-palaute-ctx (assoc ctx :koulutustoimija koulutustoimija)]
+    (assoc existing-palaute-ctx
+           :tapahtumatyyppi :hoks-tallennus
+           :existing-ddb-key ddb-key
+           :existing-ddb-herate (delay (dynamodb/get-item! :amis ddb-key))
+           :existing-palaute (existing-palaute!
+                               existing-palaute-ctx kysely-type))))
+
 (defn initiate-if-needed!
   "Saves heräte data required for opiskelijapalautekysely
   (`:aloituskysely` or `:paattokysely`) to database and sends it to
@@ -141,12 +160,7 @@
   [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [ctx (assoc
-                ctx
-                :tapahtumatyyppi :hoks-tallennus
-                :tx              tx
-                :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-                :existing-palaute (existing-palaute! tx ctx kysely-type))
+    (let [ctx (enrich-ctx! (assoc ctx :tx tx) kysely-type)
           [proposed-state field reason]
           (initial-palaute-state-and-reason ctx kysely-type)
           state
