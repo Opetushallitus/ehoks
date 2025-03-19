@@ -110,18 +110,21 @@
            :voimassa-loppupvm         (palaute/vastaamisajan-loppupvm
                                         heratepvm alkupvm))))
 
+(defn enrich-ctx!
+  "Add information needed by työelämäpalaute initiation into context."
+  [{:keys [tx hoks jakso] :as ctx}]
+  (assoc ctx
+         :tapahtumatyyppi :hoks-tallennus
+         :existing-palaute
+         (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+           tx {:hoks-id            (:id hoks)
+               :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})))
+
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec {:isolation :serializable}]
-    (let [ctx (assoc ctx
-                     :tapahtumatyyppi :hoks-tallennus
-                     :tx              tx
-                     :jakso           jakso
-                     :existing-palaute
-                     (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                       tx {:hoks-id            (:id hoks)
-                           :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
+    (let [ctx (enrich-ctx! (assoc ctx :tx tx :jakso jakso))
           [proposed-state field reason]
           (initial-palaute-state-and-reason ctx :ohjaajakysely)
           state

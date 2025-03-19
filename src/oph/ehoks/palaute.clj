@@ -181,10 +181,13 @@
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
   collected because it's not part of kohderyhmä; otherwise returns nil."
-  [{:keys [hoks opiskeluoikeus jakso existing-palaute] :as ctx}
+  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate
+           existing-palaute] :as ctx}
    herate-date-field]
   (let [herate-date (get (or jakso hoks) herate-date-field)]
     (cond
+      ;; do more efficient checks first
+
       (not herate-date)
       [nil herate-date-field :ei-ole]
 
@@ -193,6 +196,12 @@
 
       (hoks/tuva-related? hoks)
       [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
+      ;; this is for the transition period with herätepalvelu
+      (and existing-ddb-herate (seq @existing-ddb-herate))
+      [:heratepalvelussa herate-date-field :heratepalvelun-vastuulla]
+
+      ;; order dependency: :opiskeluoikeus-oid rules should come last
 
       (not opiskeluoikeus)
       [nil :opiskeluoikeus-oid :ei-loydy]

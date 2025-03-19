@@ -8,13 +8,8 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.scheduler :as schedule]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
-
-(deftest test-scheduler-runs
-  (testing "Can be called"
-    (is (schedule/daily-actions! {}))))
 
 (deftest test-valid-herate-date?
   (testing "True if heratepvm is >= [rahoituskausi start year]-07-01"

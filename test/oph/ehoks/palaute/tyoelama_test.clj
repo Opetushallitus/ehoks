@@ -28,7 +28,7 @@
            (java.util UUID)))
 
 (use-fixtures :once test-utils/migrate-database)
-(use-fixtures :each test-utils/empty-database-after-test)
+(use-fixtures :each test-utils/empty-both-dbs-after-test)
 
 ;; FIXME: there is some kind of misunderstanding in the format of this
 ;; data.  It's fed to initiate-if-needed! and
