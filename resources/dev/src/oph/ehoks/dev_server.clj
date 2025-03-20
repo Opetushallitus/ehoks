@@ -97,7 +97,7 @@
   (log/info "Not safe for production or public environments.")
   (populate-oppijaindex)
   (when (= app-name "ehoks-palaute")
-    (scheduler/run-scheduler! (Instant/now) (Duration/ofSeconds 60)))
+    (scheduler/run-schedulers! (Instant/now) (Duration/ofSeconds 60)))
   (jetty/run-jetty app
                    {:port (:port config)
                     :join? false
