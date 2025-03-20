@@ -101,11 +101,21 @@ where hoks_id = :hoks-id
 select p.id, p.heratepvm, p.tila
 from palautteet p
 join hoksit h on (h.id = p.hoks_id)
-where h.oppija_oid = :oppija-oid  -- FIXME: should probably have deleted_at cond
+where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and (p.koulutustoimija = :koulutustoimija or (:koulutustoimija)::text is null)
   and p.deleted_at is null
   and h.deleted_at is null
+
+-- :name get-hokses-without-palaute! :? :*
+-- :doc List all HOKSes that do not have any palaute records.
+select	id from hoksit
+where	id not in (
+	select hoks_id from palautteet where deleted_at is null
+)
+and	deleted_at is null
+order by id asc
+limit	:batchsize
 
 -- :name get-by-id! :? :1
 -- :doc Get palaute by palaute id.

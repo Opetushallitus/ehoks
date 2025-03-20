@@ -1,7 +1,8 @@
 (ns oph.ehoks.palaute.scheduler
   (:require [chime.core :as chime]
             [clojure.tools.logging :as log]
-            [oph.ehoks.palaute.vastaajatunnus :as palaute])
+            [oph.ehoks.palaute.initiation :as palaute]
+            [oph.ehoks.palaute.vastaajatunnus :as vt])
   (:import (java.lang AutoCloseable)
            (java.time Instant LocalTime ZonedDateTime ZoneId Period Duration)))
 
@@ -11,7 +12,7 @@
   (log/info "Commencing palaute daily actions.")
   (try
     (log/info "Handling palautteet that have reached their heratepvm.")
-    (palaute/handle-palautteet-waiting-for-heratepvm!
+    (vt/handle-palautteet-waiting-for-heratepvm!
       ["aloittaneet" "valmistuneet" "osia_suorittaneet"
        "tyopaikkajakson_suorittaneet"])
     (catch Exception e
@@ -24,7 +25,7 @@
   initiate all palautteet for those HOKSes."
   [opts]
   (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
-  )
+  (palaute/reinit-palautteet-for-uninitiated-hokses! 500))
 
 (defn time->instant
   "Converts a specific time of day into an instant on today"
