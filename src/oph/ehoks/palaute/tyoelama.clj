@@ -4,6 +4,7 @@
             [medley.core :refer [find-first map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
@@ -115,6 +116,9 @@
   [{:keys [tx hoks jakso] :as ctx}]
   (assoc ctx
          :tapahtumatyyppi :hoks-tallennus
+         :existing-ddb-herate
+         (delay (dynamodb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+                  (:id hoks) (:yksiloiva-tunniste jakso)))
          :existing-palaute
          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
            tx {:hoks-id            (:id hoks)

@@ -111,3 +111,11 @@
                      :sync-amis-heratteet)
     (log/info "sync-amis-herate!: configured to not write to DDB.")
     (sync-item! :amis kyselyrecord)))
+
+(defn get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+  "Get työelämäjakso from DDB."
+  [hoks-id yksiloiva-tunniste]
+  (far/query @faraday-opts @(tables :jakso)
+             {:hoks_id [:eq hoks-id]
+              :yksiloiva_tunniste [:eq yksiloiva-tunniste]}
+             {:index "yksiloivaTunnisteIndex"}))
