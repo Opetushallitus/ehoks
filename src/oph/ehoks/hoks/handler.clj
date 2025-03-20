@@ -287,26 +287,21 @@
                (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
         (response/not-found {:error "OTO not found with given OTO ID"})))))
 
-(def ^:private tuva-hoks-msg-template
-  "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
-
 (defn- initiate-all-palautteet!
-  [{:keys [hoks] :as ctx}]
-  (if (hoks/tuva-related? hoks)
-    (db-hoks/set-amisherate-kasittelytilat-to-true!
-      (:id hoks) (format tuva-hoks-msg-template (:id hoks)))
-    (try
-      (op/initiate-if-needed! ctx :aloituskysely)
-      (op/initiate-if-needed! ctx :paattokysely)
-      (tep/initiate-all-uninitiated! ctx)
-      (catch clojure.lang.ExceptionInfo e
-        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
-          (throw (ex-info (str "HOKS contains an unknown organisation"
-                               (:organisation-oid (ex-data e)))
-                          (assoc (ex-data e) :type ::disallowed-update)))
-          (log/error e "exception in heräte initiation with" (ex-data e))))
-      (catch Exception e
-        (log/error e "exception in heräte initiation")))))
+  "Initialise all palautteet (opiskelija & tyoelama) that should be."
+  [ctx]
+  (try
+    (op/initiate-if-needed! ctx :aloituskysely)
+    (op/initiate-if-needed! ctx :paattokysely)
+    (tep/initiate-all-uninitiated! ctx)
+    (catch clojure.lang.ExceptionInfo e
+      (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
+        (throw (ex-info (str "HOKS contains an unknown organisation"
+                             (:organisation-oid (ex-data e)))
+                        (assoc (ex-data e) :type ::disallowed-update)))
+        (log/error e "exception in heräte initiation with" (ex-data e))))
+    (catch Exception e
+      (log/error e "exception in heräte initiation"))))
 
 (defn save-hoks-and-initiate-all-palautteet!
   "Saves a HOKS to DB and initializes all palautteet (opiskelija & tyoelama)
