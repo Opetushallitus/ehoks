@@ -12,6 +12,10 @@
       "AttributeType": "N"
     },
     {
+      "AttributeName": "hoks_id",
+      "AttributeType": "N"
+    },
+    {
       "AttributeName": "jakso_loppupvm",
       "AttributeType": "S"
     },
@@ -34,6 +38,10 @@
     {
       "AttributeName": "tunnus",
       "AttributeType": "S"
+    },
+    {
+      "AttributeName": "yksiloiva_tunniste",
+      "AttributeType": "S"
     }
   ],
   "GlobalSecondaryIndexes": [
@@ -51,6 +59,22 @@
       ],
       "Projection": {
         "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "yksiloivaTunnisteIndex",
+      "KeySchema": [
+	{
+	  "AttributeName": "hoks_id",
+	  "KeyType": "HASH"
+	},
+	{
+	  "AttributeName": "yksiloiva_tunniste",
+	  "KeyType": "RANGE"
+	}
+      ],
+      "Projection": {
+	"ProjectionType": "ALL"
       }
     },
     {
