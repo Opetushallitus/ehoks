@@ -51,7 +51,9 @@
           (chime/periodic-seq start-time rate)
           action
           {:on-finished (fn [] (log/info "Palaute scheduler stopped."))
-           :error-handler (fn [e] (log/warn e "Error in scheduler"))})]
+           :error-handler (fn [e]
+                            (log/error e "Error in scheduler")
+                            true)})]
     (.addShutdownHook
       (Runtime/getRuntime)
       (Thread. (fn []
