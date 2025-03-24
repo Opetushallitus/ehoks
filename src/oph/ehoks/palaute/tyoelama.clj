@@ -82,6 +82,11 @@
     (nil? jakso)
     [nil :osaamisen-hankkimistapa :poistunut]
 
+    (not (get jakso :loppu))
+    [nil :loppu :ei-ole]
+
+    ;; order dependency: nil rules must come first
+
     (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
     [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 

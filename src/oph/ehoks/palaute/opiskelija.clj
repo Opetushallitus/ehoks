@@ -49,6 +49,11 @@
       (not (palaute/nil-or-unhandled? existing-palaute))
       [nil herate-basis :jo-lahetetty]
 
+      (not (get hoks herate-basis))
+      [nil herate-basis :ei-ole]
+
+      ;; order dependency: nil rules must come first
+
       (not (:osaamisen-hankkimisen-tarve hoks))
       [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
 
