@@ -185,9 +185,6 @@
     (cond
       ;; do more efficient checks first
 
-      (not herate-date)
-      [nil herate-date-field :ei-ole]
-
       (not (valid-herate-date? herate-date))
       [:ei-laheteta herate-date-field :eri-rahoituskaudella]
 

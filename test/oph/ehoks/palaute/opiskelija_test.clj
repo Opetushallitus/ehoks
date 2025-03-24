@@ -71,6 +71,15 @@
                                  :opiskeluoikeus oo-test/opiskeluoikeus-1}
                                 :ei-ole)))
 
+        (testing (str "`osaamisen-hankkimisen-tarve` is false _and_"
+                      "there is no heratepvm.")
+          (test-not-initiated {:hoks (assoc hoks-test/hoks-1
+                                            :osaamisen-hankkimisen-tarve false
+                                            :ensikertainen-hyvaksyminen nil
+                                            :osaamisen-saavuttamisen-pvm nil)
+                               :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                              :ei-ole))
+
         (testing "there are no ammatillinen suoritus in opiskeluoikeus"
           (test-not-initiated {:hoks           hoks-test/hoks-1
                                :opiskeluoikeus oo-test/opiskeluoikeus-2}
