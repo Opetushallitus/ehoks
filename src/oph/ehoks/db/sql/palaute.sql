@@ -114,7 +114,7 @@ where	id not in (
 	select hoks_id from palautteet where deleted_at is null
 )
 and	deleted_at is null
-order by id asc
+order by id desc  -- process newer HOKSes first
 limit	:batchsize
 
 -- :name get-by-id! :? :1
