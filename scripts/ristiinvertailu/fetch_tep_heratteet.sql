@@ -11,8 +11,6 @@ select
 	'hato' as tutkinnonosa_tyyppi,
 	split_part(oht.osaamisen_hankkimistapa_koodi_uri, '_', 2) as hankkimistapa_tyyppi,
 	oht.osa_aikaisuustieto as osa_aikaisuus,
-        oht.alku as jakso_alkupvm,
-        oht.loppu as jakso_loppupvm,
         split_part(oht.oppisopimuksen_perusta_koodi_uri, '_', 2) as oppisopimuksen_perusta,
 	tjk.vastuullinen_tyopaikka_ohjaaja_nimi as ohjaaja_nimi,
 	tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti as ohjaaja_email,
@@ -29,11 +27,11 @@ select
 	h.opiskeluoikeus_oid,
         h.oppija_oid,
 	o.oppilaitos_oid as oppilaitos
-FROM	hankittavat_ammat_tutkinnon_osat hato
-JOIN	hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat hatooh
-ON	(hato.id = hatooh.hankittava_ammat_tutkinnon_osa_id)
-JOIN	oht
-ON	(hatooh.osaamisen_hankkimistapa_id = oht.id)
+from	hankittavat_ammat_tutkinnon_osat hato
+join	hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat hatooh
+on	(hato.id = hatooh.hankittava_ammat_tutkinnon_osa_id)
+join	oht
+on	(hatooh.osaamisen_hankkimistapa_id = oht.id)
 join tyopaikalla_jarjestettavat_koulutukset tjk
 on (tjk.id = oht.tyopaikalla_jarjestettava_koulutus_id)
 join palautteet p
@@ -42,9 +40,9 @@ join hoksit h
 on (h.id = p.hoks_id)
 join opiskeluoikeudet o
 on (o."oid" = h.opiskeluoikeus_oid)
-WHERE	hato.deleted_at IS NULL
-AND	hatooh.deleted_at IS NULL
-AND	oht.deleted_at IS null
+where	hato.deleted_at is null
+and	hatooh.deleted_at is null
+and	oht.deleted_at is null
 and p.deleted_at is null
 and p.kyselytyyppi = 'tyopaikkajakson_suorittaneet'
 and p.tila in (:tilat)
@@ -55,8 +53,6 @@ select
 	'hpto' as tutkinnonosa_tyyppi,
 	split_part(oht.osaamisen_hankkimistapa_koodi_uri, '_', 2) as hankkimistapa_tyyppi,
 	oht.osa_aikaisuustieto as osa_aikaisuus,
-        oht.alku as jakso_alkupvm,
-        oht.loppu as jakso_loppupvm,
         split_part(oht.oppisopimuksen_perusta_koodi_uri, '_', 2) as oppisopimuksen_perusta,
 	tjk.vastuullinen_tyopaikka_ohjaaja_nimi as ohjaaja_nimi,
 	tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti as ohjaaja_email,
@@ -73,11 +69,11 @@ select
 	h.opiskeluoikeus_oid,
         h.oppija_oid,
 	o.oppilaitos_oid as oppilaitos
-FROM	hankittavat_paikalliset_tutkinnon_osat hpto
-JOIN	hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat hptooh
-ON	(hpto.id = hptooh.hankittava_paikallinen_tutkinnon_osa_id)
-JOIN	oht
-ON	(hptooh.osaamisen_hankkimistapa_id = oht.id)
+from	hankittavat_paikalliset_tutkinnon_osat hpto
+join	hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat hptooh
+on	(hpto.id = hptooh.hankittava_paikallinen_tutkinnon_osa_id)
+join	oht
+on	(hptooh.osaamisen_hankkimistapa_id = oht.id)
 join tyopaikalla_jarjestettavat_koulutukset tjk
 on (tjk.id = oht.tyopaikalla_jarjestettava_koulutus_id)
 join palautteet p
@@ -86,9 +82,9 @@ join hoksit h
 on (h.id = p.hoks_id)
 join opiskeluoikeudet o
 on (o."oid" = h.opiskeluoikeus_oid)
-where hpto.deleted_at IS NULL
-AND	hptooh.deleted_at IS NULL
-AND	oht.deleted_at IS null
+where hpto.deleted_at is null
+and	hptooh.deleted_at is null
+and	oht.deleted_at is null
 and p.deleted_at is null
 and p.kyselytyyppi = 'tyopaikkajakson_suorittaneet'
 and p.tila in (:tilat)
@@ -99,8 +95,6 @@ select
 	'hyto' as tutkinnonosa_tyyppi,
 	split_part(oht.osaamisen_hankkimistapa_koodi_uri, '_', 2) as hankkimistapa_tyyppi,
 	oht.osa_aikaisuustieto as osa_aikaisuus,
-        oht.alku as jakso_alkupvm,
-        oht.loppu as jakso_loppupvm,
         split_part(oht.oppisopimuksen_perusta_koodi_uri, '_', 2) as oppisopimuksen_perusta,
 	tjk.vastuullinen_tyopaikka_ohjaaja_nimi as ohjaaja_nimi,
 	tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti as ohjaaja_email,
@@ -121,9 +115,9 @@ from hankittavat_yhteiset_tutkinnon_osat hyto
 join yhteisen_tutkinnon_osan_osa_alueet ytooa
 on (hyto.id = ytooa.yhteinen_tutkinnon_osa_id)
 join yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat ytooaoh
-ON	(hyto.id = ytooaoh.yhteisen_tutkinnon_osan_osa_alue_id)
-JOIN	oht
-ON	(ytooaoh.osaamisen_hankkimistapa_id = oht.id)
+on	(hyto.id = ytooaoh.yhteisen_tutkinnon_osan_osa_alue_id)
+join	oht
+on	(ytooaoh.osaamisen_hankkimistapa_id = oht.id)
 join tyopaikalla_jarjestettavat_koulutukset tjk
 on (tjk.id = oht.tyopaikalla_jarjestettava_koulutus_id)
 join palautteet p
@@ -132,10 +126,10 @@ join hoksit h
 on (h.id = p.hoks_id)
 join opiskeluoikeudet o
 on (o."oid" = h.opiskeluoikeus_oid)
-where hyto.deleted_at IS null
+where hyto.deleted_at is null
 and ytooa.deleted_at is null
-AND	ytooaoh.deleted_at IS NULL
-AND	oht.deleted_at IS null
+and	ytooaoh.deleted_at is null
+and	oht.deleted_at is null
 and p.deleted_at is null
 and p.kyselytyyppi = 'tyopaikkajakson_suorittaneet'
 and p.tila in (:tilat)

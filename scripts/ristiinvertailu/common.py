@@ -3,13 +3,6 @@ import json
 
 from collections import defaultdict
 from datetime import datetime
-from enum import Enum
-
-
-class DiffType(Enum):
-    VALUES_DIFFER = 1
-    MISSING_FROM_EHOKS = 2
-    MISSING_FROM_HERATEPALVELU = 3
 
 
 def determine_rahoituskausi(heratepvm):
@@ -85,92 +78,31 @@ def determine_fieldnames(dicts):
     return list(fieldnames)
 
 
-def key_diff_stats_to_csv(filename, key_diff_stats):
-    print(f'Writing `{filename}`...')
-    with open(filename, 'w') as file:
-        writer = csv.writer(file)
-        for key, val in key_diff_stats.items():
-            writer.writerow([key, val])
-
-
-def key_diff_stats_per_kj_to_csv(filename, key_diff_stats_per_kj):
-    print(f'Writing `{filename}`...')
-    with open(filename, 'w') as file:
-        fieldnames = ['koulutustoimija'] + \
-                determine_fieldnames(key_diff_stats_per_kj.values())
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        for kj, d in key_diff_stats_per_kj.items():
-            d['koulutustoimija'] = kj
-            writer.writerow(d)
-
-
-def missing_per_kj_to_csv(filename, missing_from_ehoks_kj,
-                          missing_from_heratepalvelu_kj):
-    print(f'Writing `{filename}`...')
-    with open(filename, 'w') as file:
-        writer = csv.writer(file)
-        writer.writerow(['koulutustoimija', 'missing from ehoks',
-                         'missing from hp'])
-        for key in set().union(missing_from_ehoks_kj.keys(),
-                               missing_from_heratepalvelu_kj.keys()):
-            writer.writerow([key, missing_from_ehoks_kj[key],
-                             missing_from_heratepalvelu_kj[key]])
-
-
-def duplicates_per_kj_to_csv(filename, ehoks_duplicates,
-                             heratepalvelu_duplicates):
-    duplicates_per_kj = defaultdict(lambda: defaultdict(int))
-
-    for dups in ehoks_duplicates.values():
-        kj = dups[0]['koulutustoimija']
-        duplicates_per_kj[kj]['ehoks'] += len(dups) - 1
-
-    for dups in heratepalvelu_duplicates.values():
-        kj = dups[0]['koulutustoimija']
-        duplicates_per_kj[kj]['heratepalvelu'] += len(dups) - 1
+def duplicates_to_json(kyselytyyppi, palvelu, duplicates):
+    filename = f'outputs/{kyselytyyppi}_{palvelu}_duplicates.json'
+    new_duplicates = {}
+    for k, v in duplicates.items():
+        new_duplicates[','.join(str(k))] = v
 
     print(f'Writing `{filename}`...')
     with open(filename, 'w') as file:
-        writer = csv.writer(file)
-        writer.writerow(['koulutustoimija', 'dups in ehoks', 'dups in hp'])
-        for kj, dups in duplicates_per_kj.items():
-            writer.writerow([kj, dups['ehoks'], dups['heratepalvelu']])
+        json.dump(new_duplicates, file)
 
 
-def data_to_csv(filename, data):
-    print(f'Writing `{filename}`...')
-    for key in data.copy().keys():
-        data[','.join(map(str, key))] = data[key]
-        del data[key]
+def diffs_per_kj(kyselytyyppi, ehoks_heratteet, heratepalvelu_heratteet):
 
-    with open(filename, 'w') as file:
-        json.dump(data, file, indent=2)
+    diffs = {'values differ': defaultdict(list),
+             'missing from ehoks': defaultdict(list),
+             'missing from heratepalvelu': defaultdict(list)}
+    ids_all_heratteet = set().union(ehoks_heratteet.keys(),
+                                    heratepalvelu_heratteet.keys())
 
-
-def print_statistics_and_output_to_csvs(kyselytyyppi, ehoks_heratteet,
-                                        ehoks_duplicates,
-                                        heratepalvelu_heratteet,
-                                        heratepalvelu_duplicates):
-    diff = {}
-    key_diff_stats_per_kj = defaultdict(lambda: defaultdict(int))
-    key_diff_stats = defaultdict(int)
-    missing_from_ehoks_kj = defaultdict(int)
-    missing_from_heratepalvelu_kj = defaultdict(int)
-    heratteet_total = 0
-    values_differ = 0
-    missing_from_ehoks_total = 0
-    missing_from_heratepalvelu_total = 0
-
-    for ids in set().union(ehoks_heratteet.keys(),
-                           heratepalvelu_heratteet.keys()):
-        heratteet_total += 1
+    for ids in ids_all_heratteet:
 
         if ids in ehoks_heratteet and ids in heratepalvelu_heratteet:
             herate_diff = {}
             ehoks_herate = ehoks_heratteet[ids]
             heratepalvelu_herate = heratepalvelu_heratteet[ids]
-            kj = ehoks_herate['koulutustoimija']
 
             for key in set().union(ehoks_herate.keys(),
                                    heratepalvelu_herate.keys()):
@@ -182,57 +114,139 @@ def print_statistics_and_output_to_csvs(kyselytyyppi, ehoks_heratteet,
 
                 if key in ehoks_herate and key in heratepalvelu_herate:
                     if ehoks_value != heratepalvelu_value:
-                        key_diff_stats[key] += 1
-                        key_diff_stats_per_kj[kj][key] += 1
                         herate_diff[key] = {
                             'ehoks': ehoks_value,
                             'heratepalvelu': heratepalvelu_value
                         }
 
             if herate_diff:
-                diff[ids] = {'type': str(DiffType.VALUES_DIFFER),
-                             'herate': herate_diff}
-                values_differ += 1
+                kj = ehoks_herate['koulutustoimija'] \
+                    if 'koulutustoimija' in ehoks_herate \
+                    else heratepalvelu_herate['koulutustoimija']
+                diffs['values differ'][kj].append(herate_diff)
 
         elif ids in ehoks_heratteet:
             ehoks_herate = ehoks_heratteet[ids]
-            diff[ids] = {'type': str(DiffType.MISSING_FROM_HERATEPALVELU),
-                         'herate': ehoks_herate}
-            missing_from_heratepalvelu_total += 1
-            missing_from_heratepalvelu_kj[ehoks_herate['koulutustoimija']] += 1
+            kj = ehoks_herate['koulutustoimija']
+            diffs['missing from heratepalvelu'][kj].append(ehoks_herate)
 
         else:
             heratepalvelu_herate = heratepalvelu_heratteet[ids]
-            diff[ids] = {'type': str(DiffType.MISSING_FROM_EHOKS),
-                         'herate': heratepalvelu_herate}
-            missing_from_ehoks_total += 1
-            missing_from_ehoks_kj[heratepalvelu_herate['koulutustoimija']] += 1
+            kj = heratepalvelu_herate['koulutustoimija']
+            diffs['missing from ehoks'][kj].append(heratepalvelu_herate)
+
+    filename = f'outputs/{kyselytyyppi}_diff.json'
+    print(f'Writing `{filename}`...')
+    with open(filename, 'w') as file:
+        json.dump(diffs, file, indent=4)
+
+    return diffs, ids_all_heratteet
+
+
+def print_statistics(ids_all_heratteet, diff,
+                     ehoks_duplicates, heratepalvelu_duplicates):
+    heratteet_total = len(ids_all_heratteet)
+    values_differ = sum(map(lambda x: len(x), diff['values differ'].values()))
+    missing_from_ehoks = sum(map(lambda x: len(x),
+                                 diff['missing from ehoks'].values()))
+    missing_from_heratepalvelu = sum(map(lambda x: len(x),
+                                         diff['missing from heratepalvelu']
+                                         .values()))
 
     print('\n--- Statistics ---')
     print(f'Total number of heratteet: {heratteet_total}')
     print(f'Heratteet where values differ: {values_differ}')
     print('Heratteet found in palaute-backend but missing from ' +
-          f'Herätepalvelu: {missing_from_heratepalvelu_total}')
+          f'Herätepalvelu: {missing_from_heratepalvelu}')
     print('Heratteet found in Herätepalvelu but missing from ' +
-          f'palaute-backend: {missing_from_ehoks_total}')
+          f'palaute-backend: {missing_from_ehoks}')
     print('Number of duplicates in palaute-backend: ' +
           str(num_of_duplicates(ehoks_duplicates)))
     print('Number of duplicates in Herätepalvelu: ' +
           str(num_of_duplicates(heratepalvelu_duplicates)))
     print()
 
-    data_to_csv(f'outputs/{kyselytyyppi}_diff.json', diff)
-    data_to_csv(f'outputs/{kyselytyyppi}_ehoks_duplicates.json',
-                ehoks_duplicates)
-    data_to_csv(f'outputs/{kyselytyyppi}_heratepalvelu_duplicates.json',
-                heratepalvelu_duplicates)
 
-    key_diff_stats_to_csv(f'outputs/{kyselytyyppi}_key_diff_stats.csv',
-                          key_diff_stats)
-    key_diff_stats_per_kj_to_csv(
-        f'outputs/{kyselytyyppi}_key_diff_stats_per_kj.csv',
-        key_diff_stats_per_kj)
-    missing_per_kj_to_csv(f'outputs/{kyselytyyppi}_missing_per_kj.csv',
-                          missing_from_ehoks_kj, missing_from_heratepalvelu_kj)
-    duplicates_per_kj_to_csv(f'outputs/{kyselytyyppi}_duplicates_per_kj.csv',
-                             ehoks_duplicates, heratepalvelu_duplicates)
+def to_csv(filename, fields, items):
+    print(f'Writing `{filename}`...')
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(fields)
+        for attr, val in items.items():
+            writer.writerow([attr, val])
+
+
+def csv_filename(part):
+    return f'outputs/{part}.csv'
+
+
+def attr_diff_stats_to_csv(kyselytyyppi, diffs):
+    attr_diff_stats = defaultdict(int)
+    attr_diff_stats_per_kj = defaultdict(lambda: defaultdict(int))
+    for kj, kj_diffs in diffs['values differ'].items():
+        for palaute_diff in kj_diffs:
+            for key in palaute_diff.keys():
+                attr_diff_stats[key] += 1
+                attr_diff_stats_per_kj[kj][key] += 1
+
+    filename = f'outputs/{kyselytyyppi}_attr_diff_stats.csv'
+    print(f'Writing `{filename}`...')
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(['attribute', 'value'])
+        for attr, val in attr_diff_stats.items():
+            writer.writerow([attr, val])
+
+    filename = f'outputs/{kyselytyyppi}_attr_diff_stats_per_kj.csv'
+    print(f'Writing `{filename}`...')
+    with open(filename, 'w') as file:
+        fieldnames = ['koulutustoimija'] + \
+                determine_fieldnames(attr_diff_stats_per_kj.values())
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for kj, d in attr_diff_stats_per_kj.items():
+            d['koulutustoimija'] = kj
+            writer.writerow(d)
+
+
+def missing_per_kj_to_csv(kyselytyyppi, diff):
+    missing_from_ehoks_per_kj = defaultdict(int)
+    for kj, diffs in diff['missing from ehoks'].items():
+        missing_from_ehoks_per_kj[kj] = len(diffs)
+
+    missing_from_heratepalvelu_per_kj = defaultdict(int)
+    for kj, diffs in diff['missing from heratepalvelu'].items():
+        missing_from_heratepalvelu_per_kj[kj] = len(diffs)
+
+    filename = f'outputs/{kyselytyyppi}_missing_per_kj.csv'
+    print(f'Writing `{filename}`...')
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(['koulutustoimija', 'missing from ehoks',
+                         'missing from heratepalvelu'])
+        for key in set().union(missing_from_ehoks_per_kj.keys(),
+                               missing_from_heratepalvelu_per_kj.keys()):
+            writer.writerow([key, missing_from_ehoks_per_kj[key],
+                             missing_from_heratepalvelu_per_kj[key]])
+
+
+def duplicates_per_kj_to_csv(kyselytyyppi, ehoks_duplicates,
+                             heratepalvelu_duplicates):
+    duplicates_per_kj = defaultdict(lambda: defaultdict(int))
+
+    for dups in ehoks_duplicates.values():
+        kj = dups[0]['koulutustoimija']
+        duplicates_per_kj[kj]['ehoks'] += len(dups) - 1
+
+    for dups in heratepalvelu_duplicates.values():
+        kj = dups[0]['koulutustoimija']
+        duplicates_per_kj[kj]['heratepalvelu'] += len(dups) - 1
+
+    filename = f'outputs/{kyselytyyppi}_duplicates_per_kj.csv'
+    print(f'Writing `{filename}`...')
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(['koulutustoimija', 'dups in ehoks',
+                         'dups in heratepalvelu'])
+        for kj, dups in duplicates_per_kj.items():
+            writer.writerow([kj, dups['ehoks'], dups['heratepalvelu']])

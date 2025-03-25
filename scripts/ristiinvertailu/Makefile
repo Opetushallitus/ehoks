@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 DATE_NOW := $(shell date '+%Y-%m-%d')
-ALKUPVM := 2024-11-13 # TODO: Change this!
+ALKUPVM := 2024-11-14 # TODO: Change this!
 TILAT = 'odottaa_kasittelya','kysely_muodostettu','vastaajatunnus_muodostettu'
 
 # POSTGRES
@@ -16,17 +16,13 @@ ifdef AWS_PROFILE
     ENV_NAME := pallero
   endif
   DB_PASSWORD != aws ssm get-parameter --profile $(AWS_PROFILE) \
-      --name /$(ENV_NAME)/postgresqls/ehoks/app-user-password \
-      --with-decryption | jq '.Parameter.Value'
-else
-  ifeq ($(filter clean,$(MAKECMDGOALS)),)
-    $(error Set environment variable AWS_PROFILE)
-  endif
+  	--name /$(ENV_NAME)/postgresqls/ehoks/app-user-password \
+  	--with-decryption | jq '.Parameter.Value'
 endif
 
-.PHONY: clean
+.PHONY: clean plot
 
-all: outputs/amis_diff.json outputs/tep_diff.json
+all: plot
 
 outputs/ddb_tep_kyselyt.json:
 	test -n "$(DDB_JAKSOTUNNUS_TABLE_NAME)" \
@@ -72,13 +68,23 @@ outputs/ehoks_amis_kyselyt.csv:
 
 outputs/amis_diff.json: outputs/ddb_amis_kyselyt.json \
 	outputs/ehoks_amis_kyselyt.csv
+	python -m venv myenv
+	. myenv/bin/activate
 	@mkdir -p outputs
 	python amis_diff.py $^
 
 outputs/tep_diff.json: outputs/ddb_tep_kyselyt.json \
 	outputs/ehoks_tep_kyselyt.csv
 	@mkdir -p outputs
+	python -m venv myenv
+	. myenv/bin/activate
 	python tep_diff.py $^
+
+plot: myenv outputs/amis_diff.json outputs/tep_diff.json
+	python -m venv myenv
+	. myenv/bin/activate
+	python plot.py amis $(ALKUPVM) $(DATE_NOW)
+	python plot.py tep $(ALKUPVM) $(DATE_NOW)
 
 clean:
 	rm -rf outputs

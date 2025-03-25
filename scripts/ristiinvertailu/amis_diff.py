@@ -29,8 +29,14 @@ heratepalvelu_heratteet, heratepalvelu_duplicates = \
             id_keys,
             lambda x: common.remove_ddb_attr_types(x))
 
-common.print_statistics_and_output_to_csvs('amis',
-                                           ehoks_heratteet,
-                                           ehoks_duplicates,
-                                           heratepalvelu_heratteet,
-                                           heratepalvelu_duplicates)
+diff, ids_all_heratteet = \
+    common.diffs_per_kj('amis', ehoks_heratteet, heratepalvelu_heratteet)
+common.duplicates_to_json('amis', 'ehoks', ehoks_duplicates)
+common.duplicates_to_json('amis', 'heratepalvelu', heratepalvelu_duplicates)
+common.print_statistics(ids_all_heratteet, diff,
+                        ehoks_duplicates, heratepalvelu_duplicates)
+common.attr_diff_stats_to_csv('amis', diff)
+common.missing_per_kj_to_csv('amis', diff)
+common.duplicates_per_kj_to_csv('amis',
+                                ehoks_duplicates,
+                                heratepalvelu_duplicates)
