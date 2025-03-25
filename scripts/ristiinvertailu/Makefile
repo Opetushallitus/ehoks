@@ -24,10 +24,12 @@ endif
 
 all: plot
 
-outputs/ddb_tep_kyselyt.json:
+outputs:
+	mkdir -p outputs
+
+outputs/ddb_tep_kyselyt.json: outputs
 	test -n "$(DDB_JAKSOTUNNUS_TABLE_NAME)" \
 		# Set environment variable DDB_JAKSOTUNNUS_TABLE_NAME
-	@mkdir -p outputs
 	aws dynamodb scan \
 		--table $(DDB_JAKSOTUNNUS_TABLE_NAME) \
 		--profile $(AWS_PROFILE) \
@@ -35,10 +37,9 @@ outputs/ddb_tep_kyselyt.json:
 		--expression-attribute-values '{":alkupvm": {"S": "$(ALKUPVM)"}, ":currentpvm": {"S": "$(DATE_NOW)"}}' \
 		> $@
 
-outputs/ddb_amis_kyselyt.json:
+outputs/ddb_amis_kyselyt.json: outputs
 	test -n "$(DDB_AMIS_TABLE_NAME)" \
 		# Set environment variable DDB_AMIS_TABLE_NAME
-	@mkdir -p outputs
 	aws dynamodb scan \
 		--table $(DDB_AMIS_TABLE_NAME) \
 		--profile $(AWS_PROFILE) \
@@ -66,25 +67,22 @@ outputs/ehoks_amis_kyselyt.csv:
 		-v tilat="$(TILAT)" \
 		> $@
 
-outputs/amis_diff.json: outputs/ddb_amis_kyselyt.json \
-	outputs/ehoks_amis_kyselyt.csv
+myenv:
 	python -m venv myenv
-	. myenv/bin/activate
-	@mkdir -p outputs
-	python amis_diff.py $^
+	./myenv/bin/pip install matplotlib
+
+outputs/amis_diff.json: outputs/ddb_amis_kyselyt.json \
+	outputs/ehoks_amis_kyselyt.csv myenv
+	./myenv/bin/python amis_diff.py $^
 
 outputs/tep_diff.json: outputs/ddb_tep_kyselyt.json \
-	outputs/ehoks_tep_kyselyt.csv
-	@mkdir -p outputs
-	python -m venv myenv
-	. myenv/bin/activate
-	python tep_diff.py $^
+	outputs/ehoks_tep_kyselyt.csv myenv
+	./myenv/bin/python tep_diff.py $^
 
-plot: myenv outputs/amis_diff.json outputs/tep_diff.json
-	python -m venv myenv
-	. myenv/bin/activate
-	python plot.py amis $(ALKUPVM) $(DATE_NOW)
-	python plot.py tep $(ALKUPVM) $(DATE_NOW)
+plot: outputs/amis_diff.json outputs/tep_diff.json myenv
+	./myenv/bin/python plot.py amis $(ALKUPVM) $(DATE_NOW)
+	./myenv/bin/python plot.py tep $(ALKUPVM) $(DATE_NOW)
 
+.PHONY: clean
 clean:
 	rm -rf outputs
