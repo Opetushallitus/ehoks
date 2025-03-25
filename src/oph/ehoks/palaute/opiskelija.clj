@@ -49,6 +49,10 @@
       (not (palaute/nil-or-unhandled? existing-palaute))
       [nil herate-basis :jo-lahetetty]
 
+      (and (:hoks-id existing-palaute)
+           (not= (:hoks-id existing-palaute) (:id hoks)))
+      [nil :id :ei-palautteen-alkuperainen-hoks]
+
       (not (get hoks herate-basis))
       [nil herate-basis :ei-ole]
 

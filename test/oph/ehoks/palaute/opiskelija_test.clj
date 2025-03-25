@@ -56,6 +56,14 @@
              :existing-palaute    {:tila "kysely_muodostettu"}}
             :jo-lahetetty))
 
+        (testing "there is existing palaute for another HOKS."
+          (test-not-initiated
+            {:hoks                hoks-test/hoks-1
+             :opiskeluoikeus      oo-test/opiskeluoikeus-1
+             :existing-palaute    {:tila "odottaa_kasittelya"
+                                   :hoks-id 343434}}
+            :ei-palautteen-alkuperainen-hoks))
+
         (testing "there is an existing heräte in herätepalvelu."
           (test-not-initiated
             {:hoks                hoks-test/hoks-1
