@@ -47,9 +47,8 @@ outputs/ddb_amis_kyselyt.json: outputs
 		--expression-attribute-values '{":alkupvm": {"S": "$(ALKUPVM)"}, ":currentpvm": {"S": "$(DATE_NOW)"}}' \
 		> $@
 
-outputs/ehoks_tep_kyselyt.csv:
-	@mkdir -p outputs
-	@PGPASSWORD=$(DB_PASSWORD) \
+outputs/ehoks_tep_kyselyt.csv: outputs
+	PGPASSWORD=$(DB_PASSWORD) \
 		psql -d $(DB_NAME) -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USERNAME) \
 		-f fetch_tep_heratteet.sql --csv \
 		-v alkupvm="'$(ALKUPVM)'" \
@@ -57,9 +56,8 @@ outputs/ehoks_tep_kyselyt.csv:
 		-v tilat="$(TILAT)" \
 		> $@
 
-outputs/ehoks_amis_kyselyt.csv:
-	@mkdir -p outputs
-	@PGPASSWORD=$(DB_PASSWORD) \
+outputs/ehoks_amis_kyselyt.csv: outputs
+	PGPASSWORD=$(DB_PASSWORD) \
 		psql -d $(DB_NAME) -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USERNAME) \
 		-f fetch_amis_kyselyt.sql --csv \
 		-v alkupvm="'$(ALKUPVM)'" \
