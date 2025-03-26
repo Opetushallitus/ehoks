@@ -113,7 +113,7 @@
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
-    [tx db/spec]
+    [tx db/spec {:isolation :serializable}]
     (let [ctx (assoc ctx
                      :tapahtumatyyppi :hoks-tallennus
                      :tx              tx

@@ -140,7 +140,7 @@
   `nil` otherwise."
   [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type]
   (jdbc/with-db-transaction
-    [tx db/spec]
+    [tx db/spec {:isolation :serializable}]
     (let [ctx (assoc
                 ctx
                 :tapahtumatyyppi :hoks-tallennus
