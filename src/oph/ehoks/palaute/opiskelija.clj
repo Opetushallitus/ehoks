@@ -168,7 +168,7 @@
   `nil` otherwise."
   [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type]
   (jdbc/with-db-transaction
-    [tx db/spec]
+    [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx) kysely-type)
           [proposed-state field reason]
           (initial-palaute-state-and-reason ctx kysely-type)

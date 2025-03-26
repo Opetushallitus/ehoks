@@ -132,7 +132,7 @@
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
-    [tx db/spec]
+    [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx :jakso jakso))
           [proposed-state field reason]
           (initial-palaute-state-and-reason ctx :ohjaajakysely)
