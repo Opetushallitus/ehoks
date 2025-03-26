@@ -129,7 +129,7 @@
          (palaute/upsert! tx)
          (tapahtuma/build-and-insert! ctx state reason lisatiedot))
     (when (= :odottaa-kasittelya state)
-      (log/info "Making" type "heräte for HOKS" (:id hoks))
+      (log/info "Making" kysely-type "heräte for HOKS" (:id hoks))
       (sqs/send-amis-palaute-message
         {:ehoks-id           (:id hoks)
          :kyselytyyppi       (translate-kyselytyyppi
