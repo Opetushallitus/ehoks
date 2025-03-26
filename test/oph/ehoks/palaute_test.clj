@@ -32,6 +32,7 @@
     (with-redefs
      [organisaatio/get-organisaatio! organisaatio-test/mock-get-organisaatio!]
       (do
+        (is (nil? (palaute/koulutustoimija-oid! nil)))
         (is (= "1.2.246.562.10.346830761110"
                (palaute/koulutustoimija-oid!
                  {:oid "1.2.246.562.15.43634207518"
