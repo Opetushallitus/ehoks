@@ -124,4 +124,8 @@ sivulta](https://wiki.eduuni.fi/pages/viewpage.action?pageId=358075229).
 [Vipunen](https://vipunen.fi/fi-fi) on opetushallinnon tilastopalvelu, jonka
 sisällöstä vastaavat yhdessä opetus- ja kulttuuriministeriö ja Opetushallitus.
 
+## Lampi
+
+Opetushallituksen tietoallas.
+
 TODO
