@@ -6,6 +6,9 @@
  :cas-password "{{ehoks_cas_password}}"
  :client-sub-system-code "{{ehoks_client_sub_system_code}}"
  :opintopolku-host "{{ehoks_opintopolku_host}}"
+ :heratepalvelu-amis-table "{{ehoks_heratepalvelu_amis_table_name}}"
+ :heratepalvelu-jakso-table "{{ehoks_heratepalvelu_jakso_table_name}}"
+ :heratepalvelu-nippu-table "{{ehoks_heratepalvelu_nippu_table_name}}"
  :db-server "{{ehoks_db_server}}"
  :db-port {{ehoks_db_port}}
  :db-name "{{ehoks_db_name}}"
