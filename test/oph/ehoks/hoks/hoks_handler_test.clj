@@ -17,7 +17,7 @@
             [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [ring.mock.request :as mock]))
 
-(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :once test-utils/with-clean-database-and-clean-dynamodb)
 (use-fixtures :each test-utils/empty-database-after-test)
 
 (defn add-empty-hoks-values [hoks]

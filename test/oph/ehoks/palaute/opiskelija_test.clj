@@ -30,21 +30,20 @@
   (:import (java.time LocalDate LocalDateTime)))
 
 (use-fixtures :once test-utils/migrate-database)
-(use-fixtures :each test-utils/empty-database-after-test)
+(use-fixtures :each test-utils/empty-both-dbs-after-test)
 
 (def sqs-msg (atom nil))
 
 (defn test-not-initiated
   ([ctx reason]
     (test-not-initiated nil ctx reason))
-  ([kysely-type ctx reason]
-    (doseq [kysely-type (if kysely-type
-                          [kysely-type]
-                          [:aloituskysely :paattokysely])]
-      (let [state-and-reason (op/initial-palaute-state-and-reason
-                               ctx kysely-type)]
-        (is (contains? #{:ei-laheteta nil} (first state-and-reason)))
-        (is (= (last state-and-reason) reason))))))
+  ([kysely-type ctx expected-reason]
+    (doseq [kysely-type
+            (if kysely-type [kysely-type] [:aloituskysely :paattokysely])]
+      (let [[state _ reason]
+            (op/initial-palaute-state-and-reason ctx kysely-type)]
+        (is (contains? #{:ei-laheteta :heratepalvelussa nil} state))
+        (is (= reason expected-reason))))))
 
 (deftest test-initial-palaute-state-and-reason
   (with-redefs [date/now (constantly (LocalDate/of 2023 1 1))]
@@ -54,8 +53,24 @@
           (test-not-initiated
             {:hoks                hoks-test/hoks-1
              :opiskeluoikeus      oo-test/opiskeluoikeus-1
-             :existing-palaute {:tila "kysely_muodostettu"}}
+             :existing-palaute    {:tila "kysely_muodostettu"}}
             :jo-lahetetty))
+
+        (testing "there is existing palaute for another HOKS."
+          (test-not-initiated
+            {:hoks                hoks-test/hoks-1
+             :opiskeluoikeus      oo-test/opiskeluoikeus-1
+             :existing-palaute    {:tila "odottaa_kasittelya"
+                                   :hoks-id 343434}}
+            :ei-palautteen-alkuperainen-hoks))
+
+        (testing "there is an existing heräte in herätepalvelu."
+          (test-not-initiated
+            {:hoks                hoks-test/hoks-1
+             :opiskeluoikeus      oo-test/opiskeluoikeus-1
+             :existing-ddb-herate (delay {:lahetystila "ei_lahetetty"})}
+            :heratepalvelun-vastuulla))
+
         (testing "`osaamisen-hankkimisen-tarve` is missing or is `false`."
           (doseq [hoks (map #(assoc hoks-test/hoks-1
                                     :osaamisen-hankkimisen-tarve %)
@@ -63,6 +78,15 @@
             (test-not-initiated {:hoks           hoks
                                  :opiskeluoikeus oo-test/opiskeluoikeus-1}
                                 :ei-ole)))
+
+        (testing (str "`osaamisen-hankkimisen-tarve` is false _and_"
+                      "there is no heratepvm.")
+          (test-not-initiated {:hoks (assoc hoks-test/hoks-1
+                                            :osaamisen-hankkimisen-tarve false
+                                            :ensikertainen-hyvaksyminen nil
+                                            :osaamisen-saavuttamisen-pvm nil)
+                               :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                              :ei-ole))
 
         (testing "there are no ammatillinen suoritus in opiskeluoikeus"
           (test-not-initiated {:hoks           hoks-test/hoks-1
@@ -191,32 +215,27 @@
     (testing
      (str "Kysely is considered already initiated if it is for same "
           "oppija with same koulutustoimija and within same rahoituskausi.")
-      (are [kysely-type] (= (:tila (op/existing-palaute!
-                                     db/spec
-                                     {:hoks hoks-test/hoks-3
-                                      :koulutustoimija
-                                      "1.2.246.562.10.346830761110"}
-                                     kysely-type))
-                            "lahetetty")
+      (are [kysely-type]
+           (= "lahetetty"
+              (-> {:hoks hoks-test/hoks-3 :tx db/spec
+                   :koulutustoimija "1.2.246.562.10.346830761110"}
+                  (op/existing-palaute! kysely-type)
+                  :tila))
         :aloituskysely :paattokysely))
 
     (testing "Kysely is not considered already initiated when"
       (testing "koulutustoimija differs."
-        (are [kysely-type] (nil? (op/existing-palaute!
-                                   db/spec
-                                   {:hoks hoks-test/hoks-3
-                                    :koulutustoimija
-                                    "1.2.246.562.10.45678901237"}
-                                   kysely-type))
+        (are [kysely-type]
+             (nil? (-> {:hoks hoks-test/hoks-3 :tx db/spec
+                        :koulutustoimija "1.2.246.562.10.45678901237"}
+                       (op/existing-palaute! kysely-type)))
           :aloituskysely :paattokysely))
 
       (testing "heratepvm is within different rahoituskausi."
-        (are [kysely-type] (nil? (op/existing-palaute!
-                                   db/spec
-                                   {:hoks hoks-test/hoks-4
-                                    :koulutustoimija
-                                    "1.2.246.562.10.346830761110"}
-                                   kysely-type))
+        (are [kysely-type]
+             (nil? (-> {:hoks hoks-test/hoks-4 :tx db/spec
+                        :koulutustoimija "1.2.246.562.10.346830761110"}
+                       (op/existing-palaute! kysely-type)))
           :aloituskysely :paattokysely)))))
 
 (deftest test-initiate-if-needed!
@@ -284,6 +303,29 @@
                (= :odottaa-kasittelya
                   (op/initiate-if-needed! (assoc ctx :opiskeluoikeus nil)
                                           kysely-type))
+            :aloituskysely :paattokysely))
+
+        (testing "doesn't initiate if it is already handled by herätepalvelu"
+          (ddb/sync-amis-herate!
+            (op/build-amisherate-record-for-heratepalvelu
+              (assoc ctx
+                     :koulutustoimija "1.2.246.562.10.346830761110"
+                     :hk-toteuttaja (delay nil)
+                     :existing-palaute
+                     {:kyselytyyppi "aloittaneet"
+                      :heratepvm (:ensikertainen-hyvaksyminen
+                                   hoks-test/hoks-1)})))
+          (ddb/sync-amis-herate!
+            (op/build-amisherate-record-for-heratepalvelu
+              (assoc ctx
+                     :koulutustoimija "1.2.246.562.10.346830761110"
+                     :hk-toteuttaja (delay nil)
+                     :existing-palaute
+                     {:kyselytyyppi "valmistuneet"
+                      :heratepvm (:osaamisen-saavuttamisen-pvm
+                                   hoks-test/hoks-1)})))
+          (are [kysely-type]
+               (= :heratepalvelussa (op/initiate-if-needed! ctx kysely-type))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate kysely if one already exists for HOKS"

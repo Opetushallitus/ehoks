@@ -7,13 +7,18 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.palaute.handler :as handler]
+            [oph.ehoks.palaute.scheduler :as schedule]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date]
             [ring.mock.request :as mock])
   (:import (java.time LocalDate)))
 
 (use-fixtures :once test-utils/migrate-database)
-(use-fixtures :each test-utils/empty-database-after-test)
+(use-fixtures :each test-utils/empty-both-dbs-after-test)
+
+(deftest test-scheduler-runs
+  (testing "Can be called"
+    (is (schedule/daily-actions! {}))))
 
 (def base-url "/ehoks-palaute-backend/api/v1")
 

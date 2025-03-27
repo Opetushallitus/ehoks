@@ -65,15 +65,19 @@
 (defn jaksot [] (far/scan @faraday-opts @(tables :jakso) {}))
 (defn niput  [] (far/scan @faraday-opts @(tables :nippu) {}))
 
-(defn get-item!
-  "A wrapper for `taoensso.faraday/get-item`."
-  [table prim-kvs]
-  (far/get-item @faraday-opts @(tables table) prim-kvs))
+(defn table-handler [operation]
+  (fn [table record-or-keys]
+    (operation @faraday-opts
+               @(tables table)
+               (select-keys record-or-keys (table-keys table)))))
 
-(defn delete-item!
+(def get-item!
+  "A wrapper for `taoensso.faraday/get-item`."
+  (table-handler far/get-item))
+
+(def delete-item!
   "A wrapper for `taoensso.faraday/delete-item`."
-  [table prim-kvs]
-  (far/delete-item @faraday-opts @(tables table) prim-kvs))
+  (table-handler far/delete-item))
 
 (defn sync-item!
   "Does a partial upsert on item in DDB: if the item doesn't exist,
@@ -107,3 +111,11 @@
                      :sync-amis-heratteet)
     (log/info "sync-amis-herate!: configured to not write to DDB.")
     (sync-item! :amis kyselyrecord)))
+
+(defn get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+  "Get työelämäjakso from DDB."
+  [hoks-id yksiloiva-tunniste]
+  (far/query @faraday-opts @(tables :jakso)
+             {:hoks_id [:eq hoks-id]
+              :yksiloiva_tunniste [:eq yksiloiva-tunniste]}
+             {:index "yksiloivaTunnisteIndex"}))

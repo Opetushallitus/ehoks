@@ -15,7 +15,7 @@
             [taoensso.faraday :as far])
   (:import (java.time LocalDate)))
 
-(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :once test-utils/with-clean-database-and-clean-dynamodb)
 (use-fixtures :each test-utils/empty-database-after-test)
 
 (deftest missing-sync-test
@@ -59,8 +59,7 @@
                             (palaute/rahoituskausi (LocalDate/now)))
                        :toimija_oppija
                        "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"}
-              ddb-item (far/get-item
-                         @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
+              ddb-item (ddb/get-item! :amis ddb-key)]
           (is (= (:sahkoposti ddb-item) "irma.isomerkki@esimerkki.com"))
           (is (= (:herate-source ddb-item) "sqs_viesti_ehoksista"))
           (far/update-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key
@@ -70,8 +69,7 @@
                                              ":2" "2027-05-06"}})
           (ddb/sync-amis-herate! (assoc amis-herate :sahkoposti "foo@bar.com"))
           ; fields that are owned by herätepalvelu are not overwritten
-          (let [new-ddb-item
-                (far/get-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
+          (let [new-ddb-item (ddb/get-item! :amis ddb-key)]
             (is (= (:sahkoposti new-ddb-item) "foo@bar.com"))
             (is (= (:viestintapalvelu-id new-ddb-item) "2027-05-06"))
             (is (= (:lahetystila new-ddb-item) "ei_lahetetty"))))))))

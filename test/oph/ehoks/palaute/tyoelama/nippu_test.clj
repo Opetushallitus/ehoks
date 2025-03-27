@@ -3,7 +3,7 @@
             [oph.ehoks.test-utils :as util]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu])
   (:import [java.time LocalDate]))
-;
+
 (def expected-tpo-nippu-data
   {:ohjaaja_ytunnus_kj_tutkinto (str "Matti Meikäläinen/1234567-1/"
                                      "1.2.246.562.10.346830761110/12345")

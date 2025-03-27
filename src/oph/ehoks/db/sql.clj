@@ -23,7 +23,7 @@
   a SET clause (part of UPDATE command) as a string, e.g.,
   \"set key1 = 1,key2 = 'val2'\" when `params` is {:key1 1 :key2 \"val2\"})`."
   [params options]
-  (str "set "
+  (str "set updated_at = now(), "
        (str/join "," (for [[field _] params]
                        (-> (utils/to-underscore-str field)
                            (identifier-param-quote options)

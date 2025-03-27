@@ -92,16 +92,30 @@ returning *
 -- :name get-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc Get opiskelijapalaute information by HOKS ID and kyselytyyppi
 select * from palautteet
-where hoks_id = :hoks-id and kyselytyyppi in (:v*:kyselytyypit)
+where hoks_id = :hoks-id
+  and kyselytyyppi in (:v*:kyselytyypit)
+  and deleted_at is null
 
 -- :name get-by-kyselytyyppi-oppija-and-koulutustoimija! :? :*
 -- :doc Get kyselyt by kyselytyyppi, oppija OID, and koulutustoimija.
 select p.id, p.heratepvm, p.tila
 from palautteet p
 join hoksit h on (h.id = p.hoks_id)
-where h.oppija_oid = :oppija-oid  -- FIXME: should probably have deleted_at cond
+where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and (p.koulutustoimija = :koulutustoimija or (:koulutustoimija)::text is null)
+  and p.deleted_at is null
+  and h.deleted_at is null
+
+-- :name get-hokses-without-palaute! :? :*
+-- :doc List all HOKSes that do not have any palaute records.
+select	id from hoksit
+where	id not in (
+	select hoks_id from palautteet where deleted_at is null
+)
+and	deleted_at is null
+order by id desc  -- process newer HOKSes first
+limit	:batchsize
 
 -- :name get-by-id! :? :1
 -- :doc Get palaute by palaute id.
@@ -111,5 +125,7 @@ where id = :id
 -- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :1
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
 --      tunniste.
-select * from palautteet
-where hoks_id = :hoks-id AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
+SELECT * FROM palautteet
+WHERE hoks_id = :hoks-id
+  AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
+  AND deleted_at is null

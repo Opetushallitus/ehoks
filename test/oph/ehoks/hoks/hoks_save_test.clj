@@ -22,7 +22,7 @@
             [schema.core :as s])
   (:import [java.time LocalDate]))
 
-(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :once test-utils/with-clean-database-and-clean-dynamodb)
 (use-fixtures :each test-utils/empty-database-after-test)
 
 (def ahato-data

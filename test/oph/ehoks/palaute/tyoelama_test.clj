@@ -28,7 +28,7 @@
            (java.util UUID)))
 
 (use-fixtures :once test-utils/migrate-database)
-(use-fixtures :each test-utils/empty-database-after-test)
+(use-fixtures :each test-utils/empty-both-dbs-after-test)
 
 ;; FIXME: there is some kind of misunderstanding in the format of this
 ;; data.  It's fed to initiate-if-needed! and
@@ -278,6 +278,21 @@
                                        :tila "vastaajatunnus_muodostettu"}}
                    :ohjaajakysely)
                  [nil :yksiloiva-tunniste :jo-lahetetty])))
+        (testing "a corresponding heräte exists in herätepalvelu."
+          (is (= (tep/initial-palaute-state-and-reason
+                   {:hoks           hoks-test/hoks-1
+                    :opiskeluoikeus oo-test/opiskeluoikeus-1
+                    :jakso          test-jakso
+                    :existing-ddb-herate (delay {:hankkimistapa_id 12343254})}
+                   :ohjaajakysely)
+                 [:heratepalvelussa :loppu :heratepalvelun-vastuulla])))
+        (testing "the jakso has been deleted from HOKS"
+          (is (= (tep/initial-palaute-state-and-reason
+                   {:hoks           hoks-test/hoks-1
+                    :opiskeluoikeus oo-test/opiskeluoikeus-5
+                    :jakso nil}
+                   :ohjaajakysely)
+                 [nil :osaamisen-hankkimistapa :poistunut])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
@@ -303,7 +318,7 @@
                    :ohjaajakysely)
                  [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
                   :puuttuva-yhteystieto])))
-        (testing "työpaikkajakso is interrupted on it's end date"
+        (testing "työpaikkajakso is interrupted on its end date"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
@@ -422,8 +437,43 @@
                   :syy          "hoks_tallennettu"
                   :lisatiedot   {:request-id nil
                                  :loppu "2023-12-15"}}))))
-      (testing
-       "doesn't initiate tyoelamapalaute if it has already been initiated"
+      (testing "doesn't initiate if it is found in herätepalvelu"
+        (let [existing-palaute
+              (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                db/spec
+                {:hoks-id (:id hoks-test/hoks-1)
+                 :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
+              ctx {:hoks           hoks-test/hoks-1
+                   :existing-palaute (assoc existing-palaute
+                                            :hankkimistapa-id 123)
+                   :vastaamisajan-alkupvm (LocalDate/of 2020 5 13)
+                   :jakso          test-jakso
+                   :opiskeluoikeus oo-test/opiskeluoikeus-1}]
+          (heratepalvelu/sync-jakso!
+            (tep/build-jaksoherate-record-for-heratepalvelu ctx))
+          (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
+                                    :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                                   test-jakso)
+          (is (= (map (juxt :vanha-tila :uusi-tila)
+                      (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                        db/spec
+                        {:hoks-id      (:id hoks-test/hoks-1)
+                         :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
+                 [["odottaa_kasittelya" "odottaa_kasittelya"]
+                  ["odottaa_kasittelya" "heratepalvelussa"]]))
+          (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
+                                    :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                                   test-jakso)
+          (is (= (map (juxt :vanha-tila :uusi-tila :syy)
+                      (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                        db/spec
+                        {:hoks-id      (:id hoks-test/hoks-1)
+                         :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
+                 [["odottaa_kasittelya" "odottaa_kasittelya" "hoks_tallennettu"]
+                  ["odottaa_kasittelya" "heratepalvelussa"
+                   "heratepalvelun_vastuulla"]
+                  ["heratepalvelussa" "heratepalvelussa" "jo_lahetetty"]]))))
+      (testing "doesn't initiate if it has already been initiated"
         (with-log
           (let [existing
                 (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
@@ -436,22 +486,18 @@
             (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
                                       :opiskeluoikeus oo-test/opiskeluoikeus-1}
                                      test-jakso)
-            (is (= (db-helpers/query
-                     [(str "select vanha_tila, uusi_tila, tyyppi, syy "
-                           " from palaute_tapahtumat where palaute_id = "
-                           (:id existing))])
-                   [{:vanha_tila "odottaa_kasittelya",
-                     :uusi_tila "odottaa_kasittelya",
-                     :tyyppi "hoks_tallennus",
-                     :syy "hoks_tallennettu"}
-                    {:vanha_tila "odottaa_kasittelya",
-                     :uusi_tila "lahetetty",
-                     :tyyppi "arvo_luonti",
-                     :syy "arvo_kutsu_onnistui"}
-                    {:vanha_tila "lahetetty",
-                     :uusi_tila "lahetetty",
-                     :tyyppi "hoks_tallennus",
-                     :syy "jo_lahetetty"}]))
+            (is (= (map (juxt :vanha-tila :uusi-tila :syy)
+                        (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id      (:id hoks-test/hoks-1)
+                           :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
+                   [["odottaa_kasittelya" "odottaa_kasittelya"
+                     "hoks_tallennettu"]
+                    ["odottaa_kasittelya" "heratepalvelussa"
+                     "heratepalvelun_vastuulla"]
+                    ["heratepalvelussa" "heratepalvelussa" "jo_lahetetty"]
+                    ["heratepalvelussa" "lahetetty" "arvo_kutsu_onnistui"]
+                    ["lahetetty" "lahetetty" "jo_lahetetty"]]))
             (is (logged? 'oph.ehoks.palaute.tyoelama
                          :info
                          #":jo-lahetetty"))))))))

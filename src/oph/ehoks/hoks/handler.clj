@@ -17,9 +17,8 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :as mw]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.initiation :as palaute]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-schema]
@@ -287,27 +286,6 @@
                (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
         (response/not-found {:error "OTO not found with given OTO ID"})))))
 
-(def ^:private tuva-hoks-msg-template
-  "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
-
-(defn- initiate-all-palautteet!
-  [{:keys [hoks] :as ctx}]
-  (if (hoks/tuva-related? hoks)
-    (db-hoks/set-amisherate-kasittelytilat-to-true!
-      (:id hoks) (format tuva-hoks-msg-template (:id hoks)))
-    (try
-      (op/initiate-if-needed! ctx :aloituskysely)
-      (op/initiate-if-needed! ctx :paattokysely)
-      (tep/initiate-all-uninitiated! ctx)
-      (catch clojure.lang.ExceptionInfo e
-        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
-          (throw (ex-info (str "HOKS contains an unknown organisation"
-                               (:organisation-oid (ex-data e)))
-                          (assoc (ex-data e) :type ::disallowed-update)))
-          (log/error e "exception in heräte initiation with" (ex-data e))))
-      (catch Exception e
-        (log/error e "exception in heräte initiation")))))
-
 (defn save-hoks-and-initiate-all-palautteet!
   "Saves a HOKS to DB and initializes all palautteet (opiskelija & tyoelama)
   that need to be initialized."
@@ -315,7 +293,7 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
-      (initiate-all-palautteet! (assoc ctx :hoks hoks :tx tx))
+      (palaute/initiate-all-palautteet! (assoc ctx :hoks hoks :tx tx))
       hoks)))
 
 (defn change-hoks-and-initiate-all-palautteet!
@@ -326,7 +304,7 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [updated-hoks (db-handler hoks)]
-      (initiate-all-palautteet! (assoc ctx :hoks updated-hoks :tx tx))
+      (palaute/initiate-all-palautteet! (assoc ctx :hoks updated-hoks :tx tx))
       updated-hoks)))
 
 (defn post-hoks!
