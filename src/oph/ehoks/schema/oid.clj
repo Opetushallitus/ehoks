@@ -1,7 +1,7 @@
 (ns oph.ehoks.schema.oid
   "Skeemamääritykset erityyppisille OID:eille"
   (:require [clojure.string :as string]
-            [schema.core :refer [cond-pre constrained defschema]]))
+            [schema.core :refer [constrained defschema]]))
 
 ;;;; Opetushallitukselle on myönnetty koulutustoimialan OID-solmuluokka:
 ;;;; 1.2.246.562.NN.XXXXXXXXXXY, missä NN vaihtelee käyttötarkoituksen
@@ -14,6 +14,9 @@
 ;;;; has generated OIDs that have 12 digits in the last component instead of 11
 ;;;; and 10 instead of 0 as a last digit. These kinds of OIDs still exist today,
 ;;;; so we need to take this into account in validation.
+
+(def oppija-oid-nodes #{"24" "98" "198" "298"})
+(def organisaatio-oid-nodes #{"10" "99" "199" "299"})
 
 (defn- luhn-checksum
   "Takes a sequence of `digits` and returns a checksum which is calculated using
@@ -52,8 +55,8 @@
 (defn valid-oid?
   "Takes an `oid` and returns `true` if it's valid. For the last component of
   the OID, a checksum is calculated and checked that it matches the last digit.
-  IBM 1-3-7 checksum algorithm is used for henkilo/oppija (node 24) OIDs and
-  Luhn algorithm for everyting else.
+  IBM 1-3-7 checksum algorithm is used for henkilo/oppija (nodes 24, 98, 198,
+  and 298) OIDs and Luhn algorithm for everyting else.
 
   NOTE: This function expects that validity checks against an OID regexp pattern
   have been made for `oid` before calling this function!"
@@ -72,7 +75,7 @@
                                        (Character/getNumericValue
                                          ^char (first last-digit)))]
     (= last-digit
-       (if (= node "24")
+       (if (contains? oppija-oid-nodes node)
          (ibm-1-3-7-checksum first-10-digits) ; Only used for oppija OIDs.
          (luhn-checksum first-10-digits)))))
 
@@ -80,7 +83,8 @@
            (constrained #"^1\.2\.246\.562\.15\.[1-9]\d{9}(\d|10)$" valid-oid?))
 
 (defschema OppijaOID
-           (constrained #"^1\.2\.246\.562\.24\.[1-9]\d{9}(\d|10)$" valid-oid?))
+           (constrained #"^1\.2\.246\.562\.(24|[12]?98)\.[1-9]\d{9}(\d|10)$"
+                        valid-oid?))
 
 ; There are a few organisaatio OIDs where the check digit doesn't match with the
 ; calculated Luhn checksum. This is why we don't do check digit check in case of
@@ -94,4 +98,4 @@
 ;   "1.2.246.562.10.2013102416241359289612". The length of the last part is
 ;   22 digits in those cases.
 (def OrganisaatioOID
-  #"^1\.2\.246\.562\.10\.([1-9]\d{9}(\d|10)|0{10}1|201[34]\d{18})$")
+  #"^1\.2\.246\.562\.(10|[12]?99)\.([1-9]\d{9}(\d|10)|0{10}1|201[34]\d{18})$")

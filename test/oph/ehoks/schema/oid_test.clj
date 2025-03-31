@@ -1,6 +1,8 @@
 (ns oph.ehoks.schema.oid-test
   (:require [clojure.test :refer [are deftest testing]]
-            [oph.ehoks.schema.oid :refer [OpiskeluoikeusOID
+            [oph.ehoks.schema.oid :refer [oppija-oid-nodes
+                                          organisaatio-oid-nodes
+                                          OpiskeluoikeusOID
                                           OppijaOID
                                           OrganisaatioOID]]
             [schema.core :as s])
@@ -32,15 +34,16 @@
 
 (deftest test-oppija-oid-validation
   (testing "Valid oppija OIDs pass the validation."
-    (are [oid] (s/validate OppijaOID oid)
-      "1.2.246.562.24.54450598189"
-      "1.2.246.562.24.37998958910"
-      "1.2.246.562.24.92170778843"
-      "1.2.246.562.24.64297803263"
-      "1.2.246.562.24.89826171930"
-      "1.2.246.562.24.16068378700"
-      "1.2.246.562.24.898261719310"   ; checksum == 0
-      "1.2.246.562.24.160683787010")) ; checksum == 0
+    (doseq [node oppija-oid-nodes]
+      (are [oid] (s/validate OppijaOID (format "1.2.246.562.%s.%s" node oid))
+        "54450598189"
+        "37998958910"
+        "92170778843"
+        "64297803263"
+        "89826171930"
+        "16068378700"
+        "898261719310"   ; checksum == 0
+        "160683787010"))) ; checksum == 0
   (testing "Invalid oppija OIDs won't pass the validation."
     (are [oid] (thrown? ExceptionInfo (s/validate OppijaOID oid))
       "asd"
@@ -52,29 +55,38 @@
       "1.2.246.562.10.37998958910"    ; organisaatio oid node
       "1.2.246.562.24.642978032610"   ; checksum != 0
       "1.2.246.562.24.54440598189"    ; checksum mismatch
+      "1.2.246.562.98.54440598189"    ; checksum mismatch
+      "1.2.246.562.198.54440598189"   ; checksum mismatch
+      "1.2.246.562.298.54440598189"   ; checksum mismatch
       "1.2.246.562.24.37998957910"))) ; checksum mismatch
 
 (deftest test-organisaatio-oid-validation
   (testing "Valid organisaatio OIDs pass the validation."
-    (are [oid] (s/validate OrganisaatioOID oid)
-      "1.2.246.562.10.92214483247"
-      "1.2.246.562.10.18950669244"
-      "1.2.246.562.10.77831291537"
-      "1.2.246.562.10.38262856784"
-      "1.2.246.562.10.67924833642"
-      "1.2.246.562.10.2013110716590316970385" ; These types OIDs also exist
-      "1.2.246.562.10.2014081110425906984827"
-      "1.2.246.562.10.587342913610"
-      "1.2.246.562.10.54440598189"
-      "1.2.246.562.10.37998957910"
-      "1.2.246.562.10.778312915310"
-      "1.2.246.562.10.143886286710"))
+    (doseq [node organisaatio-oid-nodes]
+      (are [oid-part] (s/validate OrganisaatioOID (format "1.2.246.562.%s.%s"
+                                                          node oid-part))
+        "92214483247"
+        "18950669244"
+        "77831291537"
+        "38262856784"
+        "67924833642"
+        "2013110716590316970385" ; These types OIDs also exist
+        "2014081110425906984827"
+        "587342913610"
+        "54440598189"
+        "37998957910"
+        "778312915310"
+        "143886286710")))
   (testing "Invalid organisaatio OIDs won't pass the validation."
-    (are [oid] (thrown? ExceptionInfo (s/validate OrganisaatioOID oid))
+    (are [oid-part] (thrown? ExceptionInfo (s/validate OrganisaatioOID
+                                                       oid-part))
       "asd"
       "1.2.3"
       "1.2.246.562.10.5286980957"
       "1.2.246.562.10.2897630745971"
+      "1.2.246.562.99.2897630745971"
+      "1.2.246.562.199.2897630745971"
+      "1.2.246.562.299.2897630745971"
       "1.2.246.562.10.20131107165903169703852"
       "1.2.246.562.15.92214483247"    ; opiskeluoikeus oid node
       "1.2.246.562.24.18950669244"))) ; oppija oid node
