@@ -25,6 +25,17 @@
             [ring.util.http-response :as response]
             [schema.core :as s]))
 
+(def vipunen-schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen))
+
+(defn valid-vipunen-hoks?
+  "Onko HOKS Vipusen skeeman mukainen?  Logittaa myös validointivirheet,
+  ellei ole."
+  [hoks]
+  (if-let [errors (vipunen-schema-checker hoks)]
+    (log/warn "valid-vipunen-hoks?: HOKS" (:id hoks)
+              "has validation errors" errors)
+    true))
+
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   "Hankittavan paikallisen tutkinnon osan reitit."
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
@@ -389,10 +400,7 @@
                                                      updated-after)
               result (map hoks/mark-as-deleted raw-result)
               last-id (first (sort > (map :id result)))
-              schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
-              result-after-validation (filter
-                                        (fn [hoks] (nil? (schema-checker hoks)))
-                                        result)
+              result-after-validation (filter valid-vipunen-hoks? result)
               failed-ids (seq (clojure.set/difference
                                 (set (map :id result))
                                 (set (map :id result-after-validation))))]
