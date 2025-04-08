@@ -361,10 +361,18 @@
   [hoks]
   (walk/prewalk ensure-yksiloiva-tunniste-in-ohts hoks))
 
+(defn redact-field
+  "Return obj with the given field redacted (with a bit extra smart on
+  the field name)."
+  [obj field]
+  (if (and (= field :nimi) (:nimi obj))
+    (assoc obj :nimi "<REDACTED>")
+    (dissoc obj field)))
+
 (defn redact-fields
   "return a function that will redact all the given fields if they exist"
   [& fields]
-  (fn [obj] (apply dissoc obj fields)))
+  (fn [obj] (reduce redact-field obj fields)))
 
 (def vipunen-redaction-based-on-schema-name
   {"HOKSVipunen" (redact-fields :sahkoposti :puhelinnumero),
