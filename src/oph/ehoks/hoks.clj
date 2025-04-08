@@ -394,97 +394,6 @@
   [schema]
   (vipunen-redaction-based-on-schema-name (:name (meta schema))))
 
-(defn- trim-arvioijat
-  "Poistaa nimi-kentän jokaisesta arvioija-objektista."
-  [arvioijat]
-  (mapv (fn [arvioija] (dissoc arvioija :nimi)) arvioijat))
-
-(defn- trim-osa
-  "Poistaa nimi-kenttiä tutkinnon osan useista sisälletyistä objekteista."
-  [osa]
-  (-> osa
-      (update-in [:tarkentavat-tiedot-osaamisen-arvioija
-                  :aiemmin-hankitun-osaamisen-arvioijat] trim-arvioijat)
-      (update :tarkentavat-tiedot-naytto
-              (fn [ttn]
-                (mapv #(-> %
-                           (update
-                             :koulutuksen-jarjestaja-osaamisen-arvioijat
-                             trim-arvioijat)
-                           (update :tyoelama-osaamisen-arvioijat
-                                   trim-arvioijat)) ttn)))))
-
-(defn- trim-osaamisen-osoittaminen
-  "Poistaa nimi-kenttiä joistakin objekteista osaamisen osoittamisen sisällä."
-  [oo]
-  (-> oo
-      (update :koulutuksen-jarjestaja-osaamisen-arvioijat trim-arvioijat)
-      (update :tyoelama-osaamisen-arvioijat trim-arvioijat)))
-
-(defn- trim-ohjaaja-to-boolean
-  "Korvaa työpaikalla järjestettävän koulutuksen vastuullisen työpaikkaohjaajan
-  booleanarvolla, joka on totta, jos työpaikkaohjaajan tiedot ovat olemassa."
-  [oht]
-  (if (:tyopaikalla-jarjestettava-koulutus oht)
-    (update oht :tyopaikalla-jarjestettava-koulutus
-            (fn [tjk] (update tjk
-                              :vastuullinen-tyopaikka-ohjaaja boolean)))
-    oht))
-
-(defn- trim-osaamisen-hankkimistapa
-  "Poistaa järjestäjän edustajan ja hankkijan edustajan osaamisen
-  hankkimistavasta, ja trimmaa myös vastuullisen työpaikkaohjaajan booleaniksi."
-  [oht]
-  (-> oht
-      (dissoc :jarjestajan-edustaja)
-      (dissoc :hankkijan-edustaja)
-      trim-ohjaaja-to-boolean))
-
-(defn- trim-hao
-  "Trimmaa hankittavan tutkinnon osan osaamisen hankkimistavat ja osaamisen
-  osoittamiset."
-  [hao]
-  (-> hao
-      (update :osaamisen-hankkimistavat
-              (fn [ohts] (mapv trim-osaamisen-hankkimistapa ohts)))
-      (update :osaamisen-osoittaminen
-              (fn [oo] (mapv trim-osaamisen-osoittaminen oo)))))
-
-(defn- trim-hyto
-  "Trimmaa hankittavan yhteisen tutkinnon osan osa-alueet."
-  [hyto]
-  (update hyto :osa-alueet (fn [osa-alueet] (mapv trim-hao osa-alueet))))
-
-(defn- trim-ahyto
-  "Trimmaa aiemmin hankitun yhteisen tutkinnon osan osa-alueet."
-  [ahyto]
-  (update (trim-osa ahyto)
-          :osa-alueet
-          (fn [osa-alueet] (mapv trim-osa osa-alueet))))
-
-(defn- filter-for-vipunen
-  "Trimmaa kaikki HOKSin tutkinnon osat paitsi hankittavat paikalliset tutkinnon
-  osat vipusta varten."
-  [hoks]
-  (-> hoks
-      (dissoc :sahkoposti)
-      (dissoc :puhelinnumero)
-      (update :aiemmin-hankitut-ammat-tutkinnon-osat
-              (fn [ahato] (mapv trim-osa ahato)))
-      (update :aiemmin-hankitut-paikalliset-tutkinnon-osat
-              (fn [ahpto] (mapv trim-osa ahpto)))
-      (update :aiemmin-hankitut-yhteiset-tutkinnon-osat
-              (fn [ahyto] (mapv trim-ahyto ahyto)))
-      (update :hankittavat-ammat-tutkinnon-osat
-              (fn [hao] (mapv trim-hao hao)))
-      (update :hankittavat-yhteiset-tutkinnon-osat
-              (fn [hyto] (mapv trim-hyto hyto)))))
-
-(defn- enrich-and-filter
-  "Hakee HOKSin tutkinnon osat tietokannasta ja suodattaa ne vipusta varten."
-  [hoks]
-  (filter-for-vipunen (get-values hoks)))
-
 (defn get-starting-from-id!
   "Hakee tietyn määrän HOKSeja, jotka on päivitetty tietyn ajankohdan jälkeen ja
   joiden ID:t ovat tiettyä arvoa isompia."
@@ -494,7 +403,7 @@
                  amount
                  updated-after
                  #{:deleted_at})]
-    (map enrich-and-filter hokses)))
+    (map get-values hokses)))
 
 (defn update-opiskeluoikeudet
   "Päivittää opiskeluoikeustiedot Koskesta tietokantaan."
