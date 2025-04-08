@@ -28,6 +28,7 @@
   "Model value schema"
   {:methods {(s/optional-key :any) s/Keyword
              (s/optional-key :get) s/Keyword
+             (s/optional-key :get-vipunen) s/Keyword
              (s/optional-key :post) s/Keyword
              (s/optional-key :put) s/Keyword
              (s/optional-key :patch) s/Keyword
@@ -36,6 +37,7 @@
              (s/optional-key :patch-virkailija) s/Keyword}
    :types {(s/optional-key :any) s/Any
            (s/optional-key :get) s/Any
+           (s/optional-key :get-vipunen) s/Keyword
            (s/optional-key :post) s/Any
            (s/optional-key :put) s/Any
            (s/optional-key :patch) s/Any

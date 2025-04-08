@@ -1,5 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
+            [oph.ehoks.hoks]
             [oph.ehoks.middleware :as mw :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.palaute :refer [kuuluu-palautteen-kohderyhmaan?]]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
@@ -8,6 +9,7 @@
             [oph.ehoks.schema.oid :refer [OpiskeluoikeusOID
                                           OppijaOID
                                           OrganisaatioOID]]
+            [schema.coerce]
             [schema.core :as s])
   (:import (clojure.lang ExceptionInfo)
            (java.time LocalDate)
@@ -181,17 +183,28 @@
        :oppilaitos-oid OrganisaatioOID
        "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
-(s/defschema
-  TyopaikallaJarjestettavaKoulutus
-  "Työpaikalla järjestettävän koulutuksen schema."
-  (describe
-    "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :vastuullinen-tyopaikka-ohjaaja VastuullinenTyopaikkaOhjaaja "Vastuullinen
-    työpaikkaohjaaja"
-    :tyopaikan-nimi s/Str "Työpaikan nimi"
-    (s/optional-key :tyopaikan-y-tunnus) Y-tunnus "Työpaikan y-tunnus"
-    :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
+(def TyopaikallaJarjestettavaKoulutus-template
+  "Työpaikalla järjestettävän koulutuksen schema eri toiminnoille."
+  ^{:doc "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
+    :type ::g/schema-template
+    :name "TyopaikallaJarjestettavaKoulutus"}
+  {:id {:methods {:any :optional}
+        :types {:any s/Int}
+        :description "Tunniste eHOKS-järjestelmässä"}
+   :vastuullinen-tyopaikka-ohjaaja
+   {:methods {:any :required
+              :get-vipunen :excluded}
+    :types {:any VastuullinenTyopaikkaOhjaaja}
+    :description "Vastuullinen työpaikkaohjaaja"}
+   :tyopaikan-nimi {:methods {:any :required}
+                    :types {:any s/Str}
+                    :description "Työpaikan nimi"}
+   :tyopaikan-y-tunnus {:methods {:any :optional}
+                        :types {:any Y-tunnus}
+                        :description "Työpaikan y-tunnus"}
+   :keskeiset-tyotehtavat {:methods {:any :required}
+                           :types {:any [s/Str]}
+                           :description "Keskeiset työtehtävät"}})
 
 (s/defschema
   MuuOppimisymparisto
@@ -370,7 +383,8 @@
     :description (str "Oppisopimuskoulutusta hankkineen koulutuksen "
                       "järjestäjän edustaja")}
    :tyopaikalla-jarjestettava-koulutus
-   {:methods {:any :optional} :types {:any TyopaikallaJarjestettavaKoulutus}
+   {:methods {:any :optional}
+    :types {:any TyopaikallaJarjestettavaKoulutus-template}
     :description
     (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
          "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
@@ -979,6 +993,7 @@
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
    :eid {:methods {:any :excluded
+                   :get-vipunen :required
                    :get :required}
          :types {:any s/Str}
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
@@ -1105,6 +1120,13 @@
   (generate-hoks-schema
     "HOKS" :get "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"))
 
+(def HOKSVipunen
+  "HOKS, kun se annetaan Vipuselle."
+  (generate-hoks-schema
+    "HOKSVipunen" :get-vipunen
+    "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti,
+    josta henkilötiedot poistettu"))
+
 (def HOKSPaivitys
   "HOKSin päivitysschema."
   (generate-hoks-schema
@@ -1118,6 +1140,10 @@
 (def HOKSLuonti
   "HOKSin luontischema."
   (generate-hoks-schema "HOKSLuonti" :post "HOKS-dokumentin luominen (POST)"))
+
+(def vipunen-hoks-coercer
+  (schema.coerce/coercer
+    HOKSVipunen oph.ehoks.hoks/vipunen-redaction-coercion-matcher))
 
 (s/defschema
   kyselylinkki

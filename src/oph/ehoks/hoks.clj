@@ -361,6 +361,29 @@
   [hoks]
   (walk/prewalk ensure-yksiloiva-tunniste-in-ohts hoks))
 
+(defn redact-fields
+  "return a function that will redact all the given fields if they exist"
+  [& fields]
+  (fn [obj] (apply dissoc obj fields)))
+
+(def vipunen-redaction-based-on-schema-name
+  {"HOKSVipunen" (redact-fields :sahkoposti :puhelinnumero),
+   "OsaamisenHankkimistapa-get-vipunen"
+   (redact-fields :jarjestajan-edustaja :hankkijan-edustaja),
+   "TyopaikallaJarjestettavaKoulutus-get-vipunen"
+   (redact-fields :vastuullinen-tyopaikka-ohjaaja),
+   'VastuullinenTyopaikkaOhjaaja
+   (redact-fields :nimi :sahkoposti :puhelinnumero),
+   'Oppilaitoshenkilo (redact-fields :nimi),
+   'KoulutuksenJarjestajaArvioija (redact-fields :nimi),
+   'TyoelamaOsaamisenArvioija (redact-fields :nimi)})
+
+(defn vipunen-redaction-coercion-matcher
+  "Based on schema, find a transformation function for HOKS parts that
+  implements the correct vipunen coercions."
+  [schema]
+  (vipunen-redaction-based-on-schema-name (:name (meta schema))))
+
 (defn- trim-arvioijat
   "Poistaa nimi-kentän jokaisesta arvioija-objektista."
   [arvioijat]
