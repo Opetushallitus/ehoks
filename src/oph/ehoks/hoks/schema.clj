@@ -346,7 +346,10 @@
      {:check duration-max-5-years?
       :description "Korjaa jakso enintään 5 vuoden pituiseksi."}]
     :name "OsaamisenHankkimistapa"}
-  {:id {:methods {:any :excluded, :patch :optional, :get :optional}
+  {:id {:methods {:any :excluded
+                  :patch :optional
+                  :get :optional
+                  :get-vipunen :optional}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
    :alku {:methods {:any :required}
@@ -355,7 +358,9 @@
    :loppu {:methods {:any :required}
            :types {:any LocalDate}
            :description "Loppupäivämäärä muodossa YYYY-MM-DD"}
-   :module-id {:methods {:any :excluded, :get :required}
+   :module-id {:methods {:any :excluded
+                         :get :required
+                         :get-vipunen :optional}
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
@@ -481,10 +486,15 @@
               "näyttö tai muu osaamisen osoittaminen.")
     :type ::g/schema-template
     :name "OsaamisenOsoittaminen"}
-  {:id {:methods {:any :excluded, :patch :optional, :get :optional}
+  {:id {:methods {:any :excluded
+                  :patch :optional
+                  :get :optional
+                  :get-vipunen :optional}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
-   :module-id {:methods {:any :excluded, :get :required}
+   :module-id {:methods {:any :excluded
+                         :get :required
+                         :get-vipunen :optional}
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
@@ -580,10 +590,15 @@
   ^{:doc "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     :type ::g/schema-template
     :name "HankittavanYTOnOsaAlue"}
-  {:id {:methods {:any :excluded, :get :optional, :patch :optional}
+  {:id {:methods {:any :excluded
+                  :get :optional
+                  :patch :optional
+                  :get-vipunen :optional}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
-   :module-id {:methods {:any :excluded, :get :required}
+   :module-id {:methods {:any :excluded
+                         :get :required
+                         :get-vipunen :optional}
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
@@ -652,10 +667,15 @@
       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaYhteinenTutkinnonOsa"}
-  {:id {:methods {:any :excluded, :patch :optional, :get :optional}
+  {:id {:methods {:any :excluded
+                  :patch :optional
+                  :get :optional
+                  :get-vipunen :optional}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
-   :module-id {:methods {:any :excluded, :get :required}
+   :module-id {:methods {:any :excluded
+                         :get :required
+                         :get-vipunen :optional}
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
@@ -731,10 +751,15 @@
       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaAmmatillinenTutkinnonOsa"}
-  {:id {:methods {:any :excluded, :patch :optional, :get :optional}
+  {:id {:methods {:any :excluded
+                  :patch :optional
+                  :get :optional
+                  :get-vipunen :optional}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
-   :module-id {:methods {:any :excluded, :get :required}
+   :module-id {:methods {:any :excluded
+                         :get :required
+                         :get-vipunen :optional}
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
@@ -801,10 +826,15 @@
       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaPaikallinenTutkinnonOsa"}
-  {:id {:methods {:any :excluded, :patch :optional, :get :optional}
+  {:id {:methods {:any :excluded
+                  :patch :optional
+                  :get :optional
+                  :get-vipunen :optional}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
-   :module-id {:methods {:any :excluded, :get :required}
+   :module-id {:methods {:any :excluded
+                         :get :required
+                         :get-vipunen :optional}
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
@@ -1064,17 +1094,19 @@
                                  :description
                                  (str "HOKSin osaamisen saavuttamisen "
                                       "ajankohta muodossa YYYY-MM-DD")}
-   :osaamisen-hankkimisen-tarve {:methods {:any :required
-                                           :patch :optional
-                                           :get :optional}
-                                 :types {:any s/Bool}
-                                 :description
-                                 (str "Tutkintokoulutuksen ja muun tarvittavan "
-                                      "ammattitaidon hankkimisen tarve; "
-                                      "osaamisen tunnistamis- ja "
-                                      "tunnustamisprosessin lopputulos.")}
+   :osaamisen-hankkimisen-tarve
+   {:methods {:any :required
+              :patch :optional
+              :get :optional
+              :get-vipunen :optional}
+    :types {:any s/Bool}
+    :description (str "Tutkintokoulutuksen ja muun tarvittavan "
+                      "ammattitaidon hankkimisen tarve; "
+                      "osaamisen tunnistamis- ja "
+                      "tunnustamisprosessin lopputulos.")}
    :manuaalisyotto {:methods {:any :excluded
-                              :get :optional}
+                              :get :optional
+                              :get-vipunen :optional}
                     :types {:any s/Bool}
                     :description "Tieto, onko HOKS tuotu manuaalisyötön kautta"}
    :aiemmin-hankitut-ammat-tutkinnon-osat
