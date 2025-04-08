@@ -1089,6 +1089,9 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+   :poistettu {:methods {:any :excluded :get-vipunen :optional}
+               :types {:any s/Inst}
+               :description "HOKSin poistoaika, jos HOKS on poistettu."}
    :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
                                  :types {:any OsaamisenSaavuttamisenPvm}
                                  :description

@@ -13,7 +13,6 @@
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :as mw]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -25,7 +24,7 @@
             [ring.util.http-response :as response]
             [schema.core :as s]))
 
-(def vipunen-schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen))
+(def vipunen-schema-checker (s/checker hoks-schema/HOKSVipunen))
 
 (defn valid-vipunen-hoks?
   "Onko HOKS Vipusen skeeman mukainen?  Logittaa myös validointivirheet,
@@ -393,7 +392,7 @@
         :return (rest/response {:last-id s/Int
                                 :failed-ids [s/Int]
                                 :result
-                                [hoks-schema-vipunen/HOKSVipunen]})
+                                [hoks-schema/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
               raw-result (hoks/get-starting-from-id! from-id
                                                      limit
