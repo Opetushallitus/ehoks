@@ -192,9 +192,9 @@
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
    :vastuullinen-tyopaikka-ohjaaja
-   {:methods {:any :required
-              :get-vipunen :excluded}
-    :types {:any VastuullinenTyopaikkaOhjaaja}
+   {:methods {:any :required}
+    :types {:any VastuullinenTyopaikkaOhjaaja
+            :get-vipunen s/Bool}
     :description "Vastuullinen työpaikkaohjaaja"}
    :tyopaikan-nimi {:methods {:any :required}
                     :types {:any s/Str}

@@ -37,7 +37,7 @@
              (s/optional-key :patch-virkailija) s/Keyword}
    :types {(s/optional-key :any) s/Any
            (s/optional-key :get) s/Any
-           (s/optional-key :get-vipunen) s/Keyword
+           (s/optional-key :get-vipunen) s/Any
            (s/optional-key :post) s/Any
            (s/optional-key :put) s/Any
            (s/optional-key :patch) s/Any

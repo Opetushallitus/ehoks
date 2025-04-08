@@ -13,7 +13,8 @@
             (get-in [:hankittavat-paikalliset-tutkinnon-osat 0
                      :osaamisen-hankkimistavat 0
                      :tyopaikalla-jarjestettava-koulutus]))
-        {:tyopaikan-nimi "Ohjaus Oy"
+        {:vastuullinen-tyopaikka-ohjaaja true
+         :tyopaikan-nimi "Ohjaus Oy"
          :tyopaikan-y-tunnus "5523718-7"
          :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                  "Vuoronvaihdon tarkistukset"]})

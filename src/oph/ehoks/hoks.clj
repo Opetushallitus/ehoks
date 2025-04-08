@@ -370,8 +370,10 @@
   {"HOKSVipunen" (redact-fields :sahkoposti :puhelinnumero),
    "OsaamisenHankkimistapa-get-vipunen"
    (redact-fields :jarjestajan-edustaja :hankkijan-edustaja),
+   ;; :vastuullinen-tyopaikka-ohjaaja cannot really be false as it's a
+   ;; required field in every schema
    "TyopaikallaJarjestettavaKoulutus-get-vipunen"
-   (redact-fields :vastuullinen-tyopaikka-ohjaaja),
+   #(update % :vastuullinen-tyopaikka-ohjaaja boolean),
    'VastuullinenTyopaikkaOhjaaja
    (redact-fields :nimi :sahkoposti :puhelinnumero),
    'Oppilaitoshenkilo (redact-fields :nimi),
