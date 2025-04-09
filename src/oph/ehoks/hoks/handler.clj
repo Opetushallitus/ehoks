@@ -13,7 +13,6 @@
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :as mw]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -23,18 +22,19 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
+            [schema.utils :as s-utils]
             [schema.core :as s]))
 
-(def vipunen-schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen))
-
-(defn valid-vipunen-hoks?
-  "Onko HOKS Vipusen skeeman mukainen?  Logittaa myös validointivirheet,
-  ellei ole."
+(defn valid-vipunen-hoks
+  "Palauttaa HOKSin Vipusen vaatimusmäärittelyn mukaan anonymisoituna.
+  Logittaa myös validointivirheet, ellei HOKS ole Vipusen skeeman
+  mukainen."
   [hoks]
-  (if-let [errors (vipunen-schema-checker hoks)]
-    (log/warn "valid-vipunen-hoks?: HOKS" (:id hoks)
-              "has validation errors" errors)
-    true))
+  (let [anonymised (hoks-schema/vipunen-hoks-coercer hoks)]
+    (if (s-utils/error? anonymised)
+      (log/warn "valid-vipunen-hoks?: HOKS" (:id hoks)
+                "has validation errors" anonymised)
+      anonymised)))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   "Hankittavan paikallisen tutkinnon osan reitit."
@@ -393,14 +393,14 @@
         :return (rest/response {:last-id s/Int
                                 :failed-ids [s/Int]
                                 :result
-                                [hoks-schema-vipunen/HOKSVipunen]})
+                                [hoks-schema/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
               raw-result (hoks/get-starting-from-id! from-id
                                                      limit
                                                      updated-after)
               result (map hoks/mark-as-deleted raw-result)
               last-id (first (sort > (map :id result)))
-              result-after-validation (filter valid-vipunen-hoks? result)
+              result-after-validation (keep valid-vipunen-hoks result)
               failed-ids (seq (clojure.set/difference
                                 (set (map :id result))
                                 (set (map :id result-after-validation))))]

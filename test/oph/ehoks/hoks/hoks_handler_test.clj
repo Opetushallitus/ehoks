@@ -676,6 +676,7 @@
   (testing "GET paged HOKSes for Vipunen"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                      :oppija-oid "1.2.246.562.24.12312312319"
+                     :sahkoposti "tyyppi@mesta.fi"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           app (hoks-utils/create-app nil)
@@ -691,13 +692,12 @@
               paged-response (hoks-utils/mock-st-get
                                app (format "%s/paged" base-url))]
           (is (= (:status paged-response) 200))
-          (is (= (-> (test-utils/parse-body (:body paged-response))
-                     :data
-                     :result
-                     first
-                     :id)
-                 (-> hoks
-                     :id))))))))
+          (let [body (test-utils/parse-body (:body paged-response))]
+            (eq (-> (get-in body [:data :result 0])
+                    (select-keys (keys hoks-data)))
+                (dissoc hoks-data :sahkoposti))
+            (is (= (get-in body [:data :result 0 :id])
+                   (:id hoks)))))))))
 
 (deftest get-paged-deleted
   (testing "GET paged HOKSes with deleted item"
