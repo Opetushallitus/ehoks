@@ -14,8 +14,3 @@
   "Käännetty .isAfter"
   [^LocalDate one-date ^LocalDate other-date]
   (not (is-after one-date other-date)))
-
-(defn is-before
-  "Wrapper .isBefore-metodin ympäri, jolla on tyyppianotaatiot."
-  [^LocalDate one-date ^LocalDate other-date]
-  (.isBefore one-date other-date))

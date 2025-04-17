@@ -644,9 +644,6 @@
     :description (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen "
                       "ja ohjauksen määrä tunteina.")}})
 
-(s/defschema HankittavanYTOnOsaAlue
-             (g/generate HankittavanYTOnOsaAlue-template :get))
-
 (def AiemminHankitunYTOnOsaAlue-template
   (with-meta
     (hankittava->aiemmin-hankittu
@@ -655,9 +652,6 @@
     {:doc "Aiemmin hankitun yhteisen tutkinnon osan osa-alueen schema."
      :type ::g/schema-template
      :name "AiemminHankitunYTOnOsaAlue"}))
-
-(s/defschema AiemminHankitunYTOnOsaAlue
-             (g/generate AiemminHankitunYTOnOsaAlue-template :get))
 
 (def HankittavaYhteinenTutkinnonOsa-template
   ^{:doc "Hankittava Yhteinen Tutkinnon osa (YTO)"

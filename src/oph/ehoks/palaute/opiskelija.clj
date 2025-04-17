@@ -4,7 +4,7 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [medley.core :refer [greatest map-vals]]
-            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.config :refer []]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]

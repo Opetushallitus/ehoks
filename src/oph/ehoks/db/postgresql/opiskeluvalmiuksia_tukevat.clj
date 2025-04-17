@@ -10,13 +10,6 @@
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
-(defn insert-opiskeluvalmiuksia-tukeva-opinto!
-  "Lisää opiskeluvalmiuksia tukeva opinto"
-  [new-value]
-  (db-ops/insert-one!
-    :opiskeluvalmiuksia_tukevat_opinnot
-    (db-ops/to-sql new-value)))
-
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot!
   "Lisää opiskeluvalmiuksia tukevat opinnot"
   ([c]

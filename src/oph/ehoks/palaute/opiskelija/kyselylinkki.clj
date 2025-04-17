@@ -15,11 +15,6 @@
                   (db-ops/to-sql m)
                   ["kyselylinkki = ?" (:kyselylinkki m)]))
 
-(defn delete!
-  "Poistaa kyselylinkin tietokannasta."
-  [kyselylinkki]
-  (db-ops/delete! :kyselylinkit ["kyselylinkki = ?" kyselylinkki]))
-
 (defn get-by-oppija-oid!
   "Hakee kyselylinkkejä tietokannasta oppijan OID:n perusteella."
   [oid]

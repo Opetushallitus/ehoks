@@ -19,11 +19,3 @@
                          {:hello-second "Other World!"})
     (t/is (= (user-settings/get! "1.2.246.562.24.42345678625")
              {:hello-second "Other World!"}))))
-
-(t/deftest delete-test
-  (t/testing "Delete settings"
-    (user-settings/save! "1.2.246.562.24.42345678625" {:hello "World!"})
-    (t/is (= (user-settings/get! "1.2.246.562.24.42345678625")
-             {:hello "World!"}))
-    (user-settings/delete! "1.2.246.562.24.42345678625")
-    (t/is (nil? (user-settings/get! "1.2.246.562.24.42345678625")))))

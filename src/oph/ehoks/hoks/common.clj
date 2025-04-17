@@ -56,11 +56,6 @@
           naytto (:osa-alueet n) conn)
         naytto))))
 
-(defn tuva-related-hoks?
-  [hoks]
-  (or (some? (seq (:hankittavat-koulutuksen-osat hoks)))
-      (some? (:tuva-opiskeluoikeus-oid hoks))))
-
 (defn get-map
   "Get-funktion erikoisversio. Jos avain on sekvenssi, hakee sen jokaisen
   jäsenen coll:ista ja laittaa ne uuteen vectoriin vastaavassa järjestyksessä.
