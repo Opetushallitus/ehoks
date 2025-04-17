@@ -4,8 +4,7 @@
             [oph.ehoks.utils.date :as date]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn- extract-and-set-osaamisen-hankkimistapa-values
   "Irrottaa annetun osaamisen hankkimistavan sisällön yhdistetyistä riveistä."
@@ -120,14 +119,6 @@
           db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
           hato-fields)))
 
-(defn get-hankittava-ammat-tutkinnon-osa
-  "Hakee yhden hankittavan ammatillisen tutkinnon osan tietokannasta."
-  [id]
-  (first (extract-hankkimistavat-and-osoittamiset
-           (db/select-one-hato id)
-           db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
-           hato-fields)))
-
 (def hpto-fields
   "Kentät, jotka irrotetaan tietokannasta haetuista riveistä hankittavan
   paikallisen tutkinnon osan perustiedoiksi."
@@ -183,14 +174,6 @@
           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
           hpto-fields)))
 
-(defn get-hankittava-paikallinen-tutkinnon-osa
-  "Hakee yhden hankittavan paikallisen tutkinnon osan tietokannasta."
-  [id]
-  (first (extract-hankkimistavat-and-osoittamiset
-           (db/select-one-hpto id)
-           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
-           hpto-fields)))
-
 (def yto-osa-alue-fields
   "Kentät, jotka irrotetaan tietokannasta haetuista riveistä hankittavan
   yhteisen tutkinnon osan osa-alueen perustiedoiksi."
@@ -212,14 +195,6 @@
           (db/select-all-osa-alueet-for-yto hyto-id)
           db-hoks/yhteisen-tutkinnon-osan-osa-alue-from-sql
           yto-osa-alue-fields)))
-
-(defn get-hankittava-yhteinen-tutkinnon-osa
-  "Hakee yhden hankittavan yhteisen tutkinnon osan tietokannasta.
-  Palauttaa `nil` jos yhteistä tutkinnon osaa ei löydy."
-  [hyto-id]
-  (let [hyto-db (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
-    (when (not-empty hyto-db)
-      (assoc hyto-db :osa-alueet (get-yto-osa-alueet hyto-id)))))
 
 (defn get-hankittavat-yhteiset-tutkinnon-osat
   "Hakee hankittavat yhteiset tutkinnon osat tietokannasta."
@@ -594,21 +569,3 @@
       (mapv
         #(save-hankittava-koulutuksen-osa! hoks-id % conn)
         koulutuksen-osat))))
-
-(defn- replace-hyto-osa-alueet!
-  "Korvaa hankittavan yhteisen tutkinnon osan osa-alueet annetuilla arvoilla."
-  [hoks-id hyto-id new-oa-values db-conn]
-  (db/delete-hyto-osa-alueet! hyto-id db-conn)
-  (save-hyto-osa-alueet! hoks-id hyto-id new-oa-values db-conn))
-
-(defn update-hankittava-yhteinen-tutkinnon-osa!
-  "Päivittää hankittavan yhteisen tutkinnon osan tietokantaan."
-  [hoks-id hyto-id new-values]
-  (jdbc/with-db-transaction
-    [db-conn (db-ops/get-db-connection)]
-    (let [bare-hyto (dissoc new-values :osa-alueet)]
-      (when (not-empty bare-hyto)
-        (db/update-hankittava-yhteinen-tutkinnon-osa-by-id!
-          hyto-id new-values db-conn)))
-    (when-let [oa (:osa-alueet new-values)]
-      (replace-hyto-osa-alueet! hoks-id hyto-id oa db-conn))))

@@ -701,15 +701,6 @@
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")}})
 
-(s/defschema HankittavaYhteinenTutkinnonOsa
-             (g/generate HankittavaYhteinenTutkinnonOsa-template :get))
-
-(s/defschema HankittavaYhteinenTutkinnonOsaLuontiJaMuokkaus
-             (g/generate HankittavaYhteinenTutkinnonOsa-template :post))
-
-(s/defschema HankittavaYhteinenTutkinnonOsaPatch
-             (g/generate HankittavaYhteinenTutkinnonOsa-template :patch))
-
 (def OpiskeluvalmiuksiaTukevatOpinnot-template
   ^{:doc "Opiskeluvalmiuksia tukevien opintojen schema."
     :constraints
@@ -736,12 +727,6 @@
 
 (s/defschema OpiskeluvalmiuksiaTukevatOpinnot
              (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :get))
-
-(s/defschema OpiskeluvalmiuksiaTukevatOpinnotLuontiJaMuokkaus
-             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :post))
-
-(s/defschema OpiskeluvalmiuksiaTukevatOpinnotPatch
-             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :patch))
 
 (def HankittavaAmmatillinenTutkinnonOsa-template
   ^{:doc "Hankittavan ammatillisen tutkinnon osan schema."
@@ -808,15 +793,6 @@
                    "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")}
     :description (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen "
                       "ja ohjauksen määrä tunteina.")}})
-
-(s/defschema HankittavaAmmatillinenTutkinnonOsa
-             (g/generate HankittavaAmmatillinenTutkinnonOsa-template :get))
-
-(s/defschema HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
-             (g/generate HankittavaAmmatillinenTutkinnonOsa-template :post))
-
-(s/defschema HankittavaAmmatillinenTutkinnonOsaPatch
-             (g/generate HankittavaAmmatillinenTutkinnonOsa-template :patch))
 
 (def HankittavaPaikallinenTutkinnonOsa-template
   ^{:doc "Hankittavan paikallisen tutkinnon osan schema."
@@ -887,15 +863,6 @@
     :description (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen "
                       "ja ohjauksen määrä tunteina.")}})
 
-(s/defschema HankittavaPaikallinenTutkinnonOsa
-             (g/generate HankittavaPaikallinenTutkinnonOsa-template :get))
-
-(s/defschema HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
-             (g/generate HankittavaPaikallinenTutkinnonOsa-template :post))
-
-(s/defschema HankittavaPaikallinenTutkinnonOsaPatch
-             (g/generate HankittavaPaikallinenTutkinnonOsa-template :patch))
-
 (def AiemminHankittuPaikallinenTutkinnonOsa-template
   (with-meta
     (hankittava->aiemmin-hankittu
@@ -908,16 +875,6 @@
        :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuPaikallinenTutkinnonOsa"}))
-
-(s/defschema AiemminHankittuPaikallinenTutkinnonOsa
-             (g/generate AiemminHankittuPaikallinenTutkinnonOsa-template :get))
-
-(s/defschema AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
-             (g/generate AiemminHankittuPaikallinenTutkinnonOsa-template :post))
-
-(s/defschema
-  AiemminHankittuPaikallinenTutkinnonOsaPatch
-  (g/generate AiemminHankittuPaikallinenTutkinnonOsa-template :patch))
 
 (def AiemminHankittuYhteinenTutkinnonOsa-template
   (with-meta
@@ -934,15 +891,6 @@
      :type ::g/schema-template
      :name "AiemminHankittuYhteinenTutkinnonOsa"}))
 
-(s/defschema AiemminHankittuYhteinenTutkinnonOsa
-             (g/generate AiemminHankittuYhteinenTutkinnonOsa-template :get))
-
-(s/defschema AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
-             (g/generate AiemminHankittuYhteinenTutkinnonOsa-template :post))
-
-(s/defschema AiemminHankittuYhteinenTutkinnonOsaPatch
-             (g/generate AiemminHankittuYhteinenTutkinnonOsa-template :patch))
-
 (def AiemminHankittuAmmatillinenTutkinnonOsa-template
   (with-meta
     (hankittava->aiemmin-hankittu HankittavaAmmatillinenTutkinnonOsa-template)
@@ -953,18 +901,6 @@
        :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuAmmatillinenTutkinnonOsa"}))
-
-(s/defschema
-  AiemminHankittuAmmatillinenTutkinnonOsa
-  (g/generate AiemminHankittuAmmatillinenTutkinnonOsa-template :get))
-
-(s/defschema
-  AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
-  (g/generate AiemminHankittuAmmatillinenTutkinnonOsa-template :post))
-
-(s/defschema
-  AiemminHankittuAmmatillinenTutkinnonOsaPatch
-  (g/generate AiemminHankittuAmmatillinenTutkinnonOsa-template :patch))
 
 (s/defschema
   HankittavaKoulutuksenOsa
