@@ -8,20 +8,10 @@
   [id]
   (db-ops/query [queries/select-all-ahatos-for-hoks id]))
 
-(defn select-one-ahato
-  "Aiemmin hankittu ammatillisen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-ahato id]))
-
 (defn select-all-ahptos-for-hoks
   "Aiemmin hankittujen paikallisten tutkintojen osat"
   [id]
   (db-ops/query [queries/select-all-ahptos-for-hoks id]))
-
-(defn select-one-ahpto
-  "Aiemmin hankittu paikallinen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-ahpto id]))
 
 (defn select-all-osa-alueet-for-ahyto
   "Aiemmin hankitun yhteisen tutkinnon osan osa-alueet"
@@ -32,11 +22,6 @@
   "Aiemmin hankittujen yhteisten tutkintojen osat"
   [id]
   (db-ops/query [queries/select-all-ahytos-for-hoks id]))
-
-(defn select-one-ahyto
-  "Aiemmin hankittu yhteinen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-ahyto id]))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id
   "Todennetun arvioinnin lisätiedot"

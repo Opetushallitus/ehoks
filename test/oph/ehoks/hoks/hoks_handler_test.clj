@@ -6,16 +6,14 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.hoks.hankittavat
-             :refer [save-hankittava-ammat-tutkinnon-osa!]]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.test-utils :as test-utils :refer [eq]]
-            [ring.mock.request :as mock]))
+            [ring.mock.request :as mock])
+  (:import [java.time LocalDate]))
 
 (use-fixtures :once test-utils/with-clean-database-and-clean-dynamodb)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -938,7 +936,7 @@
               (is (= (-> (test-utils/parse-body (:body get-resp))
                          :data) hoks-after-patch)))))))))
 
-(deftest test-hoks-delete-undo-patch-hato-delete-undo
+(deftest test-hoks-delete-undo-update-hato-delete-undo
   (testing "HOKS soft delete, undo, patch hato, delete & undo"
     ; luo hoks
     (let [app (hoks-utils/create-app nil)
@@ -973,14 +971,14 @@
           (is (= (-> (test-utils/parse-body (:body get-resp))
                      :data) hoks)))
         ; päivitä hankittavaa ammatillista tutkinnon osaa
-        (let [patch-response
-              (hoks-utils/create-mock-hato-patch-request
-                hoks-id 1
-                (assoc parts-test-data/hao-data
-                       :id 1
-                       :opetus-ja-ohjaus-maara 10.5)
-                app)]
-          (is (= (:status patch-response) 204))
+        (let [put-response (hoks-utils/mock-st-put
+                             app
+                             (format "%s/1" base-url)
+                             (assoc-in (assoc hoks-data :id 1)
+                                       [:hankittavat-ammat-tutkinnon-osat 0]
+                                       (assoc parts-test-data/hao-data
+                                              :opetus-ja-ohjaus-maara 10.5)))]
+          (is (= (:status put-response) 204))
           (let [get-hoks-after-patch (hoks-utils/mock-st-get app hoks-uri)
                 hoks-after-patch
                 (-> get-hoks-after-patch :body (test-utils/parse-body) :data)]
@@ -1067,40 +1065,48 @@
 (deftest no-internal-server-error-in-response-validation-failure
   (testing (str "Response validation failure shouldn't give "
                 "`internal-server-error` in response")
-    (let [hoks {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
-                :oppija-oid "1.2.246.562.24.12312312319"
-                :osaamisen-hankkimisen-tarve true
-                :ensikertainen-hyvaksyminen "2018-12-15"}
-          hato {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
-                :tutkinnon-osa-koodi-versio 1
-                :vaatimuksista-tai-tavoitteista-poikkeaminen
-                "Ei poikkeamia."
-                :opetus-ja-ohjaus-maara 10.1
-                :osaamisen-osoittaminen
-                [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924331"}
-                  :nayttoymparisto {:nimi "Testiympäristö"
-                                    :y-tunnus "invalid"
-                                    :kuvaus "Testi test"}
-                  :sisallon-kuvaus ["Testaus"]
-                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
-                  :osa-alueet []
-                  :tyoelama-osaamisen-arvioijat []
-                  :yksilolliset-kriteerit []}]
-                :osaamisen-hankkimistavat []}
+    (let [invalid-hoks
+          (-> {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+               :oppija-oid "1.2.246.562.24.12312312319"
+               :osaamisen-hankkimisen-tarve true
+               :ensikertainen-hyvaksyminen (LocalDate/parse "2018-12-15")}
+              add-empty-hoks-values
+              (assoc :hankittavat-ammat-tutkinnon-osat
+                     [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+                       :tutkinnon-osa-koodi-versio 1
+                       :vaatimuksista-tai-tavoitteista-poikkeaminen
+                       "Ei poikkeamia."
+                       :opetus-ja-ohjaus-maara 10.1
+                       :osaamisen-osoittaminen
+                       [{:jarjestaja
+                         {:oppilaitos-oid "1.2.246.562.10.54453924331"}
+                         :nayttoymparisto {:nimi "Testiympäristö"
+                                           :y-tunnus "invalid"
+                                           :kuvaus "Testi test"}
+                         :sisallon-kuvaus ["Testaus"]
+                         :koulutuksen-jarjestaja-osaamisen-arvioijat []
+                         :osa-alueet []
+                         :tyoelama-osaamisen-arvioijat []
+                         :yksilolliset-kriteerit []}]
+                       :osaamisen-hankkimistavat []}]))
           app (hoks-utils/create-app nil)]
-      (hoks-utils/mock-st-post app base-url hoks)
-      ; Tallennetaan hato suoraan kantaan ei-validilla datalla.
-      (save-hankittava-ammat-tutkinnon-osa! 1 hato)
-      (let [response (hoks-utils/mock-st-get
-                       app
-                       (format "%s/1/hankittava-ammat-tutkinnon-osa/1"
-                               base-url))
+      (hoks-utils/mock-st-post
+        app base-url (dissoc invalid-hoks :hankittavat-ammat-tutkinnon-osat))
+      ; Päivitetään hoks suoraan kantaan ei-validilla datalla.
+      (hoks/replace! (assoc invalid-hoks :id 1))
+      (let [response (hoks-utils/mock-st-get app (format "%s/1" base-url))
             body     (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (is (= (-> (:data body)
-                   (update-in [:osaamisen-osoittaminen 0] dissoc :module-id)
-                   (dissoc :id :module-id))
-               hato))))))
+                   (dissoc :id :eid :manuaalisyotto)
+                   (update-in [:hankittavat-ammat-tutkinnon-osat 0]
+                              dissoc
+                              :module-id)
+                   (update-in [:hankittavat-ammat-tutkinnon-osat 0
+                               :osaamisen-osoittaminen 0] dissoc :module-id)
+                   (update-in [:ensikertainen-hyvaksyminen]
+                              #(LocalDate/parse %)))
+               invalid-hoks))))))
 
 (deftest test-handles-unauthorized
   (testing "Responds with unauthorized when not able to get ST for käyttöoikeus"

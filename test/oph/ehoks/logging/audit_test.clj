@@ -12,28 +12,18 @@
 
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
 
-(declare expected-log-entry-on-hoks-creation
-         expected-log-entry-on-ahato-creation
-         expected-log-entry-on-ahato-update
-         expected-log-entry-on-ahato-read)
+(declare expected-log-entry-on-hoks-creation)
 
 (deftest test-handle-audit-logging
   (with-log
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request ahato-path ahato-data app hoks)
-      (hoks-utils/create-mock-hoks-osa-patch-request
-        ahato-path app multiple-ahato-values-patched)
-      (hoks-utils/create-mock-hoks-osa-get-request ahato-path app hoks)
-      (let [[hoks-create _ ahato-creation ahato-update ahato-read]
+      (let [[hoks-create _]
             (map #(-> % :message json/read-str (dissoc "bootTime"))
                  (matches "audit" :info #""))
             logseq (get hoks-create "logSeq")]
-        (are [actual expected] (= actual expected)
-          hoks-create    (expected-log-entry-on-hoks-creation  logseq)
-          ahato-creation (expected-log-entry-on-ahato-creation (+ 2 logseq))
-          ahato-update   (expected-log-entry-on-ahato-update   (+ 3 logseq))
-          ahato-read     (expected-log-entry-on-ahato-read     (+ 4 logseq))))
+        (is (= hoks-create (expected-log-entry-on-hoks-creation  logseq))))
       (test-utils/clear-db))))
 
 (deftest test-changes
@@ -141,153 +131,6 @@
       "osaamisen-hankkimisen-tarve" false
       "opiskeluoikeus-oid" "1.2.246.562.15.10000000009"
       "oppija-oid" "1.2.246.562.24.12312312319"}}]
-   "type" "log"
-   "version" 1
-   "target" {"hoksId" 1
-             "oppijaOid" "1.2.246.562.24.12312312319"
-             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
-
-(defn- expected-log-entry-on-ahato-creation
-  [logseq]
-  {"hostname" ""
-   "logSeq" logseq
-   "user"
-   {"oid" "1.2.246.562.24.11474338834"
-    "ipAddress" "127.0.0.1"
-    "session" "ST-testitiketti"
-    "userAgent" "no user agent"}
-   "status" "succeeded"
-   "applicationType" "backend"
-   "operation" "create"
-   "serviceName" "both"
-   "changes"
-   [{"path" ""
-     "newValue"
-     {"tutkinnon-osa-koodi-versio" 100022
-      "valittu-todentamisen-prosessi-koodi-versio" 3
-      "tutkinnon-osa-koodi-uri" "tutkinnonosat_100022"
-      "valittu-todentamisen-prosessi-koodi-uri"
-      "osaamisentodentamisenprosessi_3"
-      "koulutuksen-jarjestaja-oid"
-      "1.2.246.562.10.54453921410"
-      "tarkentavat-tiedot-osaamisen-arvioija"
-      {"lahetetty-arvioitavaksi" "2019-03-18"
-       "aiemmin-hankitun-osaamisen-arvioijat"
-       [{"nimi" "Erkki Esimerkki"
-         "organisaatio"
-         {"oppilaitos-oid" "1.2.246.562.10.54453921626"}}
-        {"nimi" "Joku Tyyppi"
-         "organisaatio"
-         {"oppilaitos-oid" "1.2.246.562.10.54453921006"}}]}
-      "tarkentavat-tiedot-naytto"
-      [{"sisallon-kuvaus" ["Tutkimustyö" "Raportointi"]
-        "yksilolliset-kriteerit" ["Ensimmäinen kriteeri"]
-        "alku" "2019-02-09"
-        "tyoelama-osaamisen-arvioijat"
-        [{"nimi" "Teppo Työmies"
-          "organisaatio"
-          {"nimi" "Testiyrityksen Sisar Oy"
-           "y-tunnus" "1234563-9"}}]
-        "jarjestaja"
-        {"oppilaitos-oid" "1.2.246.562.10.54453921683"}
-        "loppu" "2019-01-12"
-        "koulutuksen-jarjestaja-osaamisen-arvioijat"
-        [{"nimi" "Aapo Arvioija"
-          "organisaatio"
-          {"oppilaitos-oid" "1.2.246.562.10.54453921675"}}]
-        "nayttoymparisto"
-        {"nimi" "Toinen Esimerkki Oyj"
-         "y-tunnus" "1234566-3"
-         "kuvaus" "Testiyrityksen testiosasostalla"}
-        "osa-alueet"
-        [{"koodi-uri" "ammatillisenoppiaineet_fy"
-          "koodi-versio" 1}]}]}}]
-   "type" "log"
-   "version" 1
-   "target" {"hoksId" 1
-             "oppijaOid" "1.2.246.562.24.12312312319"
-             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
-
-(defn- expected-log-entry-on-ahato-update
-  [logseq]
-  {"hostname" "",
-   "logSeq" logseq,
-   "user"
-   {"oid" "1.2.246.562.24.11474338834",
-    "ipAddress" "127.0.0.1",
-    "session" "ST-testitiketti",
-    "userAgent" "no user agent"},
-   "status" "succeeded"
-   "applicationType" "backend",
-   "operation" "update",
-   "serviceName" "both",
-   "changes"
-   [{"path" ":tutkinnon-osa-koodi-versio",
-     "oldValue" 100022,
-     "newValue" 3000}
-    {"path"
-     (str ":tarkentavat-tiedot-naytto.0."
-          ":koulutuksen-jarjestaja-osaamisen-arvioijat.0.:nimi"),
-     "oldValue" "Aapo Arvioija",
-     "newValue" "Muutettu Arvioija"}
-    {"path"
-     ":tarkentavat-tiedot-naytto.0.:nayttoymparisto.:nimi",
-     "oldValue" "Toinen Esimerkki Oyj",
-     "newValue" "Testi Oy"}
-    {"path"
-     ":tarkentavat-tiedot-naytto.0.:nayttoymparisto.:y-tunnus",
-     "oldValue" "1234566-3",
-     "newValue" "1234565-5"}
-    {"path" ":tarkentavat-tiedot-naytto.0.:osa-alueet.0",
-     "oldValue"
-     {"koodi-uri" "ammatillisenoppiaineet_fy",
-      "koodi-versio" 1}}
-    {"path"
-     ":tarkentavat-tiedot-naytto.0.:tyoelama-osaamisen-arvioijat.0",
-     "oldValue"
-     {"nimi" "Teppo Työmies",
-      "organisaatio"
-      {"nimi" "Testiyrityksen Sisar Oy",
-       "y-tunnus" "1234563-9"}}}
-    {"path"
-     ":tarkentavat-tiedot-naytto.0.:yksilolliset-kriteerit.0",
-     "oldValue" "Ensimmäinen kriteeri",
-     "newValue" "testikriteeri"}
-    {"path"
-     ":tarkentavat-tiedot-osaamisen-arvioija.:lahetetty-arvioitavaksi",
-     "oldValue" "2019-03-18",
-     "newValue" "2020-01-01"}
-    {"path"
-     (str ":tarkentavat-tiedot-osaamisen-arvioija."
-          ":aiemmin-hankitun-osaamisen-arvioijat.0.:nimi"),
-     "oldValue" "Erkki Esimerkki",
-     "newValue" "Nimi Muutettu"}
-    {"path"
-     (str ":tarkentavat-tiedot-osaamisen-arvioija."
-          ":aiemmin-hankitun-osaamisen-arvioijat.0."
-          ":organisaatio.:oppilaitos-oid"),
-     "oldValue" "1.2.246.562.10.54453921626",
-     "newValue" "1.2.246.562.10.54453555556"}],
-   "type" "log",
-   "version" 1,
-   "target" {"hoksId" 1
-             "oppijaOid" "1.2.246.562.24.12312312319"
-             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
-
-(defn- expected-log-entry-on-ahato-read
-  [logseq]
-  {"hostname" ""
-   "logSeq" logseq
-   "user"
-   {"oid" "1.2.246.562.24.11474338834"
-    "ipAddress" "127.0.0.1"
-    "session" "ST-testitiketti"
-    "userAgent" "no user agent"}
-   "status" "succeeded"
-   "applicationType" "backend"
-   "operation" "read"
-   "serviceName" "both"
-   "changes" []
    "type" "log"
    "version" 1
    "target" {"hoksId" 1
