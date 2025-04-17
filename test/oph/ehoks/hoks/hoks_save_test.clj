@@ -371,14 +371,6 @@
             (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
           (test-utils/dissoc-module-ids ahpto-data)))))
 
-(deftest get-hankittava-ammat-tutkinnon-osa-test
-  (testing "Get HOKS hankittava ammatillinen osaaminen"
-    (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
-      (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
-      (eq (test-utils/dissoc-module-ids
-            (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
-          (test-utils/dissoc-module-ids hao-data)))))
-
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]

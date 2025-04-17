@@ -56,20 +56,10 @@
   [id]
   (db-ops/query [queries/select-all-hatos-for-hoks id]))
 
-(defn select-one-hato
-  "Hankittava ammatillinen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-hato id]))
-
 (defn select-all-hptos-for-hoks
   "Hankittavat paikallisen tutkinnon osat"
   [id]
   (db-ops/query [queries/select-all-hptos-for-hoks id]))
-
-(defn select-one-hpto
-  "hankittava paikallinen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-hpto id]))
 
 (defn select-all-osa-alueet-for-yto
   "Hankittavat yhteisen tutkinnon osan osa-alueet"

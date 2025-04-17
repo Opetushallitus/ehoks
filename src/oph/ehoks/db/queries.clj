@@ -191,9 +191,7 @@
 (defq select-paattyneet-kyselylinkit-by-date-and-type-temp
       "heratepalvelu/select_paattyneet_kyselylinkit_by_date_and_type_temp.sql")
 (defq select-all-hatos-for-hoks "hoksit/select_all_hatos_for_hoks.sql")
-(defq select-one-hato "hoksit/select_one_hato.sql")
 (defq select-all-hptos-for-hoks "hoksit/select_all_hptos_for_hoks.sql")
-(defq select-one-hpto "hoksit/select_one_hpto.sql")
 (defq select-all-osa-alueet-for-yto "hoksit/select_all_osa_alueet_for_yto.sql")
 (defq select-osaamisen-hankkimistapa-by-id
       "hoksit/select_osaamisen_hankkimistapa_by_id.sql")
@@ -202,13 +200,10 @@
 (defq select-osaamisen-osoittamiset-by-module-id
       "hoksit/select_osaamisen_osoittamiset_by_module_id.sql")
 (defq select-all-ahatos-for-hoks "hoksit/select_all_ahatos_for_hoks.sql")
-(defq select-one-ahato "hoksit/select_one_ahato.sql")
 (defq select-all-ahptos-for-hoks "hoksit/select_all_ahptos_for_hoks.sql")
-(defq select-one-ahpto "hoksit/select_one_ahpto.sql")
 (defq select-all-osa-alueet-for-ahyto
       "hoksit/select_all_osa_alueet_for_ahyto.sql")
 (defq select-all-ahytos-for-hoks "hoksit/select_all_ahytos_for_hoks.sql")
-(defq select-one-ahyto "hoksit/select_one_ahyto.sql")
 (defq select-hoksit-by-oo-oppilaitos-and-koski404
       "hoksit/select_hoksit_by_oo_oppilaitos_and_koski404.sql")
 (defq select-oht-by-tutkinto-and-oppilaitos-between

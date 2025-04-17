@@ -6,12 +6,9 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
-            [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :as mw]
@@ -40,262 +37,150 @@
   "Hankittavan paikallisen tutkinnon osan reitit."
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" [:as request]
       :summary "Palauttaa HOKSin hankittavan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HankittavaPaikallinenTutkinnonOsa)
-      (rest/ok
-        (dissoc (ha/get-hankittava-paikallinen-tutkinnon-osa id) :hoks-id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan paikallisen tutkinnon osan"
-      :body [hpto hoks-schema/HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [hpto-db (ha/save-hankittava-paikallinen-tutkinnon-osa! hoks-id
-                                                                   hpto)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id hpto-db))}
-                        :id (:id hpto-db))
-               ::audit/changes {:new hpto})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" [:as request]
       :summary
       "Päivittää HOKSin hankittavan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body
-      [values hoks-schema/HankittavaPaikallinenTutkinnonOsaPatch]
-      (if-let [old-hpto (ha/get-hankittava-paikallinen-tutkinnon-osa id)]
-        (do (ha/update-hankittava-paikallinen-tutkinnon-osa! old-hpto values)
-            (assoc (response/no-content)
-                   ::audit/changes
-                   {:old old-hpto
-                    :new (ha/get-hankittava-paikallinen-tutkinnon-osa id)}))
-        (response/not-found
-          {:error "Hankittava paikallinen tutkinnon osa not found"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (def ^:private hankittava-ammat-tutkinnon-osa
   "Hankittavan ammatillisen tutkinnon osan reitit."
   (c-api/context "/hankittava-ammat-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" [:as request]
       :summary "Palauttaa HOKSin hankittavan ammatillisen tutkinnon osan"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HankittavaAmmatillinenTutkinnonOsa)
-      (rest/ok (dissoc (ha/get-hankittava-ammat-tutkinnon-osa id) :hoks-id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan ammatillisen osaamisen HOKSiin"
-      :body
-      [hato hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [hato-db (ha/save-hankittava-ammat-tutkinnon-osa! hoks-id hato)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id hato-db))}
-                        :id (:id hato-db))
-               ::audit/changes {:new hato})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" [:as request]
       :summary
       "Päivittää HOKSin hankittavan ammatillisen tutkinnon osan arvoa ja arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaPatch]
-      (if-let [old-hato (ha/get-hankittava-ammat-tutkinnon-osa id)]
-        (do (ha/update-hankittava-ammat-tutkinnon-osa! old-hato values)
-            (assoc (response/no-content)
-                   ::audit/changes
-                   {:old old-hato
-                    :new (ha/get-hankittava-ammat-tutkinnon-osa id)}))
-        (response/not-found
-          {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (def ^:private hankittava-yhteinen-tutkinnon-osa
   "Hankittavan yhteisen tutkinnon osan reitit."
   (c-api/context "/hankittava-yhteinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HankittavaYhteinenTutkinnonOsa)
-      (rest/ok (dissoc (ha/get-hankittava-yhteinen-tutkinnon-osa id) :hoks-id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
-      :body [hyto hoks-schema/HankittavaYhteinenTutkinnonOsaLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [hyto-db (ha/save-hankittava-yhteinen-tutkinnon-osa! hoks-id hyto)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id hyto-db))}
-                        :id (:id hyto-db))
-               ::audit/changes {:new hyto})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" []
       :summary
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaYhteinenTutkinnonOsaPatch]
-      (if-let [old-hyto (ha/get-hankittava-yhteinen-tutkinnon-osa id)]
-        (do (ha/update-hankittava-yhteinen-tutkinnon-osa!
-              (:hoks-id old-hyto) id values)
-            (assoc (response/no-content)
-                   ::audit/changes
-                   {:old old-hyto
-                    :new (ha/get-hankittava-yhteinen-tutkinnon-osa id)}))
-        (response/not-found {:error "HYTO not found with given HYTO ID"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
   "Aiemmin hankitun ammatillisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin aiemmin hankitun ammatillisen tutkinnon osan"
       :path-params [id :- s/Int]
-      :return (rest/response
-                hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa)
-      (rest/ok (dissoc (ah/get-aiemmin-hankittu-ammat-tutkinnon-osa id)
-                       :tarkentavat-tiedot-osaamisen-arvioija-id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
-      :body
-      [ahato
-       hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ahato-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
-                       hoks-id ahato)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id ahato-db))}
-                        :id (:id ahato-db))
-               ::audit/changes {:new ahato})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" []
       :summary (str "Päivittää HOKSin aiemmin hankitun ammatillisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaPatch]
-      (if-let [old-ahato (ah/get-aiemmin-hankittu-ammat-tutkinnon-osa id)]
-        (do (ah/update-aiemmin-hankittu-ammat-tutkinnon-osa! old-ahato values)
-            (assoc (response/no-content)
-                   ::audit/changes
-                   {:old old-ahato
-                    :new (ah/get-aiemmin-hankittu-ammat-tutkinnon-osa id)}))
-        (response/not-found
-          {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (def ^:private aiemmin-hankittu-paikallinen-tutkinnon-osa
   "Aiemmin hankitun paikallisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin olemassa olevan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/AiemminHankittuPaikallinenTutkinnonOsa)
-      (rest/ok (dissoc (ah/get-aiemmin-hankittu-paikallinen-tutkinnon-osa id)
-                       :tarkentavat-tiedot-osaamisen-arvioija-id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan paikallisen tutkinnon osan HOKSiin"
-      :body
-      [hpto hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ahpto-db (ah/save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
-                       hoks-id hpto)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id ahpto-db))}
-                        :id (:id ahpto-db))
-               ::audit/changes {:new hpto})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" []
       :summary (str "Päivittää HOKSin aiemmin hankitun paikallisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body
-      [values hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaPatch]
-      (if-let [old-ahpto (ah/get-aiemmin-hankittu-paikallinen-tutkinnon-osa id)]
-        (do (ah/update-aiemmin-hankittu-paikallinen-tutkinnon-osa! old-ahpto
-                                                                   values)
-            (assoc
-              (response/no-content)
-              ::audit/changes
-              {:old old-ahpto
-               :new (ah/get-aiemmin-hankittu-paikallinen-tutkinnon-osa id)}))
-        (response/not-found
-          {:error "Aiemmin hankittu paikallinen tutkinnon osa not found"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (def ^:private aiemmin-hankittu-yhteinen-tutkinnon-osa
   "Aiemmin hankitun yhteisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-yhteinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin aiemmin hankitun yhteisen tutkinnon osan"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/AiemminHankittuYhteinenTutkinnonOsa)
-      (rest/ok (dissoc (ah/get-aiemmin-hankittu-yhteinen-tutkinnon-osa id)
-                       :tarkentavat-tiedot-osaamisen-arvioija-id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun yhteisen tutkinnon osan HOKSiin"
-      :body
-      [ahyto hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ahyto-db (ah/save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
-                       (get-in request [:hoks :id]) ahyto)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id ahyto-db))}
-                        :id (:id ahyto-db))
-               ::audit/changes {:new ahyto})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" []
       :summary (str "Päivittää HOKSin aiemmin hankitun yhteisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankittuYhteinenTutkinnonOsaPatch]
-      (if-let [old-ahyto (ah/get-aiemmin-hankittu-yhteinen-tutkinnon-osa id)]
-        (do (ah/update-aiemmin-hankittu-yhteinen-tutkinnon-osa! old-ahyto
-                                                                values)
-            (assoc (response/no-content)
-                   ::audit/changes
-                   {:old old-ahyto
-                    :new (ah/get-aiemmin-hankittu-yhteinen-tutkinnon-osa id)}))
-        (response/not-found
-          {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
   "Opiskeluvalimuksia tukevien opintojen reitit."
   (c-api/context "/opiskeluvalmiuksia-tukevat-opinnot" []
     :path-params [hoks-id :- s/Int]
+    :swagger {:deprecated true}
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/ok (ot/get-opiskeluvalmiuksia-tukeva-opinto id)))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
-      :body [oto hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuontiJaMuokkaus]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [oto-db (ot/save-opiskeluvalmiuksia-tukeva-opinto! hoks-id oto)]
-        (assoc (rest/ok {:uri (format "%s/%d" (:uri request) (:id oto-db))}
-                        :id (:id oto-db))
-               ::audit/changes {:new oto})))
+      (response/gone {:message "Route is deprected."}))
 
     (c-api/PATCH "/:id" []
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPatch]
-      (if-let [oto-db
-               (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)]
-        (do (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values)
-            (assoc
-              (response/no-content)
-              ::audit/changes
-              {:old oto-db
-               :new
-               (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
-        (response/not-found {:error "OTO not found with given OTO ID"})))))
+      (response/gone {:message "Route is deprected."}))))
 
 (defn save-hoks-and-initiate-all-palautteet!
   "Saves a HOKS to DB and initializes all palautteet (opiskelija & tyoelama)
