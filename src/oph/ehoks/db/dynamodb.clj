@@ -1,5 +1,5 @@
 (ns oph.ehoks.db.dynamodb
-  (:require [clojure.set :refer [rename-keys]]
+  (:require [clojure.set :refer []]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]

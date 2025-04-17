@@ -11,8 +11,3 @@
   "Get user settings from database"
   [user-oid]
   (:data (first (db/select-user-settings-by-user-oid user-oid))))
-
-(defn delete!
-  "Delete settings from database for user"
-  [user-oid]
-  (db/delete-user-settings! user-oid))

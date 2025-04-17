@@ -11,11 +11,6 @@
               (s/optional-key :en) (s/maybe s/Str)
               (s/optional-key :sv) (s/maybe s/Str)})
 
-(s/defschema Information
-             "Basic service and process information"
-             {:basic-information Translated
-              :hoks-process Translated})
-
 (s/defschema HealthcheckStatus
              "Service healthcheck status"
              {})

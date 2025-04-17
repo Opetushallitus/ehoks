@@ -4,14 +4,6 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]))
 
-(defn select-hankittava-paikallinen-tutkinnon-osa-by-id
-  "Hankittava paikallisen tutkinnon osa"
-  [id]
-  (first
-    (db-ops/query
-      [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-id id]
-      {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql})))
-
 (defn select-osaamisen-hankkimistapa-by-id
   "Osaamisen hankkimistapa"
   [id]
@@ -27,15 +19,6 @@
   "Hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset"
   [uuid]
   (db-ops/query [queries/select-osaamisen-osoittamiset-by-module-id uuid]))
-
-(defn select-hankittava-yhteinen-tutkinnon-osa-by-id
-  "Hankittava yhteisen tutkinnon osa"
-  [hyto-id]
-  (->
-    (db-ops/query [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-id
-                   hyto-id])
-    first
-    h/hankittava-yhteinen-tutkinnon-osa-from-sql))
 
 (defn select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id
   "Hankittavat yhteisen tutkinnon osat"
@@ -56,20 +39,10 @@
   [id]
   (db-ops/query [queries/select-all-hatos-for-hoks id]))
 
-(defn select-one-hato
-  "Hankittava ammatillinen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-hato id]))
-
 (defn select-all-hptos-for-hoks
   "Hankittavat paikallisen tutkinnon osat"
   [id]
   (db-ops/query [queries/select-all-hptos-for-hoks id]))
-
-(defn select-one-hpto
-  "hankittava paikallinen tutkinnon osa"
-  [id]
-  (db-ops/query [queries/select-one-hpto id]))
 
 (defn select-all-osa-alueet-for-yto
   "Hankittavat yhteisen tutkinnon osan osa-alueet"
@@ -200,24 +173,6 @@
   (db-ops/soft-delete!
     :hankittavan_paikallisen_tutkinnon_osan_naytto
     ["hankittava_paikallinen_tutkinnon_osa_id = ?" id] db-conn))
-
-(defn update-osaamisen-hankkimistapa!
-  "Muokkaa osaamisen hankkimistapa"
-  ([id oh]
-    (db-ops/update!
-      :osaamisen_hankkimistavat
-      (h/osaamisen-hankkimistapa-to-sql (assoc oh
-                                               :updated_at
-                                               (java.util.Date.)))
-      ["id = ?" id]))
-  ([id oh db-conn]
-    (db-ops/update!
-      :osaamisen_hankkimistavat
-      (h/osaamisen-hankkimistapa-to-sql (assoc oh
-                                               :updated_at
-                                               (java.util.Date.)))
-      ["id = ?" id]
-      db-conn)))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
   "Päivitä hankittavan paikallisen tutkinnon osa"
@@ -365,21 +320,6 @@
       (db-ops/to-sql koulutuksen-osa)
       db-conn)))
 
-(defn delete-hyto-osa-alueet!
-  "Poista hankittavan yhteisen tutkinnon osan osa-alueet"
-  [hyto-id db-conn]
-  (db-ops/soft-delete!
-    :yhteisen_tutkinnon_osan_osa_alueet
-    ["yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL" hyto-id] db-conn))
-
-(defn update-hankittava-yhteinen-tutkinnon-osa-by-id!
-  "Päivitä hankittavan yhteisen tutkinnon osa"
-  [hyto-id new-values db-conn]
-  (db-ops/update!
-    :hankittavat_yhteiset_tutkinnon_osat
-    (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
-    ["id = ? AND deleted_at IS NULL" hyto-id] db-conn))
-
 (defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
   "Poista hankittavat ammatillisen tutkinnon osat"
   [hoks-id db-conn]
@@ -407,26 +347,3 @@
   (db-ops/soft-delete!
     :hankittavat_koulutuksen_osat
     ["hoks_id = ?" hoks-id] db-conn))
-
-(defn delete-osaamisen-hankkimistavan-muut-oppimisymparistot
-  "Poista osaamisen hankkimistavan muut oppimisympäristöt"
-  [oht-id db-conn]
-  (db-ops/soft-delete!
-    :muut_oppimisymparistot
-    ["osaamisen_hankkimistapa_id = ? AND deleted_at IS NULL" (:id oht-id)]
-    db-conn))
-
-(defn delete-osaamisen-hankkimistavan-keskeytymisajanjaksot
-  "Poista osaamisen hankkimistavan keskeytymisajanjaksot"
-  [oht-id db-conn]
-  (db-ops/soft-delete!
-    :keskeytymisajanjaksot
-    ["osaamisen_hankkimistapa_id = ? AND deleted_at IS NULL" (:id oht-id)]
-    db-conn))
-
-(defn delete-tyopaikalla-jarjestettava-koulutus
-  "Poistaa työpaikalla järjestettävän koulutuksen tietokannasta."
-  [tjk-id db-conn]
-  (db-ops/soft-delete! :tyopaikalla_jarjestettavat_koulutukset
-                       ["id = ? AND deleted_at IS NULL" tjk-id]
-                       db-conn))

@@ -313,6 +313,19 @@ käsiksi environmentista löytyvillä linkeillä.
 [Rajapinta](http://localhost:3000/dev-tools/)
 Huom dev-tools rajapinnan Swagger-dokumentaatio ei tällä hetkellä toimi. Koodissa kommentti.
 
+### Käyttämättömien Var:ien siivous
+
+Käyttämättömien Var:ien siivoamiseen voi halutessaan hyödyntää `carve` työkalua.
+Työkalua kannattaa ajaa interaktiivisessa tilassa, jolloin poistettavat Var:it
+määritetään tapauskohtaisesti, esim.
+```
+lein carve --interactive --paths src
+```
+Interaktiivisessa ajossa Var:eja voi lisätä myös `.carve/ignore` listaukseen,
+jolloin näitä ei poisteta työkalun toimesta, eivätkä samat Var:it tule
+uudelleen vastaan interaktiivisessa ajossa.
+
+
 ## Dummy-datan tuonti tietokantaan
 
 Testidataa löytyy `resources/dev/demo-data` kansiosta. Näiden avulla pystyy

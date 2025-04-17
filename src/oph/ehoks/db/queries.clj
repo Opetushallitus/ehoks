@@ -89,38 +89,8 @@
       "oppijat/select_opiskeluoikeudet_by_oid.sql")
 (defq select-count-by-koulutustoimija
       "opiskeluoikeudet/select_count_by_koulutustoimija.sql")
-(defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
-(def select-osa-alueet-by-osaamisen-osoittaminen
-  (generate-select-join
-    {:table "koodisto_koodit"
-     :join "osaamisen_osoittamisen_osa_alueet"
-     :secondary-column "koodisto_koodi_id"
-     :primary-column "id"
-     :column "osaamisen_osoittaminen_id"}))
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id)
-(def select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
-  (generate-select-join
-    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
-     :join "osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija"
-     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
-     :primary-column "id"
-     :column "osaamisen_osoittaminen_id"}))
-(def select-tyoelama-osaamisen-arvioijat-by-hon-id
-  (generate-select-join
-    {:table "tyoelama_osaamisen_arvioijat"
-     :join "osaamisen_osoittamisen_tyoelama_arvioija"
-     :secondary-column "tyoelama_arvioija_id"
-     :primary-column "id"
-     :column "osaamisen_osoittaminen_id"}))
 (defq select-nayttoymparistot-by-id)
-(def select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
-  (generate-select-by {:table "osaamisen_osoittamisen_sisallot"
-                       :column "osaamisen_osoittaminen_id"}))
-(def select-osaamisen-osoittamisen-kriteeri-by-osaamisen-osoittaminen-id
-  (generate-select-by {:table "osaamisen_osoittamisen_yksilolliset_kriteerit"
-                       :column "osaamisen_osoittaminen_id"}))
 (defq select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
       "hoksit/select_keskeytymisajanjaksot_by_osaamisen_hankkimistapa_id.sql")
 (defq select-todennettu-arviointi-lisatiedot-by-id)
@@ -191,9 +161,7 @@
 (defq select-paattyneet-kyselylinkit-by-date-and-type-temp
       "heratepalvelu/select_paattyneet_kyselylinkit_by_date_and_type_temp.sql")
 (defq select-all-hatos-for-hoks "hoksit/select_all_hatos_for_hoks.sql")
-(defq select-one-hato "hoksit/select_one_hato.sql")
 (defq select-all-hptos-for-hoks "hoksit/select_all_hptos_for_hoks.sql")
-(defq select-one-hpto "hoksit/select_one_hpto.sql")
 (defq select-all-osa-alueet-for-yto "hoksit/select_all_osa_alueet_for_yto.sql")
 (defq select-osaamisen-hankkimistapa-by-id
       "hoksit/select_osaamisen_hankkimistapa_by_id.sql")
@@ -202,13 +170,10 @@
 (defq select-osaamisen-osoittamiset-by-module-id
       "hoksit/select_osaamisen_osoittamiset_by_module_id.sql")
 (defq select-all-ahatos-for-hoks "hoksit/select_all_ahatos_for_hoks.sql")
-(defq select-one-ahato "hoksit/select_one_ahato.sql")
 (defq select-all-ahptos-for-hoks "hoksit/select_all_ahptos_for_hoks.sql")
-(defq select-one-ahpto "hoksit/select_one_ahpto.sql")
 (defq select-all-osa-alueet-for-ahyto
       "hoksit/select_all_osa_alueet_for_ahyto.sql")
 (defq select-all-ahytos-for-hoks "hoksit/select_all_ahytos_for_hoks.sql")
-(defq select-one-ahyto "hoksit/select_one_ahyto.sql")
 (defq select-hoksit-by-oo-oppilaitos-and-koski404
       "hoksit/select_hoksit_by_oo_oppilaitos_and_koski404.sql")
 (defq select-oht-by-tutkinto-and-oppilaitos-between

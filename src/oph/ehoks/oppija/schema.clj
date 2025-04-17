@@ -1,7 +1,7 @@
 (ns oph.ehoks.oppija.schema
   (:require [schema.core :as s]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.schema-tools :refer [modify]]
             [oph.ehoks.common.schema :refer [Translated]]
             [oph.ehoks.hoks.schema :refer [OsaamisenOsoittaminen
                                            OsaamisenHankkimistapa]])

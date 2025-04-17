@@ -93,6 +93,7 @@
                          [software.amazon.awssdk/sqs "2.30.36" :exclusions [org.slf4j/slf4j-api]]
                          [com.googlecode.libphonenumber/libphonenumber "8.13.49"]
                          [com.rpl/specter "1.1.4"]
+                         [io.github.borkdude/carve "0.3.5" :exclusions [com.cognitect/transit-clj]]
                          [ring/ring-mock "0.4.0"]
                          [ring/ring-devel "1.13.0" :exclusions [ring/ring-core
                                                                 org.clojure/java.classpath]]
@@ -138,7 +139,8 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
-            "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]}
+            "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]
+            "carve" ["run" "-m" "carve.main"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :eastwood {}
   :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
@@ -149,7 +151,8 @@
                           :aws-endpoint-url "http://localhost:18000"}}
              :schemaspy {:dependencies [[net.sourceforge.schemaspy/schemaspy "5.0.0"]]}
              :dev {:main oph.ehoks.dev-server
-                   :dependencies [[ring/ring-mock]
+                   :dependencies [[io.github.borkdude/carve]
+                                  [ring/ring-mock]
                                   [ring/ring-devel]
                                   [camel-snake-kebab]]
                    :env {:config "oph-configuration/dev.edn"}

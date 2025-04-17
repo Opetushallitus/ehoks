@@ -1,5 +1,5 @@
 (ns oph.ehoks.palaute.handler
-  (:require [medley.core :refer [find-first]]
+  (:require [medley.core :refer []]
             [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [compojure.core :refer [GET]]

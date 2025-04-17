@@ -1,8 +1,8 @@
 (ns oph.ehoks.heratepalvelu
-  (:require [clojure.set :refer [rename-keys]]
+  (:require [clojure.set :refer []]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first]]
+            [medley.core :refer []]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
