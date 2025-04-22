@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute
   (:require [clojure.java.jdbc :as jdbc]
-            [clojure.set :refer []]
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [assoc-some find-first]]

@@ -1,6 +1,5 @@
 (ns oph.ehoks.external.eperusteet
-  (:require [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.cache :as cache]
+  (:require [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]
             [com.rpl.specter :as spc :refer [ALL NONE FIRST]]))
 

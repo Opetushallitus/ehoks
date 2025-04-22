@@ -8,7 +8,6 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
@@ -21,8 +20,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
-            [oph.ehoks.oppija.oppija-external :as oppija-external]
-            [clojure.tools.logging :as log])
+            [oph.ehoks.oppija.oppija-external :as oppija-external])
   (:import (java.time LocalDate)))
 
 (defn wrap-match-user

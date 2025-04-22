@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.http-client :as client]
-            [clojure.string :as cstr])
+            [oph.ehoks.external.http-client :as client])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
 (defn- get-client-fn

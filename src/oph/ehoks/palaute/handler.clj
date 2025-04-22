@@ -1,9 +1,7 @@
 (ns oph.ehoks.palaute.handler
-  (:require [medley.core :refer []]
-            [compojure.api.sweet :as c-api]
+  (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [compojure.core :refer [GET]]
-            [clojure.java.jdbc :as jdbc]
             [compojure.route :as compojure-route]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db :as db]
@@ -13,8 +11,6 @@
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.vastaajatunnus :as vt]
-            [oph.ehoks.palaute.opiskelija :as amis]
-            [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as restful]
             [ring.util.http-response :as response]
             [schema.core :as s]))
