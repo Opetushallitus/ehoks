@@ -11,7 +11,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>63816cbe6f77f6c0275ab49471aeb0cf27da1677</tag>
+    <tag>907a3a938c7afb632b56ea11ddf33cb57ca5361e</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -393,6 +393,17 @@
         <version>1.1.4</version>
       </dependency>
       <dependency>
+        <groupId>io.github.borkdude</groupId>
+        <artifactId>carve</artifactId>
+        <version>0.3.5</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>transit-clj</artifactId>
+            <groupId>com.cognitect</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>ring</groupId>
         <artifactId>ring-mock</artifactId>
         <version>0.4.0</version>
@@ -543,6 +554,11 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>core.memoize</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.github.borkdude</groupId>
+      <artifactId>carve</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ring</groupId>

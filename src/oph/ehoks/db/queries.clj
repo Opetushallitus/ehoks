@@ -58,8 +58,6 @@
 (defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-hoksit-created-between "hoksit/select_hoksit_created_between.sql")
-(defq select-hoksit-finished-between
-      "hoksit/select_hoksit_finished_between.sql")
 (defq select-non-tuva-hoksit-started-between
       "hoksit/select_non_tuva_hoksit_started_between.sql")
 (defq select-non-tuva-hoksit-finished-between
@@ -89,38 +87,6 @@
       "oppijat/select_opiskeluoikeudet_by_oid.sql")
 (defq select-count-by-koulutustoimija
       "opiskeluoikeudet/select_count_by_koulutustoimija.sql")
-(defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
-(def select-osa-alueet-by-osaamisen-osoittaminen
-  (generate-select-join
-    {:table "koodisto_koodit"
-     :join "osaamisen_osoittamisen_osa_alueet"
-     :secondary-column "koodisto_koodi_id"
-     :primary-column "id"
-     :column "osaamisen_osoittaminen_id"}))
-(defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id)
-(def select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
-  (generate-select-join
-    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
-     :join "osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija"
-     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
-     :primary-column "id"
-     :column "osaamisen_osoittaminen_id"}))
-(def select-tyoelama-osaamisen-arvioijat-by-hon-id
-  (generate-select-join
-    {:table "tyoelama_osaamisen_arvioijat"
-     :join "osaamisen_osoittamisen_tyoelama_arvioija"
-     :secondary-column "tyoelama_arvioija_id"
-     :primary-column "id"
-     :column "osaamisen_osoittaminen_id"}))
-(defq select-nayttoymparistot-by-id)
-(def select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
-  (generate-select-by {:table "osaamisen_osoittamisen_sisallot"
-                       :column "osaamisen_osoittaminen_id"}))
-(def select-osaamisen-osoittamisen-kriteeri-by-osaamisen-osoittaminen-id
-  (generate-select-by {:table "osaamisen_osoittamisen_yksilolliset_kriteerit"
-                       :column "osaamisen_osoittaminen_id"}))
 (defq select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
       "hoksit/select_keskeytymisajanjaksot_by_osaamisen_hankkimistapa_id.sql")
 (defq select-todennettu-arviointi-lisatiedot-by-id)
@@ -131,9 +97,7 @@
      :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
-(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-id)
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
-(defq select-hankittavat-yhteiset-tutkinnon-osat-by-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
 (defq select-hankittavat-koulutuksen-osat-by-hoks-id)
 (defq select-oppilaitos-oids

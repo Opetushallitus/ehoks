@@ -95,25 +95,6 @@
       [:vastuullinen-tyopaikka-ohjaaja :puhelinnumero]
       :vastuullinen-tyopaikka-ohjaaja-puhelinnumero}}))
 
-(defn henkilo-from-sql
-  "Muuttaa tietokannasta haetun henkilön sen mukaiseksi, mitä odotetaan
-  palvelussa."
-  [m]
-  (db-ops/from-sql
-    m
-    {:removals [:id :tyopaikalla_jarjestettava_koulutus_id]
-     :replaces
-     {:organisaatio_nimi [:organisaatio :nimi]
-      :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
-
-(defn henkilo-to-sql
-  "Muuttaa palvelussa käytetyn henkilön sen mukaiseksi, minkä voi tallentaa
-  tietokantaan."
-  [m]
-  (db-ops/to-sql
-    m {:replaces {[:organisaatio :nimi] :organisaatio_nimi
-                  [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
-
 (defn osaamisen-hankkimistapa-from-sql
   "Muuttaa tietokannasta haetun osaamisen hankkimistavan sen mukaiseksi, mitä
   odotetaan palvelussa."
@@ -150,12 +131,6 @@
       [:hankkijan-edustaja :oppilaitos-oid]
       :hankkijan-edustaja-oppilaitos-oid}}))
 
-(defn muu-oppimisymparisto-from-sql
-  "Muuttaa tietokannasta haetun muun oppimisympäristön sen mukaiseksi, mitä
-  odotetaan palvelussa."
-  [m]
-  (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
-
 (defn keskeytymisajanjakso-from-sql
   "Muuttaa tietokannasta haetun keskeytymisajanjakson sen mukaiseksi, mitä
   odotetaan palvelussa."
@@ -183,12 +158,6 @@
                 :osa-alueet
                 :yksilolliset-kriteerit]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
-
-(defn koodi-uri-from-sql
-  "Muuttaa tietokannasta haetun koodi URI:n sen mukaiseksi, mitä odotetaan
-  palvelussa."
-  [m]
-  (db-ops/from-sql m {:removals [:id]}))
 
 (defn koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
   "Muuttaa tietokannasta haetun koulutuksen järjestäjän osaamisen arvioijan sen
@@ -227,16 +196,6 @@
   palvelussa."
   [m]
   (db-ops/from-sql m {:removals [:id]}))
-
-(defn sisallon-kuvaus-from-sql
-  "Hakee sisällön kuvauksen tietokannasta haetusta objektista."
-  [m]
-  (get m :sisallon_kuvaus))
-
-(defn yksilolliset-kriteerit-from-sql
-  "Hakee yksilöllisen kriteerin tietokannasta haetusta objektista."
-  [m]
-  (get m :yksilollinen_kriteeri))
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
   "Muuttaa tietokannasta haetun aiemmin hankitun paikallisen tutkinnon osan sen
@@ -417,14 +376,6 @@
   [from to]
   (db-ops/query
     [queries/select-hoksit-created-between from to]
-    {:row-fn hoks-from-sql}))
-
-(defn select-hoksit-finished-between
-  "Hakee tietokannasta ne HOKSit, jotka on merkattu valmiiksi annettujen
-  ajankohtien välilla."
-  [from to]
-  (db-ops/query
-    [queries/select-hoksit-finished-between from to]
     {:row-fn hoks-from-sql}))
 
 (defn select-non-tuva-hoksit-started-between
@@ -663,23 +614,6 @@
                     ["id = ?" (:id tilat)] tx)))
 
 (declare get-or-create-amisherate-kasittelytila-by-hoks-id!)
-
-(defn set-amisherate-kasittelytilat-to-true!
-  "Set both `aloitusherate_kasitelty` and `paattoherate_kasitelty` to `true` if
-  both or either one had previsouly value `false`. For log printing purposes,
-  `reason-msg` should tell why kasittelytilat will be set to `true`."
-  [hoks-id reason-msg]
-  ; Only set kasittelytilat if either kasittelytila is `false`.
-  (let [kasittelytilat
-        (get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)]
-    (when-not (and (:aloitusherate_kasitelty kasittelytilat)
-                   (:paattoherate_kasitelty kasittelytilat))
-      (log/info "Setting `aloitusherate_kasitelty` and `paattoherate_kasitelty`"
-                "to `true`. Reason: " reason-msg)
-      (update-amisherate-kasittelytilat!
-        {:id (:id kasittelytilat)
-         :aloitusherate_kasitelty true
-         :paattoherate_kasitelty true}))))
 
 (defn select-hoksit-with-kasittelemattomat-aloitusheratteet
   "Hakee tietokannasta HOKSit, joissa on käsittelemättömiä aloitusherätteitä."
