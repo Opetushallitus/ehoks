@@ -1,7 +1,7 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first map-vals]]
+            [medley.core :refer [map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]

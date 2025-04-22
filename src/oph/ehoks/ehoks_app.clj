@@ -1,7 +1,7 @@
 (ns oph.ehoks.ehoks-app
   (:require [oph.ehoks.common.api :as common-api]
             [compojure.api.sweet :as c-api]
-            [compojure.api.core :refer [route-middleware]]
+            [compojure.api.core :refer []]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
             [oph.ehoks.db.session-store :as session-store]

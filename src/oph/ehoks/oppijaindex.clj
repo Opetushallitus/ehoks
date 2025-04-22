@@ -3,7 +3,7 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as cs]
             [clojure.tools.logging :as log]
-            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.config :refer []]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
@@ -435,23 +435,11 @@
     (update-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
-(defn set-opiskeluoikeus-paattynyt!
-  "Set opiskeluoikeus as finished (päättynyt) as of a particular timestamp"
-  [oid timestamp]
-  (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
-
 (defn set-opiskeluoikeus-koski404
   "Set koski404 field of opiskeluoikeus, indicating that trying to fetch that
   opiskeluoikeus from Koski returns a 404 error"
   [oid]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:koski404 true}))
-
-(defn oppija-opiskeluoikeus-match?
-  "Check that opiskeluoikeus belongs to oppija"
-  [opiskeluoikeudet opiskeluoikeus-oid]
-  (if (:enforce-opiskeluoikeus-match? config)
-    (some #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)
-    true))
 
 (defn filter-hankintakoulutukset-for-current-opiskeluoikeus
   "Filters hankintakoulutukset from opiskeluoikeudet for current opiskeluoikeus"

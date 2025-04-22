@@ -58,29 +58,7 @@
   (get-queue-url-with-error-handling
     (:heratepalvelu-resend-queue config)))
 
-(defn build-hoks-hyvaksytty-msg
-  "Luo HOKS hyväksytty -viestin."
-  [hoks]
-  {:pre [(:id hoks)]}
-  {:ehoks-id (:id hoks)
-   :kyselytyyppi "aloittaneet"
-   :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-   :oppija-oid (:oppija-oid hoks)
-   :sahkoposti (:sahkoposti hoks)
-   :puhelinnumero (:puhelinnumero hoks)
-   :alkupvm (str (:ensikertainen-hyvaksyminen hoks))}) ; heratepvm
-
-(defn build-hoks-osaaminen-saavutettu-msg
-  "Luo HOKS osaamisen saavutettu -viestin."
-  [hoks kyselytyyppi]
-  {:pre [(:id hoks) (:osaamisen-saavuttamisen-pvm hoks)]}
-  {:ehoks-id (:id hoks)
-   :kyselytyyppi kyselytyyppi
-   :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-   :oppija-oid (:oppija-oid hoks)
-   :sahkoposti (:sahkoposti hoks)
-   :puhelinnumero (:puhelinnumero hoks)
-   :alkupvm (str (:osaamisen-saavuttamisen-pvm hoks))})
+; heratepvm
 
 (defn build-tyoelamapalaute-msg
   "Luo työelämäpalauteviestin."

@@ -287,13 +287,6 @@
       [conn db-conn]
       (mapv #(save-hpto-osaamisen-hankkimistapa! hpto % conn) c))))
 
-(defn- replace-hpto-osaamisen-hankkimistavat!
-  "Poistaa hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat
-  tietokannasta ja tallentaa ne uudelleen."
-  [hpto c db-conn]
-  (db/delete-osaamisen-hankkimistavat-by-hpto-id! (:id hpto) db-conn)
-  (save-hpto-osaamisen-hankkimistavat! hpto c db-conn))
-
 (defn- save-hpto-osaamisen-osoittaminen!
   "Tallentaa yhden hankittavan paikallisen tutkinnon osan osaamisen osoittamisen
   hankkimistavan tietokantaan."
@@ -317,30 +310,6 @@
       (mapv
         #(save-hpto-osaamisen-osoittaminen! ppto % conn)
         c))))
-
-(defn- replace-hpto-osaamisen-osoittamiset!
-  "Poistaa hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat
-  tietokannasta ja tallentaa ne uudelleen."
-  [hpto c db-conn]
-  (db/delete-osaamisen-osoittamiset-by-ppto-id! (:id hpto) db-conn)
-  (save-hpto-osaamisen-osoittamiset! hpto c db-conn))
-
-(defn update-hankittava-paikallinen-tutkinnon-osa!
-  "Päivittää hankittavan paikallisen tutkinnon osan tietokantaan."
-  [hpto-db values]
-  (jdbc/with-db-transaction
-    [db-conn (db-ops/get-db-connection)]
-    (db/update-hankittava-paikallinen-tutkinnon-osa-by-id!
-      (:id hpto-db) values db-conn)
-    (cond-> hpto-db
-      (:osaamisen-hankkimistavat values)
-      (assoc :osaamisen-hankkimistavat
-             (replace-hpto-osaamisen-hankkimistavat!
-               hpto-db (:osaamisen-hankkimistavat values) db-conn))
-      (:osaamisen-osoittaminen values)
-      (assoc :osaamisen-osoittaminen
-             (replace-hpto-osaamisen-osoittamiset!
-               hpto-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn- save-yto-osa-alueen-osaamisen-osoittaminen!
   "Tallentaa yhden hankittavan yhteisen tutkinnon osan osaamisen osoittamisen
@@ -398,12 +367,6 @@
           (:id hato) (:id o-db) conn)
         o-db))))
 
-(defn- save-hato-osaamisen-hankkimistavat!
-  "Tallentaa hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat
-  tietokantaan."
-  [hato-db c db-conn]
-  (mapv #(save-hato-osaamisen-hankkimistapa! hato-db % db-conn) c))
-
 (defn- save-hato-osaamisen-osoittaminen!
   "Tallentaa yhden hankittavan ammatillisen tutkinnon osan osaamisen
   osoittamisen tietokantaan."
@@ -416,12 +379,6 @@
       (let [naytto (c/save-osaamisen-osoittaminen! n conn)]
         (db/insert-hato-osaamisen-osoittaminen! (:id hato) (:id naytto) conn)
         naytto))))
-
-(defn- save-hato-osaamisen-osoittamiset!
-  "Tallentaa hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset
-  tietokantaan."
-  [hato-db c db-conn]
-  (mapv #(save-hato-osaamisen-osoittaminen! hato-db % db-conn) c))
 
 (defn save-hankittava-ammat-tutkinnon-osa!
   "Tallentaa yhden hankittavan ammatillisen tutkinnon osan tietokantaan."
@@ -453,37 +410,6 @@
     (jdbc/with-db-transaction
       [conn db-conn]
       (mapv #(save-hankittava-ammat-tutkinnon-osa! hoks-id % conn) c))))
-
-(defn- replace-hato-osaamisen-hankkimistavat!
-  "Poistaa hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat
-  tietokannasta ja tallentaa ne uudelleen."
-  [hato c db-conn]
-  (db/delete-osaamisen-hankkimistavat-by-hato-id! (:id hato) db-conn)
-  (save-hato-osaamisen-hankkimistavat! hato c db-conn))
-
-(defn- replace-hato-osaamisen-osoittamiset!
-  "Poistaa hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset
-  tietokannasta ja tallentaa ne uudelleen."
-  [hato c db-conn]
-  (db/delete-osaamisen-osoittamiset-by-pato-id! (:id hato) db-conn)
-  (save-hato-osaamisen-osoittamiset! hato c db-conn))
-
-(defn update-hankittava-ammat-tutkinnon-osa!
-  "Päivittää hanittavan ammatillisen tutkinnon osan tietokantaan."
-  [hato-db values]
-  (jdbc/with-db-transaction
-    [db-conn (db-ops/get-db-connection)]
-    (db/update-hankittava-ammat-tutkinnon-osa-by-id!
-      (:id hato-db) values db-conn)
-    (cond-> hato-db
-      (:osaamisen-hankkimistavat values)
-      (assoc :osaamisen-hankkimistavat
-             (replace-hato-osaamisen-hankkimistavat!
-               hato-db (:osaamisen-hankkimistavat values) db-conn))
-      (:osaamisen-osoittaminen values)
-      (assoc :osaamisen-osoittaminen
-             (replace-hato-osaamisen-osoittamiset!
-               hato-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn- save-hyto-osa-alue-osaamisen-hankkimistapa!
   "Tallentaa yhden hankittavan yhteisen tutkinnon osan osa-alueen osaamisen
