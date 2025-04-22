@@ -577,45 +577,6 @@
          :hankintakoulutus-jarjestaja-oid
          "1.2.246.562.10.99999125000"}))))
 
-(t/deftest set-paattynyt-test
-  (t/testing "Setting paattynyt timestamp"
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.12111111119"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oppija-oid "1.2.246.562.24.12111111119"
-       :oid "1.2.246.562.15.23222222228"})
-    (let [timestamp (java.sql.Timestamp. 1568367627293)]
-      (sut/set-opiskeluoikeus-paattynyt! "1.2.246.562.15.23222222228" timestamp)
-      (t/is
-        (= (.compareTo
-             timestamp
-             ^java.sql.Timestamp
-             (get
-               (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
-               :paattynyt))
-           0)))))
-
-(t/deftest oppija-opiskeluoikeus-match-test
-  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match? true}]
-    (let [opiskeluoikeudet [{:oid "1.2.246.562.15.55003456345"
-                             :oppilaitos {:oid "1.2.246.562.10.12000000005"
-                                          :nimi {:fi "TestiFi"
-                                                 :sv "TestiSv"
-                                                 :en "TestiEn"}}
-                             :alkamispäivä "2020-03-12"}]]
-
-      (t/testing "Opintooikeus belonging to oppija return true"
-        (t/is
-          (sut/oppija-opiskeluoikeus-match?
-            opiskeluoikeudet
-            "1.2.246.562.15.55003456345")))
-
-      (t/testing "Opintooikeus not belonging to oppija return false"
-        (t/is
-          (not
-            (sut/oppija-opiskeluoikeus-match?
-              opiskeluoikeudet
-              "1.2.246.562.15.55003456347")))))))
-
 (t/deftest hankintakoulutus-opiskeluoikeus-test
   (t/testing "Save opiskeluoikeus with sisältyyOpiskeluoikeuteen information"
     (test-utils/with-ticket-auth

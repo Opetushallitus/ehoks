@@ -31,13 +31,6 @@
        :koodisto_koodi_id koodi-id}
       conn)))
 
-(defn select-osa-alueet-by-osaamisen-osoittaminen
-  "Hakee osa-alueet tietokannasta osaamisen osoittamisen ID:n perusteella."
-  [naytto-id]
-  (db-ops/query
-    [queries/select-osa-alueet-by-osaamisen-osoittaminen naytto-id]
-    {:row-fn h/koodi-uri-from-sql}))
-
 (defn insert-osaamisen-osoittaminen!
   "Lisää yhden osaamisen osoittamisen tietokantaan."
   ([m]
@@ -72,14 +65,6 @@
           conn)
         kja-col))))
 
-(defn select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
-  "Hakee hankitun osaamisen näytön koulutuksen järjestäjän arvioijat
-  tietokannasta."
-  [id]
-  (db-ops/query
-    [queries/select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id id]
-    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
-
 (defn insert-tyoelama-arvioija!
   "Lisää yhden työelämän arvioijan tietokantaan."
   ([arvioija]
@@ -106,13 +91,6 @@
        :tyoelama_arvioija_id (:id arvioija)}
       conn)))
 
-(defn select-tyoelama-osaamisen-arvioijat-by-hon-id
-  "Hakee hankitun osaamisen näytön työelemän arvioijat tietokannasta."
-  [id]
-  (db-ops/query
-    [queries/select-tyoelama-osaamisen-arvioijat-by-hon-id id]
-    {:row-fn h/tyoelama-arvioija-from-sql}))
-
 (defn insert-osaamisen-osoittamisen-sisallot!
   "Lisää osaamisen osoittamisen sisällöt tietokantaan."
   ([hon c]
@@ -126,15 +104,6 @@
       (map #(hash-map :osaamisen_osoittaminen_id (:id hon) :sisallon_kuvaus %)
            c)
       conn)))
-
-(defn select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
-  "Hakee osaamisen osoittamisen sisällöt tietokannasta osaamisen osoittamisen
-  ID:n perusteella."
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
-     id]
-    {:row-fn h/sisallon-kuvaus-from-sql}))
 
 (defn insert-osaamisen-osoittamisen-yksilolliset-kriteerit!
   "Lisää osaamisen osoittamisen yksilölliset kriteerit tietokantaan."
@@ -150,15 +119,6 @@
                       :yksilollinen_kriteeri %) c)
       conn)))
 
-(defn select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
-  "Hakee osaamisen osoittamisen yksilölliset kriteerit tietokannasta osaamisen
-  osoittamisen ID:n perusteella."
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamisen-kriteeri-by-osaamisen-osoittaminen-id
-     id]
-    {:row-fn h/yksilolliset-kriteerit-from-sql}))
-
 (defn insert-nayttoymparisto!
   "Lisää yhden näyttöympäristön tietokantaan."
   ([m]
@@ -169,14 +129,6 @@
     (db-ops/insert-one!
       :nayttoymparistot
       (db-ops/to-sql m) conn)))
-
-(defn select-nayttoymparisto-by-id
-  "Hakee näyttöympäristön tietokannasta ID:n perusteella."
-  [id]
-  (first
-    (db-ops/query
-      [queries/select-nayttoymparistot-by-id id]
-      {:row-fn h/nayttoymparisto-from-sql})))
 
 (defn select-oppilaitos-oids
   "Hakee oppilaitos OID:t tietokannasta."

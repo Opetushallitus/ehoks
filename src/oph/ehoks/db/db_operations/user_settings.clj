@@ -10,11 +10,6 @@
     [queries/select-user-settings-by-user-oid user-oid]
     {:row-fn db-ops/from-sql}))
 
-(defn delete-user-settings!
-  "Poistaa käyttäjäasetukset käyttäjän OID:n perusteella."
-  [user-oid]
-  (db-ops/delete! :user_settings ["user_oid = ?" user-oid]))
-
 (defn insert-or-update-user-settings!
   "Tallentaa tai päivittää käyttäjäasetukset tietokantaan."
   [user-oid data]
