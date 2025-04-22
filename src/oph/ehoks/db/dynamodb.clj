@@ -1,12 +1,8 @@
 (ns oph.ehoks.db.dynamodb
-  (:require [clojure.set :refer []]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.db :as db]
-            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
-            [oph.ehoks.utils :as utils]
             [taoensso.faraday :as far])
   (:import (com.amazonaws.auth AWSStaticCredentialsProvider
                                BasicSessionCredentials)

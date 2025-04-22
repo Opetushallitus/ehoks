@@ -6,8 +6,7 @@
             [oph.ehoks.db.db-operations.shared-modules :as db]
             [ring.util.http-response :as response]
             [oph.ehoks.hoks.hankittavat :as h])
-  (:import (java.time LocalDate)
-           (clojure.lang ExceptionInfo)))
+  (:import (java.time LocalDate)))
 
 (defn- get-tutkinnonosa-details
   "Get hankittava tutkinnon osa details by module ID"

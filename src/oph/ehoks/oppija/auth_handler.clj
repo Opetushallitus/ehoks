@@ -11,7 +11,6 @@
             [oph.ehoks.oppija.settings-handler :as settings-handler]
             [clojure.tools.logging :as log]
             [oph.ehoks.external.cas :as cas]
-            [ring.middleware.session.store :refer []]
             [oph.ehoks.db.db-operations.session :as db-session]
             [clojure.set :as set]
             [clojure.string :as cstr]

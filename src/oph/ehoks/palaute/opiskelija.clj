@@ -4,7 +4,6 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [medley.core :refer [greatest map-vals]]
-            [oph.ehoks.config :refer []]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]
@@ -16,9 +15,7 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.utils.date :as date])
-  (:import (clojure.lang ExceptionInfo)
-           (java.util UUID)))
+            [oph.ehoks.utils.date :as date]))
 
 (def kyselytyypit #{"aloittaneet" "valmistuneet" "osia_suorittaneet"})
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})

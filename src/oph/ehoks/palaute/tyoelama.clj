@@ -6,7 +6,6 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
@@ -16,9 +15,7 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]
             [oph.ehoks.utils.string :as u-str])
-  (:import (clojure.lang ExceptionInfo)
-           (java.time LocalDate)
-           (java.util UUID)))
+  (:import (java.time LocalDate)))
 
 (defn finished-workplace-periods!
   "Queries for all finished workplace periods between start and end"

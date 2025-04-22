@@ -3,7 +3,6 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as cs]
             [clojure.tools.logging :as log]
-            [oph.ehoks.config :refer []]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]

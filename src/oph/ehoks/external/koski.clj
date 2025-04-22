@@ -1,7 +1,5 @@
 (ns oph.ehoks.external.koski
-  (:require [clojure.core.cache :as cache]
-            [clojure.core.memoize :as memo]
-            [clojure.data.json :as json]
+  (:require [clojure.data.json :as json]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.oph-url :as u]
