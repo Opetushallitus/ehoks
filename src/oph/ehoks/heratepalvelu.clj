@@ -1,20 +1,13 @@
 (ns oph.ehoks.heratepalvelu
-  (:require [clojure.set :refer []]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [medley.core :refer []]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
-            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.palaute.tyoelama.nippu :as nippu]
-            [oph.ehoks.utils :as utils]
-            [oph.ehoks.utils.date :as date])
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki])
   (:import (java.time LocalDate)))
 
 (defn send-workplace-periods!

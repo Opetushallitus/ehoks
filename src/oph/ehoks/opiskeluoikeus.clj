@@ -1,8 +1,6 @@
 (ns oph.ehoks.opiskeluoikeus
-  (:require [clojure.tools.logging :as log]
-            [medley.core :refer [find-first greatest-by]]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.koski :as koski])
+  (:require [medley.core :refer [find-first greatest-by]]
+            [oph.ehoks.config :refer [config]])
   (:import [java.time LocalDate]))
 
 (def inactive-statuses

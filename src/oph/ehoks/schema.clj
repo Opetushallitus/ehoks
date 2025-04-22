@@ -1,6 +1,5 @@
 (ns oph.ehoks.schema
-  (:require [schema.core :as s]
-            [oph.ehoks.schema-tools :refer []]))
+  (:require [schema.core :as s]))
 
 (s/defschema POSTResponse
              "RESTful POST response"
