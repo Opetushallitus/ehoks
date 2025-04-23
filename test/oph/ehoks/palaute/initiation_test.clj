@@ -1,14 +1,15 @@
 (ns oph.ehoks.palaute.initiation-test
-  (:require [clojure.test :refer [use-fixtures deftest testing is]]
-            [oph.ehoks.test-utils :as test-utils]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.db :as db]
-            [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.hoks-test :as hoks-test]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.koski-test :as koski-test]
+            [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.initiation :as init]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
+            [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate)))
 
@@ -44,18 +45,25 @@
               ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"]
               ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"]
               ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"]
-              ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"]])))))
+              ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"]]))
+      (is (some? (-> (:id hoks-test/hoks-1)
+                     (db-hoks/select-hoks-by-id #{:palaute_handled_at})
+                     :palaute-handled-at))))))
 
 (deftest test-reinit-palautteet-for-uninitiated-hokses!
   (with-redefs [koski/get-opiskeluoikeus-info-raw
                 koski-test/mock-get-opiskeluoikeus-raw]
-    (testing "saved HOKS doesn't have palautteet"
+    (testing (str "Saved HOKS doesn't have palautteet and `palaute-handled-at` "
+                  "timestamp.")
       (hoks/save! hoks-test/hoks-1)
       (is (= (palaute/get-by-hoks-id-and-kyselytyypit!
                db/spec {:hoks-id (:id hoks-test/hoks-1)
                         :kyselytyypit ["aloittaneet" "valmistuneet"
                                        "tyopaikkajakson_suorittaneet"]})
-             [])))
+             []))
+      (is (nil? (-> (:id hoks-test/hoks-1)
+                    (db-hoks/select-hoks-by-id #{:palaute_handled_at})
+                    :palaute-handled-at))))
     (testing "batchsize is honored"
       (init/reinit-palautteet-for-uninitiated-hokses! 0)
       (is (= (palaute/get-by-hoks-id-and-kyselytyypit!
@@ -63,7 +71,8 @@
                         :kyselytyypit ["aloittaneet" "valmistuneet"
                                        "tyopaikkajakson_suorittaneet"]})
              [])))
-    (testing "reinit-palautteet-for-uninitiated-hokses! makes palautteet"
+    (testing (str "reinit-palautteet-for-uninitiated-hokses! makes palautteet "
+                  "and sets `palaute-handled-at` timestamp.")
       (init/reinit-palautteet-for-uninitiated-hokses! 7)
       (is (= (->> {:hoks-id (:id hoks-test/hoks-1)
                    :kyselytyypit ["aloittaneet" "valmistuneet"
@@ -76,7 +85,10 @@
               ["ei_laheteta" "tyopaikkajakson_suorittaneet"]
               ["ei_laheteta" "tyopaikkajakson_suorittaneet"]
               ["ei_laheteta" "tyopaikkajakson_suorittaneet"]
-              ["ei_laheteta" "tyopaikkajakson_suorittaneet"]])))
+              ["ei_laheteta" "tyopaikkajakson_suorittaneet"]]))
+      (is (some? (-> (:id hoks-test/hoks-1)
+                     (db-hoks/select-hoks-by-id #{:palaute_handled_at})
+                     :palaute-handled-at))))
     (testing "reinit-palautteet-for-uninitiated-hokses! is idemponent"
       (init/reinit-palautteet-for-uninitiated-hokses! 7)
       (is (= (->> {:hoks-id (:id hoks-test/hoks-1)

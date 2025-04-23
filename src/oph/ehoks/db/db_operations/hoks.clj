@@ -370,11 +370,12 @@
 
 (defn select-hoks-by-id
   "Hakee yhden HOKSin tietokannasta sen ID:n perusteella."
-  [id]
-  (first
-    (db-ops/query
-      [queries/select-hoksit-by-id id]
-      {:row-fn hoks-from-sql})))
+  ([id]
+    (select-hoks-by-id id nil))
+  ([id keep-columns]
+    (first (db-ops/query
+             [queries/select-hoksit-by-id id]
+             {:row-fn #(hoks-from-sql % keep-columns)}))))
 
 (defn select-hokses-greater-than-id
   "Hakee tietokannasta tietyn määrän HOKSeja, joiden ID:t ovat annettu arvo tai

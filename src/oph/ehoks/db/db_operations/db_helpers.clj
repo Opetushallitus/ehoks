@@ -116,7 +116,10 @@
   "Remove keys corresponding to columns used for internal purposes, keeping
   columns listed in keep-columns."
   [m keep-columns]
-  (let [remove-columns (difference #{:created_at :updated_at :deleted_at}
+  (let [remove-columns (difference #{:created_at
+                                     :updated_at
+                                     :deleted_at
+                                     :palaute_handled_at}
                                    keep-columns)]
     (apply
       dissoc m remove-columns)))
