@@ -627,6 +627,9 @@
               tep-palautteet-after-creation)
           (eq (set (map (juxt :kyselytyyppi :heratepvm :uusi-tila :syy) tap))
               palaute-tapahtumat-after-creation)
+          (is (some? (-> (:id hoks-db)
+                         (db-hoks/select-hoks-by-id #{:palaute_handled_at})
+                         :palaute-handled-at)))
           (is (true? (test-utils/wait-for
                        (fn [_] (= @sqs-call-counter 2)) 5000)))
           ;; with changed HOKS

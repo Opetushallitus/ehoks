@@ -1,20 +1,26 @@
 (ns oph.ehoks.palaute.initiation
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.tyoelama :as tep]))
+            [oph.ehoks.palaute.tyoelama :as tep]
+            [oph.ehoks.utils.date :as date]))
 
 (defn initiate-all-palautteet!
   "Initialise all palautteet (opiskelija & tyoelama) that should be."
-  [ctx]
+  [{:keys [hoks] :as ctx}]
   (try
-    (op/initiate-if-needed! ctx :aloituskysely)
-    (op/initiate-if-needed! ctx :paattokysely)
-    (tep/initiate-all-uninitiated! ctx)
+    (jdbc/with-db-transaction
+      [tx db/spec]
+      (let [ctx (assoc ctx :tx tx)]
+        (op/initiate-if-needed! ctx :aloituskysely)
+        (op/initiate-if-needed! ctx :paattokysely)
+        (tep/initiate-all-uninitiated! ctx)
+        (hoks/update! (assoc hoks :palaute-handled-at (date/now)))))
     (catch clojure.lang.ExceptionInfo e
       (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))
         (throw (ex-info (str "HOKS contains an unknown organisation"
@@ -42,6 +48,6 @@
   (log/info "reinit-palautteet-for-uninitiated-hokses!: making batch of"
             batchsize "HOKSes")
   (->> {:batchsize batchsize}
-       (palaute/get-hokses-without-palaute! db/spec)
+       (palaute/get-hokses-with-unhandled-palautteet! db/spec)
        (map :id)
        (initiate-all-palautteet-for-hoks-ids!)))

@@ -107,13 +107,10 @@ where h.oppija_oid = :oppija-oid
   and p.deleted_at is null
   and h.deleted_at is null
 
--- :name get-hokses-without-palaute! :? :*
+-- :name get-hokses-with-unhandled-palautteet! :? :*
 -- :doc List all HOKSes that do not have any palaute records.
 select	id from hoksit
-where	id not in (
-	select hoks_id from palautteet where deleted_at is null
-)
-and	deleted_at is null
+where deleted_at is null and palaute_handled_at is null
 order by id desc  -- process newer HOKSes first
 limit	:batchsize
 
