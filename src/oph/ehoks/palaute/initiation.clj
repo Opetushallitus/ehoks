@@ -14,13 +14,10 @@
   "Initialise all palautteet (opiskelija & tyoelama) that should be."
   [{:keys [hoks] :as ctx}]
   (try
-    (jdbc/with-db-transaction
-      [tx db/spec]
-      (let [ctx (assoc ctx :tx tx)]
-        (op/initiate-if-needed! ctx :aloituskysely)
-        (op/initiate-if-needed! ctx :paattokysely)
-        (tep/initiate-all-uninitiated! ctx)
-        (hoks/update! (assoc hoks :palaute-handled-at (date/now)))))
+    (op/initiate-if-needed! ctx :aloituskysely)
+    (op/initiate-if-needed! ctx :paattokysely)
+    (tep/initiate-all-uninitiated! ctx)
+    (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
     (catch clojure.lang.ExceptionInfo e
       (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))
         (throw (ex-info (str "HOKS contains an unknown organisation"
