@@ -25,7 +25,7 @@
   initiate all palautteet for those HOKSes."
   [opts]
   (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
-  (palaute/reinit-palautteet-for-uninitiated-hokses! 500))
+  (palaute/reinit-palautteet-for-uninitiated-hokses! 2500))
 
 (defn time->instant
   "Converts a specific time of day into an instant on today"
