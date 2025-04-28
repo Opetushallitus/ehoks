@@ -1,7 +1,6 @@
 (ns oph.ehoks.schema.oid-test
   (:require [clojure.test :refer [are deftest testing]]
-            [oph.ehoks.schema.oid :refer [oppija-oid-nodes
-                                          organisaatio-oid-nodes
+            [oph.ehoks.schema.oid :refer [organisaatio-oid-nodes
                                           OpiskeluoikeusOID
                                           OppijaOID
                                           OrganisaatioOID]]
@@ -33,17 +32,28 @@
       "1.2.246.562.15.68533489991"))) ; checksum mismatch
 
 (deftest test-oppija-oid-validation
-  (testing "Valid oppija OIDs pass the validation."
-    (doseq [node oppija-oid-nodes]
+  (testing "Valid oppija OIDs (node 24) pass the validation."
+    (are [oid] (s/validate OppijaOID (format "1.2.246.562.24.%s" oid))
+      "54450598189"
+      "37998958910"
+      "92170778843"
+      "64297803263"
+      "89826171930"
+      "16068378700"
+      "898261719310"   ; checksum == 0
+      "160683787010")) ; checksum == 0
+  (testing
+   "Valid test oppija OIDs (nodes 98, 198, and 298) pass the validation."
+    (doseq [node [98 198 298]]
       (are [oid] (s/validate OppijaOID (format "1.2.246.562.%s.%s" node oid))
-        "54450598189"
-        "37998958910"
-        "92170778843"
-        "64297803263"
-        "89826171930"
-        "16068378700"
-        "898261719310"   ; checksum == 0
-        "160683787010"))) ; checksum == 0
+        "54450598187"
+        "37998958914"
+        "92170778846"
+        "64297803260"
+        "89826171939"
+        "16068378708"
+        "160683787410"   ; checksum == 0
+        "160683787410"))) ; checksum == 0
   (testing "Invalid oppija OIDs won't pass the validation."
     (are [oid] (thrown? ExceptionInfo (s/validate OppijaOID oid))
       "asd"
@@ -54,11 +64,11 @@
       "1.2.246.562.15.54450598189"    ; opiskeluoikeus oid node
       "1.2.246.562.10.37998958910"    ; organisaatio oid node
       "1.2.246.562.24.642978032610"   ; checksum != 0
-      "1.2.246.562.24.54440598189"    ; checksum mismatch
-      "1.2.246.562.98.54440598189"    ; checksum mismatch
-      "1.2.246.562.198.54440598189"   ; checksum mismatch
-      "1.2.246.562.298.54440598189"   ; checksum mismatch
-      "1.2.246.562.24.37998957910"))) ; checksum mismatch
+      "1.2.246.562.24.54440598189"    ; checksum mismatch, 6 would be correct
+      "1.2.246.562.98.54440598186"    ; checksum mismatch, 0 would be correct
+      "1.2.246.562.198.54440598186"   ; checksum mismatch, 0 would be correct
+      "1.2.246.562.298.54440598186"   ; checksum mismatch, 0 would be correct
+      "1.2.246.562.24.37998957910"))) ; checksum mismatch, 1 would be correct
 
 (deftest test-organisaatio-oid-validation
   (testing "Valid organisaatio OIDs pass the validation."
