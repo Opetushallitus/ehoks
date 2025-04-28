@@ -15,7 +15,6 @@
 ;;;; and 10 instead of 0 as a last digit. These kinds of OIDs still exist today,
 ;;;; so we need to take this into account in validation.
 
-(def oppija-oid-nodes #{"24" "98" "198" "298"})
 (def organisaatio-oid-nodes #{"10" "99" "199" "299"})
 
 (defn- luhn-checksum
@@ -61,22 +60,23 @@
   NOTE: This function expects that validity checks against an OID regexp pattern
   have been made for `oid` before calling this function!"
   [oid]
-  (let [splitted-oid                 (string/split oid #"\.")
-        node                         (nth splitted-oid 4)
-        [first-10-digits last-digit] (split-at 10 (nth splitted-oid 5))
-        first-10-digits              (map #(Character/getNumericValue ^char %)
-                                          first-10-digits)
+  (let [splitted-oid                  (string/split oid #"\.")
+        node                          (nth splitted-oid 4)
+        [first-10-digits last-digits] (->> (nth splitted-oid 5)
+                                           (map #(Character/getNumericValue
+                                                   ^char %))
+                                           (split-at 10))
         ; Apparently there has been a bug in OID Generator earlier, so that it
         ; has generated OIDs that have 12 digits in the last component instead
-        ; of 11 and 10 instead of 0 as a last digit. These kinds of OIDs still
-        ; exist today, so we need to take this into account in validation:
-        last-digit                   (if (> (count last-digit) 1)
-                                       0
-                                       (Character/getNumericValue
-                                         ^char (first last-digit)))]
-    (= last-digit
-       (if (contains? oppija-oid-nodes node)
-         (ibm-1-3-7-checksum first-10-digits) ; Only used for oppija OIDs.
+        ; of 11. In OIDs where the checksum should be 0 (being the last digit),
+        ; there is 10 instead. These kinds of OIDs still exist today, so we
+        ; need to take this into account in validation:
+        expected-last-digit           (if (= last-digits [1 0])
+                                        0
+                                        (first last-digits))]
+    (= expected-last-digit
+       (if (= node "24")
+         (ibm-1-3-7-checksum first-10-digits) ; Used for oppija OIDs in prod.
          (luhn-checksum first-10-digits)))))
 
 (defschema OpiskeluoikeusOID
