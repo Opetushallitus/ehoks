@@ -306,7 +306,7 @@
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate if it is already handled by herätepalvelu"
-          (ddb/sync-amis-herate!
+          (ddb/sync-amis-herate-if-not-exists!
             (op/build-amisherate-record-for-heratepalvelu
               (assoc ctx
                      :koulutustoimija "1.2.246.562.10.346830761110"
@@ -315,7 +315,7 @@
                      {:kyselytyyppi "aloittaneet"
                       :heratepvm (:ensikertainen-hyvaksyminen
                                    hoks-test/hoks-1)})))
-          (ddb/sync-amis-herate!
+          (ddb/sync-amis-herate-if-not-exists!
             (op/build-amisherate-record-for-heratepalvelu
               (assoc ctx
                      :koulutustoimija "1.2.246.562.10.346830761110"

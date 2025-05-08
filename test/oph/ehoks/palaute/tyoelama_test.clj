@@ -1,7 +1,7 @@
 (ns oph.ehoks.palaute.tyoelama-test
   (:require [clojure.set :as s]
             [clojure.test :refer [are deftest is testing use-fixtures]]
-            [clojure.tools.logging.test :refer [logged? with-log]]
+            [clojure.tools.logging.test :refer [logged? the-log with-log]]
             [medley.core :refer [find-first remove-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
@@ -16,6 +16,7 @@
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
@@ -23,8 +24,7 @@
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date]
             [taoensso.faraday :as far])
-  (:import [clojure.lang ExceptionInfo]
-           (java.time LocalDate)
+  (:import (java.time LocalDate)
            (java.util UUID)))
 
 (use-fixtures :once test-utils/migrate-database)
@@ -50,11 +50,41 @@
    :keskeytymisajanjaksot
    [{:alku  (LocalDate/of 2023 9 28) :loppu (LocalDate/of 2023 9 29)}]
    :tyopaikalla-jarjestettava-koulutus
-   {:vastuullinen-tyopaikka-ohjaaja "Esi Merkki"
+   {:vastuullinen-tyopaikka-ohjaaja {:nimi "Esi Merkki"}
     :tyopaikan-nimi "Kohtuu mesta Oy"
     :tyopaikan-y-tunnus "1234567-1"}
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
+
+(def test-palaute
+  (let [heratepvm (LocalDate/of 2025 5 5)
+        voimassa-alkupvm (tep/next-niputus-date heratepvm)]
+    {:tila                           "odottaa_kasittelya"
+     :kyselytyyppi                   "tyopaikkajakson_suorittaneet"
+     :hoks-id                        (:id hoks-test/hoks-1)
+     :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste test-jakso)
+     :hankkimistapa-id               123
+     :heratepvm                      heratepvm
+     :suorituskieli                  "fi"
+     :tutkintotunnus                 351407
+     :tutkintonimike                 "(\"12345\",\"23456\")"
+     :voimassa-alkupvm               voimassa-alkupvm
+     :voimassa-loppupvm              (palaute/vastaamisajan-loppupvm
+                                       heratepvm voimassa-alkupvm)
+     :koulutustoimija                "1.2.246.562.10.346830761110"
+     :toimipiste-oid                 "1.2.246.562.10.12312312312"
+     :herate-source                  "ehoks_update"}))
+
+(def test-ctx
+  {:hoks                  hoks-test/hoks-1
+   :existing-palaute      test-palaute
+   :koulutustoimija       "1.2.246.562.10.346830761110"
+   :vastaamisajan-alkupvm (tep/next-niputus-date
+                            (:heratepvm test-palaute))
+   :suoritus              (find-first suoritus/ammatillinen?
+                                      (:suoritukset oo-test/opiskeluoikeus-1))
+   :jakso                 test-jakso
+   :opiskeluoikeus        oo-test/opiskeluoikeus-1})
 
 (def expected-ddb-jaksot
   [{:osa_aikaisuus 100
@@ -438,41 +468,30 @@
                   :lisatiedot   {:request-id nil
                                  :loppu "2023-12-15"}}))))
       (testing "doesn't initiate if it is found in herätepalvelu"
-        (let [existing-palaute
-              (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                db/spec
-                {:hoks-id (:id hoks-test/hoks-1)
-                 :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
-              ctx {:hoks           hoks-test/hoks-1
-                   :existing-palaute (assoc existing-palaute
-                                            :hankkimistapa-id 123)
-                   :vastaamisajan-alkupvm (LocalDate/of 2020 5 13)
-                   :jakso          test-jakso
-                   :opiskeluoikeus oo-test/opiskeluoikeus-1}]
-          (heratepalvelu/sync-jakso!
-            (tep/build-jaksoherate-record-for-heratepalvelu ctx))
-          (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                    :opiskeluoikeus oo-test/opiskeluoikeus-1}
-                                   test-jakso)
-          (is (= (map (juxt :vanha-tila :uusi-tila)
-                      (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
-                        db/spec
-                        {:hoks-id      (:id hoks-test/hoks-1)
-                         :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
-                 [["odottaa_kasittelya" "odottaa_kasittelya"]
-                  ["odottaa_kasittelya" "heratepalvelussa"]]))
-          (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                    :opiskeluoikeus oo-test/opiskeluoikeus-1}
-                                   test-jakso)
-          (is (= (map (juxt :vanha-tila :uusi-tila :syy)
-                      (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
-                        db/spec
-                        {:hoks-id      (:id hoks-test/hoks-1)
-                         :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
-                 [["odottaa_kasittelya" "odottaa_kasittelya" "hoks_tallennettu"]
-                  ["odottaa_kasittelya" "heratepalvelussa"
-                   "heratepalvelun_vastuulla"]
-                  ["heratepalvelussa" "heratepalvelussa" "jo_lahetetty"]]))))
+        (heratepalvelu/sync-jakso-if-not-exists!
+          (tep/build-jaksoherate-record-for-heratepalvelu test-ctx))
+        (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
+                                  :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                                 test-jakso)
+        (is (= (map (juxt :vanha-tila :uusi-tila)
+                    (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                      db/spec
+                      {:hoks-id      (:id hoks-test/hoks-1)
+                       :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
+               [["odottaa_kasittelya" "odottaa_kasittelya"]
+                ["odottaa_kasittelya" "heratepalvelussa"]]))
+        (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
+                                  :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                                 test-jakso)
+        (is (= (map (juxt :vanha-tila :uusi-tila :syy)
+                    (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                      db/spec
+                      {:hoks-id      (:id hoks-test/hoks-1)
+                       :kyselytyypit ["tyopaikkajakson_suorittaneet"]}))
+               [["odottaa_kasittelya" "odottaa_kasittelya" "hoks_tallennettu"]
+                ["odottaa_kasittelya" "heratepalvelussa"
+                 "heratepalvelun_vastuulla"]
+                ["heratepalvelussa" "heratepalvelussa" "jo_lahetetty"]])))
       (testing "doesn't initiate if it has already been initiated"
         (with-log
           (let [existing
@@ -524,6 +543,45 @@
               expected (build-expected-herate jakso hoks-test/hoks-1)]
           (is (= real expected)
               ["diff: " (clojure.data/diff real expected)]))))))
+
+(deftest test-jaksoherate-sync
+  (let [expected-ddb-jaksot
+        [{:osa_aikaisuus 100
+          :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
+          :hankkimistapa_tyyppi "oppisopimus"
+          :hoks_id 12345
+          :tyopaikan_nimi "Kohtuu mesta Oy"
+          :tyopaikan_ytunnus "1234567-1"
+          :koulutustoimija "1.2.246.562.10.346830761110"
+          :jakso_loppupvm "2023-12-15"
+          :osaamisala ""
+          :yksiloiva_tunniste "1"
+          :tpk-niputuspvm "ei_maaritelty"
+          :tallennuspvm "2025-05-08"
+          :ohjaaja_ytunnus_kj_tutkinto
+          "Esi Merkki/1234567-1/1.2.246.562.10.346830761110/351407"
+          :ohjaaja_nimi "Esi Merkki"
+          :tutkinto 351407
+          :tyopaikan_normalisoitu_nimi "kohtuu_mesta_oy"
+          :alkupvm "2025-05-16"
+          :jakso_alkupvm "2023-09-09"
+          :hankkimistapa_id 123
+          :oppija_oid "1.2.246.562.24.12312312319"
+          :rahoituskausi "2024-2025"
+          :tutkintonimike "(\"12345\" \"23456\")"
+          :viimeinen_vastauspvm "2025-06-14"}]]
+    (testing "Jaksoherate is synced to DDB if it doesn't already exist."
+      (is (= (ddb/jaksot) []))
+      (heratepalvelu/sync-jakso-if-not-exists!
+        (tep/build-jaksoherate-record-for-heratepalvelu test-ctx))
+      (is (= (ddb/jaksot) expected-ddb-jaksot))
+      (with-log
+        (heratepalvelu/sync-jakso-if-not-exists!
+          (tep/build-jaksoherate-record-for-heratepalvelu test-ctx))
+        (is (logged? 'oph.ehoks.heratepalvelu
+                     :info
+                     #"Jaksoheräte already exists")))
+      (is (= (ddb/jaksot) expected-ddb-jaksot)))))
 
 (defn clear-ddb-jakso-table! []
   (doseq [jakso (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})]
@@ -681,7 +739,7 @@
                 "arvo_kutsu_epaonnistui"))
           (check-current-state-is-same-as-initial-state))
         (testing "jakso sync to Herätepalvelu fails."
-          (with-redefs [heratepalvelu/sync-jakso!*
+          (with-redefs [heratepalvelu/sync-jakso!
                         (fn [_] (throw (ex-info "Jakso sync error" {})))]
             (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (is (contains?

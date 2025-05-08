@@ -100,13 +100,18 @@
                      {:update-expr update-expr :expr-attr-names attr-names
                       :expr-attr-vals attr-values})))
 
-(defn sync-amis-herate!
+(defn sync-amis-herate-if-not-exists!
   "Put information for single opiskelijapalaute to herätepalvelu DDB."
   [kyselyrecord]
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-amis-heratteet)
-    (log/info "sync-amis-herate!: configured to not write to DDB.")
-    (sync-item! :amis kyselyrecord)))
+    (log/info "sync-amis-herate-if-not-exists!: "
+              "configured to not write to DDB.")
+    (if (get-item! :amis (select-keys kyselyrecord
+                                      [:toimija_oppija :tyyppi_kausi]))
+      (log/warnf "Amis-heräte already exists in DDB, not syncing: %s"
+                 (select-keys kyselyrecord [:toimija_oppija :tyyppi_kausi]))
+      (sync-item! :amis kyselyrecord))))
 
 (defn get-jakso-by-hoks-id-and-yksiloiva-tunniste!
   "Get työelämäjakso from DDB."

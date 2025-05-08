@@ -216,5 +216,5 @@
    :arvo-builder #'arvo/build-jaksotunnus-request-body
    :arvo-caller #'arvo/create-jaksotunnus!
    :heratepalvelu-builder #'build-jaksoherate-record-for-heratepalvelu
-   :heratepalvelu-caller #'heratepalvelu/sync-jakso!
+   :heratepalvelu-caller #'heratepalvelu/sync-jakso-if-not-exists!
    :extra-handlers [#'ensure-tpo-nippu!]})
