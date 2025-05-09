@@ -2,7 +2,9 @@
   (:require [medley.core :refer [dissoc-in map-keys]]
             [clojure.core.cache :as cache]
             [clojure.core.memoize :as memo]
-            [clojure.string]))
+            [clojure.tools.logging :as log]
+            [clojure.string])
+  (:import (java.util.concurrent Future TimeUnit TimeoutException)))
 
 (defn apply-when
   "Apply function `f` to value `v` if predicate `(pred v)` returns `true`.
@@ -34,6 +36,20 @@
     (if-let [value (get-in m sks)]
       (dissoc-in (assoc-in m dks value) sks)
       m)))
+
+;; adapted from https://stackoverflow.com/questions/
+;; 6694530/executing-a-function-with-a-timeout
+(defn with-timeout
+  "Execute a function with a given timeout, in milliseconds."
+  [timeout-millis f]
+  (let [^Future worker (future (f))]
+    (try
+      (.get worker timeout-millis TimeUnit/MILLISECONDS)
+      (catch TimeoutException toe
+        (log/warn toe "with-timeout:" f "timed out after"
+                  timeout-millis "milliseconds")
+        (future-cancel worker)
+        :timeout))))
 
 (defn with-fifo-ttl-cache
   [f ttl-millis fifo-threshold seed]
