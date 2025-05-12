@@ -79,16 +79,22 @@
     (db-hoks/select-tyoelamajaksot-active-between "hyto" oppija start end)))
 
 ; Helper functions that can be mocked in tests
-(def sync-jakso!*     (partial ddb/sync-item! :jakso))
+(def sync-jakso!     (partial ddb/sync-item! :jakso))
 (def sync-tpo-nippu!* (partial ddb/sync-item! :nippu))
 
-(defn sync-jakso!
-  "Put information about single työelämäpalaute to herätepalvelu DDB."
+(defn sync-jakso-if-not-exists!
+  "Put information about single työelämäpalaute to herätepalvelu DDB if it
+  doesn't already exist."
   [jaksorecord]
+  {:pre [(:ohjaaja
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-jakso-heratteet)
-    (log/info "sync-jakso!: configured to not write to DDB.")
-    (sync-jakso!* jaksorecord)))
+    (log/info "sync-jakso-if-not-exists!: configured to not write to DDB.")
+    (if (empty? (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+                  (:hoks_id jaksorecord) (:yksiloiva_tunniste jaksorecord)))
+      (sync-jakso! jaksorecord)
+      (log/infof "Jaksoheräte already exists in DDB, not syncing: %s"
+                 (select-keys jaksorecord [:hoks_id :yksiloiva_tunniste])))))
 
 (defn sync-tpo-nippu!
   "Update the Herätepalvelu nipputable to have the same content for given heräte

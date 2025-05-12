@@ -4,12 +4,12 @@
 
 (defn build-tpo-nippu-for-heratepalvelu
   [{:keys [jakso suoritus koulutustoimija niputuspvm] :as ctx}]
-  {:pre [(:tyopaikalla-jarjestettava-koulutus jakso)]}
   (let [tutkinto           (suoritus/tutkintotunnus suoritus)
         tjk                (:tyopaikalla-jarjestettava-koulutus jakso)
         tyopaikan-nimi     (:tyopaikan-nimi tjk)
         tyopaikan-y-tunnus (:tyopaikan-y-tunnus tjk)
         ohjaaja            (:nimi (:vastuullinen-tyopaikka-ohjaaja tjk))]
+    (assert (and ohjaaja tyopaikan-y-tunnus koulutustoimija tutkinto))
     (-> {:ohjaaja-ytunnus-kj-tutkinto (format "%s/%s/%s/%s"
                                               ohjaaja
                                               tyopaikan-y-tunnus
