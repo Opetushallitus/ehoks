@@ -151,7 +151,6 @@
         ddb-key {:toimija_oppija toimija-oppija :tyyppi_kausi tyyppi-kausi}
         existing-palaute-ctx (assoc ctx :koulutustoimija koulutustoimija)]
     (assoc existing-palaute-ctx
-           :tapahtumatyyppi :hoks-tallennus
            :existing-ddb-key ddb-key
            :existing-ddb-herate (delay (dynamodb/get-item! :amis ddb-key))
            :existing-palaute (existing-palaute!
@@ -191,7 +190,8 @@
                      (initiate-if-needed!
                        {:hoks           %
                         :opiskeluoikeus (koski/get-opiskeluoikeus!
-                                          (:opiskeluoikeus-oid %))}
+                                          (:opiskeluoikeus-oid %))
+                        ::tapahtuma/type :reinit-palaute}
                        kysely-type))
                  hoksit)))
 

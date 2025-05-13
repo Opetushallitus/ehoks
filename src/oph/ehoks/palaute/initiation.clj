@@ -1,12 +1,12 @@
 (ns oph.ehoks.palaute.initiation
-  (:require [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.utils.date :as date]))
 
@@ -34,7 +34,9 @@
     (log/info "initiate-all-palautteet-for-hoks-ids!: HOKS id" hoks-id)
     (let [hoks (hoks/get-by-id hoks-id)
           opiskeluoikeus (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
-          ctx {:hoks hoks :opiskeluoikeus opiskeluoikeus}]
+          ctx {:hoks            hoks
+               :opiskeluoikeus  opiskeluoikeus
+               ::tapahtuma/type :reinit-palaute}]
       (initiate-all-palautteet! ctx))))
 
 (defn reinit-palautteet-for-uninitiated-hokses!

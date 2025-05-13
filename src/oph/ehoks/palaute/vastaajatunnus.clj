@@ -115,7 +115,7 @@
                 (:jakson-yksiloiva-tunniste palaute)
                 (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))]
     (enrich-ctx! {:hoks hoks :jakso jakso :existing-palaute palaute
-                  :tapahtumatyyppi :arvo-luonti
+                  ::tapahtuma/type :arvo-luonti
                   :request-id (str (UUID/randomUUID))})))
 
 (defn make-kysely-type
@@ -237,7 +237,7 @@
         [tx db/spec]
         (-> (:ctx (ex-data e))
             (or {:existing-palaute palaute})
-            (assoc :tapahtumatyyppi :arvo-luonti :tx tx)
+            (assoc ::tapahtuma/type :arvo-luonti :tx tx)
             (handle-exception e)))
       nil) ; no arvo-tunnus created
     (catch Exception e

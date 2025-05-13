@@ -163,7 +163,8 @@
 
     (testing "On HOKS creation"
       (let [ctx {:hoks hoks-test/hoks-1
-                 :opiskeluoikeus oo-test/opiskeluoikeus-1}]
+                 :opiskeluoikeus oo-test/opiskeluoikeus-1
+                 ::tapahtuma/type :hoks-tallennus}]
         (testing
          "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
           (is (= (op/initial-palaute-state-and-reason ctx :aloituskysely)
@@ -206,8 +207,9 @@
     (with-redefs [organisaatio/get-organisaatio!
                   organisaatio-test/mock-get-organisaatio!]
       (doseq [kysely-type [:aloituskysely :paattokysely]]
-        (op/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                 :opiskeluoikeus oo-test/opiskeluoikeus-1}
+        (op/initiate-if-needed! {:hoks            hoks-test/hoks-1
+                                 :opiskeluoikeus  oo-test/opiskeluoikeus-1
+                                 ::tapahtuma/type :hoks-tallennus}
                                 kysely-type)))
     (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                    WHERE hoks_id=? RETURNING *" (:id hoks-test/hoks-1)])
@@ -251,9 +253,10 @@
       {:id                 (:id hoks-test/hoks-1)
        :oppija-oid         (:oppija-oid hoks-test/hoks-1)
        :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
-    (let [ctx {:hoks           hoks-test/hoks-1
-               :opiskeluoikeus (mock-get-opiskeluoikeus-info-raw
-                                 (:opiskeluoikeus-oid hoks-test/hoks-1))}]
+    (let [ctx {:hoks            hoks-test/hoks-1
+               :opiskeluoikeus  (mock-get-opiskeluoikeus-info-raw
+                                  (:opiskeluoikeus-oid hoks-test/hoks-1))
+               ::tapahtuma/type :hoks-tallennus}]
       (testing "Testing that function `initiate-if-needed!`"
         (testing (str "stores kysely info to `palautteet` DB table and "
                       "successfully sends aloituskysely and paattokysely "

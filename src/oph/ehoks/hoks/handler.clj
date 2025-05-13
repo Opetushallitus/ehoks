@@ -15,12 +15,13 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.palaute.initiation :as palaute]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
-            [schema.utils :as s-utils]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [schema.utils :as s-utils]))
 
 (defn valid-vipunen-hoks
   "Palauttaa HOKSin Vipusen vaatimusmäärittelyn mukaan anonymisoituna.
@@ -189,7 +190,8 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
-      (palaute/initiate-all-palautteet! (assoc ctx :hoks hoks :tx tx))
+      (palaute/initiate-all-palautteet!
+        (assoc ctx :hoks hoks :tx tx ::tapahtuma/type :hoks-tallennus))
       hoks)))
 
 (defn change-hoks-and-initiate-all-palautteet!
@@ -200,7 +202,8 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [updated-hoks (db-handler hoks)]
-      (palaute/initiate-all-palautteet! (assoc ctx :hoks updated-hoks :tx tx))
+      (palaute/initiate-all-palautteet!
+        (assoc ctx :hoks updated-hoks :tx tx ::tapahtuma/type :hoks-tallennus))
       updated-hoks)))
 
 (defn post-hoks!

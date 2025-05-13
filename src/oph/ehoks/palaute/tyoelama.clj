@@ -117,7 +117,6 @@
   "Add information needed by työelämäpalaute initiation into context."
   [{:keys [tx hoks jakso] :as ctx}]
   (assoc ctx
-         :tapahtumatyyppi :hoks-tallennus
          :existing-ddb-herate
          (delay (dynamodb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
                   (:id hoks) (:yksiloiva-tunniste jakso)))

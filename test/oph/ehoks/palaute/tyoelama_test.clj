@@ -411,7 +411,8 @@
       (testing (str "stores kysely info to `palautteet` DB table and "
                     "tapahtuma info to `palaute_tapahtumat` table.")
         (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                  :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                                  :opiskeluoikeus oo-test/opiskeluoikeus-1
+                                  ::tapahtuma/type :hoks-tallennus}
                                  test-jakso)
         (let [real (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                          db/spec
@@ -448,11 +449,13 @@
                                             :hankkimistapa-id 123)
                    :vastaamisajan-alkupvm (LocalDate/of 2020 5 13)
                    :jakso          test-jakso
-                   :opiskeluoikeus oo-test/opiskeluoikeus-1}]
+                   :opiskeluoikeus oo-test/opiskeluoikeus-1
+                   ::tapahtuma/type :hoks-tallennus}]
           (heratepalvelu/sync-jakso!
             (tep/build-jaksoherate-record-for-heratepalvelu ctx))
-          (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                    :opiskeluoikeus oo-test/opiskeluoikeus-1}
+          (tep/initiate-if-needed! {:hoks            hoks-test/hoks-1
+                                    :opiskeluoikeus  oo-test/opiskeluoikeus-1
+                                    ::tapahtuma/type :hoks-tallennus}
                                    test-jakso)
           (is (= (map (juxt :vanha-tila :uusi-tila)
                       (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
@@ -462,7 +465,8 @@
                  [["odottaa_kasittelya" "odottaa_kasittelya"]
                   ["odottaa_kasittelya" "heratepalvelussa"]]))
           (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                    :opiskeluoikeus oo-test/opiskeluoikeus-1}
+                                    :opiskeluoikeus oo-test/opiskeluoikeus-1
+                                    ::tapahtuma/type :hoks-tallennus}
                                    test-jakso)
           (is (= (map (juxt :vanha-tila :uusi-tila :syy)
                       (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
@@ -481,10 +485,11 @@
                   {:hoks-id (:id hoks-test/hoks-1)
                    :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})]
             (palaute/update-tila! {:existing-palaute existing
-                                   :tapahtumatyyppi :arvo-luonti}
+                                   ::tapahtuma/type :arvo-luonti}
                                   "lahetetty" :arvo-kutsu-onnistui {})
-            (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
-                                      :opiskeluoikeus oo-test/opiskeluoikeus-1}
+            (tep/initiate-if-needed! {:hoks            hoks-test/hoks-1
+                                      :opiskeluoikeus  oo-test/opiskeluoikeus-1
+                                      ::tapahtuma/type :hoks-tallennus}
                                      test-jakso)
             (is (= (map (juxt :vanha-tila :uusi-tila :syy)
                         (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
@@ -513,7 +518,8 @@
     (testing (str "The function successfully initiates kyselys for every "
                   "tyopaikkajakso in HOKS.")
       (tep/initiate-all-uninitiated! {:hoks hoks-test/hoks-1
-                                      :opiskeluoikeus oo-test/opiskeluoikeus-1})
+                                      :opiskeluoikeus oo-test/opiskeluoikeus-1
+                                      ::tapahtuma/type :hoks-tallennus})
       (doseq [jakso (tep/tyopaikkajaksot hoks-test/hoks-1)]
         (let [real (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                          db/spec

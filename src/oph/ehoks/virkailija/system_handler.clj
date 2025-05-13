@@ -10,8 +10,9 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema.oid :as oid-schema]
             [oph.ehoks.virkailija.middleware :as m]
@@ -254,7 +255,8 @@
                  (op/initiate-if-needed!
                    {:hoks           hoks
                     :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                                      (:opiskeluoikeus-oid hoks))}
+                                      (:opiskeluoikeus-oid hoks))
+                    ::tapahtuma/type :reinit-palaute}
                    :aloituskysely))
             (response/no-content)
             (response/bad-request
@@ -275,7 +277,8 @@
                  (op/initiate-if-needed!
                    {:hoks hoks
                     :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                                      (:opiskeluoikeus-oid hoks))}
+                                      (:opiskeluoikeus-oid hoks))
+                    ::tapahtuma/type :reinit-palaute}
                    :paattokysely))
             (response/no-content)
             (response/bad-request
