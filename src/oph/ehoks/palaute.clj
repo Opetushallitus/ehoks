@@ -7,6 +7,7 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -176,7 +177,7 @@
   [opiskeluoikeus]
   (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
-(defn initial-palaute-state-and-reason-if-not-kohderyhma
+(defn- initial-state-and-reason-if-not-kohderyhma
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
   collected because it's not part of kohderyhmä; otherwise returns nil."
@@ -218,3 +219,72 @@
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
+
+(def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
+                        :paattokysely  :osaamisen-saavuttamisen-pvm})
+
+(defn- dispatch-fn
+  [ctx]
+  {:pre [(::type ctx)]}
+  (get {:aloituskysely :opiskelijapalaute
+        :paattokysely  :opiskelijapalaute
+        :ohjaajakysely :tyoelamapalaute}
+       (::type ctx)))
+
+(defmulti initial-state-and-reason
+  "Runs several checks against HOKS and opiskeluoikeus to determine if
+  opiskelijapalautekysely or tyoelamapalaute process for jakso should be
+  initiated. Returns the initial state of the palaute (or nil if it cannot be
+  formed at all), the field the decision was based on, and the reason for
+  picking that state."
+  dispatch-fn)
+
+(defmethod initial-state-and-reason :opiskelijapalaute
+  [{:keys [hoks existing-palaute ::type] :as ctx}]
+  (let [herate-basis (herate-date-basis type)]
+    (cond
+      (not (nil-or-unhandled? existing-palaute))
+      [nil herate-basis :jo-lahetetty]
+
+      (and (:hoks-id existing-palaute)
+           (not= (:hoks-id existing-palaute) (:id hoks)))
+      [nil :id :ei-palautteen-alkuperainen-hoks]
+
+      (not (get hoks herate-basis))
+      [nil herate-basis :ei-ole]
+
+      ;; order dependency: nil rules must come first
+
+      (not (:osaamisen-hankkimisen-tarve hoks))
+      [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
+
+      :else
+      (or (initial-state-and-reason-if-not-kohderyhma ctx herate-basis)
+          [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
+
+(defmethod initial-state-and-reason :tyoelamapalaute
+  [{:keys [jakso existing-palaute] :as ctx}]
+  (cond
+    (not (nil-or-unhandled? existing-palaute))
+    [nil :yksiloiva-tunniste :jo-lahetetty]
+
+    (nil? jakso)
+    [nil :osaamisen-hankkimistapa :poistunut]
+
+    (not (get jakso :loppu))
+    [nil :loppu :ei-ole]
+
+    ;; order dependency: nil rules must come first
+
+    (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
+    [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
+
+    (not (oht/has-required-osa-aikaisuustieto? jakso))
+    [:ei-laheteta :osa-aikaisuustieto :ei-ole]
+
+    (oht/fully-keskeytynyt? jakso)
+    [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
+
+    :else
+    (or (initial-state-and-reason-if-not-kohderyhma ctx :loppu)
+        [:odottaa-kasittelya :loppu :hoks-tallennettu])))

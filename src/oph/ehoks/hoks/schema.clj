@@ -257,7 +257,7 @@
   työpaikkajakson loppupäivä on 1.7.2023 tai sen jälkeen."
   [oht]
   ;; FIXME: tämän pitäisi ehkä käyttää suoraan
-  ;; initial-palaute-state-and-reason-if-not-kohderyhma, jossa on paljon
+  ;; initial-state-and-reason-if-not-kohderyhma, jossa on paljon
   ;; enemmän sääntöjä.
   (or (not (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
       (oht/has-required-osa-aikaisuustieto? oht)))

@@ -120,7 +120,7 @@
 
 (defn make-kysely-type
   "Map DB-level kyselytyyppi back into what is expected by
-  initial-palaute-state-and-reason"
+  initial-state-and-reason"
   [palaute]
   (-> (:kyselytyyppi palaute)
       ({"aloittaneet" :aloituskysely
@@ -205,10 +205,9 @@
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so, using the given functions for appropriately
   handling different amis- and tep-palaute."
-  [{:keys [existing-palaute hoks jakso] :as ctx}
-   {:keys [check-palaute] :as handlers}]
+  [{:keys [existing-palaute hoks jakso] :as ctx} handlers]
   (let [[state field reason]
-        (check-palaute
+        (palaute/initial-state-and-reason
           (assoc ctx ::palaute/type (make-kysely-type existing-palaute)))]
     (log/info "Requested state for palaute" (:id existing-palaute)
               "of HOKS" (:id hoks) "is" (or state :ei-kasitella)

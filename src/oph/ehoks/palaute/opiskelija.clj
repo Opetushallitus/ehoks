@@ -35,34 +35,6 @@
   {"ehoks_update" "sqs_viesti_ehoksista"
    "koski_update" "tiedot_muuttuneet_koskessa"})
 
-(defn initial-palaute-state-and-reason
-  "Runs several checks against HOKS and opiskeluoikeus to determine if
-  opiskelijapalautekysely should be initiated.  Returns the initial state
-  of the palaute (or nil if it cannot be formed at all), the field the
-  decision was based on, and the reason for picking that state."
-  [{:keys [hoks existing-palaute ::palaute/type] :as ctx}]
-  (let [herate-basis (herate-date-basis type)]
-    (cond
-      (not (palaute/nil-or-unhandled? existing-palaute))
-      [nil herate-basis :jo-lahetetty]
-
-      (and (:hoks-id existing-palaute)
-           (not= (:hoks-id existing-palaute) (:id hoks)))
-      [nil :id :ei-palautteen-alkuperainen-hoks]
-
-      (not (get hoks herate-basis))
-      [nil herate-basis :ei-ole]
-
-      ;; order dependency: nil rules must come first
-
-      (not (:osaamisen-hankkimisen-tarve hoks))
-      [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
-
-      :else
-      (or (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
-            ctx herate-basis)
-          [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
-
 (def kysely-kasittely-field-mapping
   {:aloituskysely :aloitusherate_kasitelty
    :paattokysely :paattoherate_kasitelty})
@@ -167,7 +139,7 @@
     [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx))
           [proposed-state field reason]
-          (initial-palaute-state-and-reason ctx)
+          (palaute/initial-state-and-reason ctx)
           state
           (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
           lisatiedot (map-vals str (select-keys hoks [field]))]
@@ -291,8 +263,7 @@
 ;; its namespace is redef'd)
 
 (def handlers
-  {:check-palaute #'initial-palaute-state-and-reason
-   :arvo-builder #'build-kyselylinkki-request-body
+  {:arvo-builder #'build-kyselylinkki-request-body
    :arvo-caller #'arvo/create-kyselytunnus!
    :heratepalvelu-builder #'build-amisherate-record-for-heratepalvelu
    :heratepalvelu-caller #'dynamodb/sync-amis-herate!

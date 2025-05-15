@@ -41,12 +41,12 @@
     (doseq [kysely-type
             (if kysely-type [kysely-type] [:aloituskysely :paattokysely])]
       (let [[state _ reason]
-            (op/initial-palaute-state-and-reason
+            (palaute/initial-state-and-reason
               (assoc ctx ::palaute/type kysely-type))]
         (is (contains? #{:ei-laheteta :heratepalvelussa nil} state))
         (is (= reason expected-reason))))))
 
-(deftest test-initial-palaute-state-and-reason
+(deftest test-initial-state-and-reason
   (with-redefs [date/now (constantly (LocalDate/of 2023 1 1))]
     (testing "On HOKS creation or update"
       (testing "don't initiate kysely if"
@@ -168,7 +168,7 @@
                  ::tapahtuma/type :hoks-tallennus}]
         (testing
          "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
-          (is (= (op/initial-palaute-state-and-reason
+          (is (= (palaute/initial-state-and-reason
                    (assoc ctx ::palaute/type :aloituskysely))
                  [:odottaa-kasittelya :ensikertainen-hyvaksyminen
                   :hoks-tallennettu])))
@@ -176,7 +176,7 @@
         (testing
          (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
               "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
-          (is (= (op/initial-palaute-state-and-reason
+          (is (= (palaute/initial-state-and-reason
                    (assoc ctx ::palaute/type :paattokysely))
                  [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm
                   :hoks-tallennettu])))))))

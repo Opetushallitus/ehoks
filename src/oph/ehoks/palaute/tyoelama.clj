@@ -55,48 +55,6 @@
         (LocalDate/of (inc year) 1 1)
         (LocalDate/of year (inc month) 1)))))
 
-(defn fully-keskeytynyt?
-  "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
-  [tyoelamajakso]
-  (some (fn [k-jakso]
-          (and (:loppu tyoelamajakso)
-               (date/is-same-or-before (:alku k-jakso) (:loppu tyoelamajakso))
-               (or (not (:loppu k-jakso))
-                   (date/is-same-or-before (:loppu tyoelamajakso)
-                                           (:loppu k-jakso)))))
-        (:keskeytymisajanjaksot tyoelamajakso)))
-
-(defn initial-palaute-state-and-reason
-  "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
-  tyoelamapalaute process should be initiated for jakso. Returns the initial
-  state of the palaute (or nil if it cannot be formed at all), the field the
-  decision was based on, and the reason for picking that state."
-  [{:keys [jakso existing-palaute] :as ctx}]
-  (cond
-    (not (palaute/nil-or-unhandled? existing-palaute))
-    [nil :yksiloiva-tunniste :jo-lahetetty]
-
-    (nil? jakso)
-    [nil :osaamisen-hankkimistapa :poistunut]
-
-    (not (get jakso :loppu))
-    [nil :loppu :ei-ole]
-
-    ;; order dependency: nil rules must come first
-
-    (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
-    [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
-
-    (not (oht/has-required-osa-aikaisuustieto? jakso))
-    [:ei-laheteta :osa-aikaisuustieto :ei-ole]
-
-    (fully-keskeytynyt? jakso)
-    [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
-
-    :else
-    (or (palaute/initial-palaute-state-and-reason-if-not-kohderyhma ctx :loppu)
-        [:odottaa-kasittelya :loppu :hoks-tallennettu])))
-
 (defn build!
   "Builds tyoelamapalaute to be inserted to DB. Uses `palaute/build!` to build
   an initial `palaute` map, then `assoc`s tyoelamapalaute specific values to
@@ -131,7 +89,7 @@
     [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx :jakso jakso))
           [proposed-state field reason]
-          (initial-palaute-state-and-reason
+          (palaute/initial-state-and-reason
             (assoc ctx ::palaute/type :ohjaajakysely))
           state
           (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
@@ -212,8 +170,7 @@
 ;; its namespace is redef'd)
 
 (def handlers
-  {:check-palaute #'initial-palaute-state-and-reason
-   :arvo-builder #'arvo/build-jaksotunnus-request-body
+  {:arvo-builder #'arvo/build-jaksotunnus-request-body
    :arvo-caller #'arvo/create-jaksotunnus!
    :heratepalvelu-builder #'build-jaksoherate-record-for-heratepalvelu
    :heratepalvelu-caller #'heratepalvelu/sync-jakso!
