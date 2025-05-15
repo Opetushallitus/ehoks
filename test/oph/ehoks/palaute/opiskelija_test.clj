@@ -204,7 +204,7 @@
                                 "TaiEiOikeuksia\"}]")}))
     (assoc oo-test/opiskeluoikeus-1 :oid oo)))
 
-(deftest test-existing-palaute!
+(deftest test-existing!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))]
     (db-hoks/insert-hoks! hoks-test/hoks-1)
     (with-redefs [organisaatio/get-organisaatio!
@@ -223,24 +223,29 @@
       (are [kysely-type]
            (= "lahetetty"
               (-> {:hoks hoks-test/hoks-3 :tx db/spec
-                   :koulutustoimija "1.2.246.562.10.346830761110"}
-                  (op/existing-palaute! kysely-type)
+                   :koulutustoimija "1.2.246.562.10.346830761110"
+                   ::palaute/type kysely-type}
+                  palaute/existing!
                   :tila))
         :aloituskysely :paattokysely))
 
     (testing "Kysely is not considered already initiated when"
       (testing "koulutustoimija differs."
         (are [kysely-type]
-             (nil? (-> {:hoks hoks-test/hoks-3 :tx db/spec
-                        :koulutustoimija "1.2.246.562.10.45678901237"}
-                       (op/existing-palaute! kysely-type)))
+             (nil? (palaute/existing!
+                     {:hoks hoks-test/hoks-3
+                      :tx db/spec
+                      :koulutustoimija "1.2.246.562.10.45678901237"
+                      ::palaute/type kysely-type}))
           :aloituskysely :paattokysely))
 
       (testing "heratepvm is within different rahoituskausi."
         (are [kysely-type]
-             (nil? (-> {:hoks hoks-test/hoks-4 :tx db/spec
-                        :koulutustoimija "1.2.246.562.10.346830761110"}
-                       (op/existing-palaute! kysely-type)))
+             (nil? (palaute/existing!
+                     {:hoks hoks-test/hoks-4
+                      :tx db/spec
+                      :koulutustoimija "1.2.246.562.10.346830761110"
+                      ::palaute/type kysely-type}))
           :aloituskysely :paattokysely)))))
 
 (deftest test-initiate-if-needed!

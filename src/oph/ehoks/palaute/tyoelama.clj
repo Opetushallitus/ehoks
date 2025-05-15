@@ -73,15 +73,12 @@
 
 (defn enrich-ctx!
   "Add information needed by työelämäpalaute initiation into context."
-  [{:keys [tx hoks jakso] :as ctx}]
+  [{:keys [hoks jakso] :as ctx}]
   (assoc ctx
          :existing-ddb-herate
          (delay (dynamodb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
                   (:id hoks) (:yksiloiva-tunniste jakso)))
-         :existing-palaute
-         (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-           tx {:hoks-id            (:id hoks)
-               :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})))
+         :existing-palaute (palaute/existing! ctx)))
 
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
@@ -89,8 +86,7 @@
     [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx :jakso jakso))
           [proposed-state field reason]
-          (palaute/initial-state-and-reason
-            (assoc ctx ::palaute/type :ohjaajakysely))
+          (palaute/initial-state-and-reason ctx)
           state
           (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
           lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]

@@ -16,7 +16,7 @@
   (try
     (op/initiate-if-needed! (assoc ctx ::palaute/type :aloituskysely))
     (op/initiate-if-needed! (assoc ctx ::palaute/type :paattokysely))
-    (tep/initiate-all-uninitiated! ctx)
+    (tep/initiate-all-uninitiated! (assoc ctx ::palaute/type :ohjaajakysely))
     (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
     (catch clojure.lang.ExceptionInfo e
       (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))

@@ -18,7 +18,6 @@
             [oph.ehoks.utils.date :as date]))
 
 (def kyselytyypit #{"aloittaneet" "valmistuneet" "osia_suorittaneet"})
-(def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
 (def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
                         :paattokysely  :osaamisen-saavuttamisen-pvm})
 
@@ -38,31 +37,6 @@
 (def kysely-kasittely-field-mapping
   {:aloituskysely :aloitusherate_kasitelty
    :paattokysely :paattoherate_kasitelty})
-
-(defn existing-palaute!
-  "Returns an existing palaute if one already exists for `kysely-type` and
-  for rahoituskausi corresponding to herate date."
-  [{:keys [tx hoks koulutustoimija] :as ctx} kysely-type]
-  (let [rahoituskausi (palaute/rahoituskausi
-                        (get hoks (herate-date-basis kysely-type)))
-        kyselytyypit  (case kysely-type
-                        :aloituskysely ["aloittaneet"]
-                        :paattokysely  (vec paattokyselyt))
-        params        {:kyselytyypit     kyselytyypit
-                       :oppija-oid       (:oppija-oid hoks)
-                       :koulutustoimija  koulutustoimija}]
-    (->> (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
-         (vec)
-         (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
-         ((fn [existing-palautteet]
-            (when (> (count existing-palautteet) 1)
-              (log/errorf (str "Found more than one existing herate for "
-                               "`%s` of HOKS `%d` in rahoituskausi `%s`.")
-                          kysely-type
-                          (:id hoks)
-                          rahoituskausi))
-            existing-palautteet))
-         first)))
 
 (defn build!
   "Builds opiskelijapalaute to be inserted to DB. Uses `palaute/build!` to build
@@ -112,7 +86,7 @@
 
 (defn enrich-ctx!
   "Add information needed by opiskelijapalaute initiation into context."
-  [{:keys [hoks opiskeluoikeus tx ::palaute/type] :as ctx}]
+  [{:keys [hoks opiskeluoikeus ::palaute/type] :as ctx}]
   (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
         heratepvm (get hoks (herate-date-basis type))
         toimija-oppija (str koulutustoimija "/" (:oppija-oid hoks))
@@ -125,8 +99,7 @@
     (assoc existing-palaute-ctx
            :existing-ddb-key ddb-key
            :existing-ddb-herate (delay (dynamodb/get-item! :amis ddb-key))
-           :existing-palaute (existing-palaute!
-                               existing-palaute-ctx type))))
+           :existing-palaute (palaute/existing! existing-palaute-ctx))))
 
 (defn initiate-if-needed!
   "Saves heräte data required for opiskelijapalautekysely

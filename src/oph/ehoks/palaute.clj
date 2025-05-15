@@ -231,6 +231,39 @@
         :ohjaajakysely :tyoelamapalaute}
        (::type ctx)))
 
+(defmulti existing!
+  "Returns an existing palaute if one already exists for palaute type."
+  dispatch-fn)
+
+(defmethod existing! :opiskelijapalaute
+  [{:keys [tx hoks koulutustoimija ::type] :as ctx}]
+  (let [rkausi        (rahoituskausi
+                        (get hoks (herate-date-basis type)))
+        kyselytyypit  (case type
+                        :aloituskysely ["aloittaneet"]
+                        :paattokysely  ["valmistuneet" "osia_suorittaneet"])
+        params        {:kyselytyypit     kyselytyypit
+                       :oppija-oid       (:oppija-oid hoks)
+                       :koulutustoimija  koulutustoimija}]
+    (->> (get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
+         (vec)
+         (filterv #(= rkausi (rahoituskausi (:heratepvm %))))
+         ((fn [existing-palautteet]
+            (when (> (count existing-palautteet) 1)
+              (log/errorf (str "Found more than one existing herate for "
+                               "`%s` of HOKS `%d` in rahoituskausi `%s`.")
+                          type
+                          (:id hoks)
+                          rkausi))
+            existing-palautteet))
+         first)))
+
+(defmethod existing! :tyoelamapalaute
+  [{:keys [hoks jakso tx] :as ctx}]
+  (get-by-hoks-id-and-yksiloiva-tunniste!
+    tx {:hoks-id            (:id hoks)
+        :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
+
 (defmulti initial-state-and-reason
   "Runs several checks against HOKS and opiskeluoikeus to determine if
   opiskelijapalautekysely or tyoelamapalaute process for jakso should be
