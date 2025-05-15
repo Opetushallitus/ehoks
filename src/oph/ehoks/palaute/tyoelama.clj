@@ -4,7 +4,6 @@
             [medley.core :refer [map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
@@ -71,20 +70,11 @@
            :voimassa-loppupvm         (palaute/vastaamisajan-loppupvm
                                         heratepvm alkupvm))))
 
-(defn enrich-ctx!
-  "Add information needed by työelämäpalaute initiation into context."
-  [{:keys [hoks jakso] :as ctx}]
-  (assoc ctx
-         :existing-ddb-herate
-         (delay (dynamodb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
-                  (:id hoks) (:yksiloiva-tunniste jakso)))
-         :existing-palaute (palaute/existing! ctx)))
-
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec {:isolation :serializable}]
-    (let [ctx (enrich-ctx! (assoc ctx :tx tx :jakso jakso))
+    (let [ctx (palaute/enrich-ctx! (assoc ctx :tx tx :jakso jakso))
           [proposed-state field reason]
           (palaute/initial-state-and-reason ctx)
           state

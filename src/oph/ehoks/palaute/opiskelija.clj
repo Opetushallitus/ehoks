@@ -21,14 +21,6 @@
 (def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
                         :paattokysely  :osaamisen-saavuttamisen-pvm})
 
-(def translate-kyselytyyppi
-  "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
-  i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
-  This should not be needed when eHOKS-Herätepalvelu integration is done."
-  {"aloittaneet"       "aloittaneet"
-   "valmistuneet"      "tutkinnon_suorittaneet"
-   "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
-
 (def translate-source
   "Translate palaute-db heräte source name to equivalent used in Herätepalvelu."
   {"ehoks_update" "sqs_viesti_ehoksista"
@@ -84,23 +76,6 @@
          :puhelinnumero      (:puhelinnumero hoks)
          :alkupvm            (str heratepvm)}))))
 
-(defn enrich-ctx!
-  "Add information needed by opiskelijapalaute initiation into context."
-  [{:keys [hoks opiskeluoikeus ::palaute/type] :as ctx}]
-  (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-        heratepvm (get hoks (herate-date-basis type))
-        toimija-oppija (str koulutustoimija "/" (:oppija-oid hoks))
-        kyselytyyppi (translate-kyselytyyppi
-                       (palaute/kyselytyyppi type opiskeluoikeus))
-        rahoituskausi (palaute/rahoituskausi heratepvm)
-        tyyppi-kausi (str kyselytyyppi "/" rahoituskausi)
-        ddb-key {:toimija_oppija toimija-oppija :tyyppi_kausi tyyppi-kausi}
-        existing-palaute-ctx (assoc ctx :koulutustoimija koulutustoimija)]
-    (assoc existing-palaute-ctx
-           :existing-ddb-key ddb-key
-           :existing-ddb-herate (delay (dynamodb/get-item! :amis ddb-key))
-           :existing-palaute (palaute/existing! existing-palaute-ctx))))
-
 (defn initiate-if-needed!
   "Saves heräte data required for opiskelijapalautekysely
   (`:aloituskysely` or `:paattokysely`) to database and sends it to
@@ -110,7 +85,7 @@
   [{:keys [hoks ::palaute/type] :as ctx}]
   (jdbc/with-db-transaction
     [tx db/spec {:isolation :serializable}]
-    (let [ctx (enrich-ctx! (assoc ctx :tx tx))
+    (let [ctx (palaute/enrich-ctx! (assoc ctx :tx tx))
           [proposed-state field reason]
           (palaute/initial-state-and-reason ctx)
           state
@@ -171,7 +146,8 @@
         alkupvm (greatest heratepvm (date/now))]
     {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
      :tutkinnon_suorituskieli (or (suoritus/kieli suoritus) "fi")
-     :kyselyn_tyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))
+     :kyselyn_tyyppi (palaute/translate-kyselytyyppi
+                       (:kyselytyyppi existing-palaute))
      :osaamisala (suoritus/get-osaamisalat suoritus heratepvm)
      :tutkinnonosat_hankkimistavoittain
      (osaamisen-hankkimistavat->tutkinnonosat-hankkimistavoittain
@@ -193,7 +169,8 @@
   (let [heratepvm (:heratepvm existing-palaute)
         oppija-oid (:oppija-oid hoks)
         rahoituskausi (palaute/rahoituskausi heratepvm)
-        kyselytyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))
+        kyselytyyppi (palaute/translate-kyselytyyppi
+                       (:kyselytyyppi existing-palaute))
         alkupvm (greatest heratepvm (date/now))]
     (utils/remove-nils
       {:sahkoposti (:sahkoposti hoks)

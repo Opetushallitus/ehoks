@@ -4,6 +4,7 @@
             [hugsql.core :as hugsql]
             [medley.core :refer [assoc-some find-first]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
@@ -105,6 +106,14 @@
                        (koski-suoritustyyppi->kyselytyyppi)
                        (or "valmistuneet"))
     :tyopaikkakysely "tyopaikkajakson_suorittaneet"))
+
+(def translate-kyselytyyppi
+  "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
+  i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
+  This should not be needed when eHOKS-Herätepalvelu integration is done."
+  {"aloittaneet"       "aloittaneet"
+   "valmistuneet"      "tutkinnon_suorittaneet"
+   "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
 (defn build!
   "A helper function to build palaute, utilized by functions with a similar name
@@ -321,3 +330,31 @@
     :else
     (or (initial-state-and-reason-if-not-kohderyhma ctx :loppu)
         [:odottaa-kasittelya :loppu :hoks-tallennettu])))
+
+(defmulti enrich-ctx!
+  "Add information needed by palaute initiation into context."
+  dispatch-fn)
+
+(defmethod enrich-ctx! :opiskelijapalaute
+  [{:keys [hoks opiskeluoikeus ::type] :as ctx}]
+  (let [koulutustoimija (koulutustoimija-oid! opiskeluoikeus)
+        heratepvm (get hoks (herate-date-basis type))
+        toimija-oppija (str koulutustoimija "/" (:oppija-oid hoks))
+        kyselytyyppi (translate-kyselytyyppi
+                       (kyselytyyppi type opiskeluoikeus))
+        rahoituskausi (rahoituskausi heratepvm)
+        tyyppi-kausi (str kyselytyyppi "/" rahoituskausi)
+        ddb-key {:toimija_oppija toimija-oppija :tyyppi_kausi tyyppi-kausi}
+        existing-palaute-ctx (assoc ctx :koulutustoimija koulutustoimija)]
+    (assoc existing-palaute-ctx
+           :existing-ddb-key ddb-key
+           :existing-ddb-herate (delay (ddb/get-item! :amis ddb-key))
+           :existing-palaute (existing! existing-palaute-ctx))))
+
+(defmethod enrich-ctx! :tyoelamapalaute
+  [{:keys [hoks jakso] :as ctx}]
+  (assoc ctx
+         :existing-ddb-herate
+         (delay (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+                  (:id hoks) (:yksiloiva-tunniste jakso)))
+         :existing-palaute (existing! ctx)))
