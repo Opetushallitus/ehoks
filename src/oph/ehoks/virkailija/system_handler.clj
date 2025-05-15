@@ -11,6 +11,7 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.restful :as restful]
@@ -253,11 +254,11 @@
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
           (if (= :odottaa-kasittelya
                  (op/initiate-if-needed!
-                   {:hoks           hoks
-                    :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                                      (:opiskeluoikeus-oid hoks))
-                    ::tapahtuma/type :reinit-palaute}
-                   :aloituskysely))
+                   {:hoks            hoks
+                    :opiskeluoikeus  (koski/get-existing-opiskeluoikeus!
+                                       (:opiskeluoikeus-oid hoks))
+                    ::palaute/type   :aloituskysely
+                    ::tapahtuma/type :reinit-palaute}))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -275,11 +276,11 @@
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
           (if (= :odottaa-kasittelya
                  (op/initiate-if-needed!
-                   {:hoks hoks
-                    :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                                      (:opiskeluoikeus-oid hoks))
-                    ::tapahtuma/type :reinit-palaute}
-                   :paattokysely))
+                   {:hoks            hoks
+                    :opiskeluoikeus  (koski/get-existing-opiskeluoikeus!
+                                       (:opiskeluoikeus-oid hoks))
+                    ::palaute/type   :paattokysely
+                    ::tapahtuma/type :reinit-palaute}))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "

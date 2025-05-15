@@ -41,7 +41,8 @@
     (doseq [kysely-type
             (if kysely-type [kysely-type] [:aloituskysely :paattokysely])]
       (let [[state _ reason]
-            (op/initial-palaute-state-and-reason ctx kysely-type)]
+            (op/initial-palaute-state-and-reason
+              (assoc ctx ::palaute/type kysely-type))]
         (is (contains? #{:ei-laheteta :heratepalvelussa nil} state))
         (is (= reason expected-reason))))))
 
@@ -167,14 +168,16 @@
                  ::tapahtuma/type :hoks-tallennus}]
         (testing
          "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
-          (is (= (op/initial-palaute-state-and-reason ctx :aloituskysely)
+          (is (= (op/initial-palaute-state-and-reason
+                   (assoc ctx ::palaute/type :aloituskysely))
                  [:odottaa-kasittelya :ensikertainen-hyvaksyminen
                   :hoks-tallennettu])))
 
         (testing
          (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
               "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
-          (is (= (op/initial-palaute-state-and-reason ctx :paattokysely)
+          (is (= (op/initial-palaute-state-and-reason
+                   (assoc ctx ::palaute/type :paattokysely))
                  [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm
                   :hoks-tallennettu])))))))
 
@@ -209,8 +212,8 @@
       (doseq [kysely-type [:aloituskysely :paattokysely]]
         (op/initiate-if-needed! {:hoks            hoks-test/hoks-1
                                  :opiskeluoikeus  oo-test/opiskeluoikeus-1
-                                 ::tapahtuma/type :hoks-tallennus}
-                                kysely-type)))
+                                 ::palaute/type kysely-type
+                                 ::tapahtuma/type :hoks-tallennus})))
     (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                    WHERE hoks_id=? RETURNING *" (:id hoks-test/hoks-1)])
 
@@ -262,7 +265,8 @@
                       "successfully sends aloituskysely and paattokysely "
                       "herate to SQS queue")
           (are [kysely-type] (= (expected-msg kysely-type hoks-test/hoks-1)
-                                (do (op/initiate-if-needed! ctx kysely-type)
+                                (do (op/initiate-if-needed!
+                                      (assoc ctx ::palaute/type kysely-type))
                                     @sqs-msg))
             :aloituskysely
             :paattokysely)
@@ -304,8 +308,10 @@
         (testing "if opiskeluoikeus is not found, will wait for heratepvm"
           (are [kysely-type]
                (= :odottaa-kasittelya
-                  (op/initiate-if-needed! (assoc ctx :opiskeluoikeus nil)
-                                          kysely-type))
+                  (op/initiate-if-needed!
+                    (assoc ctx
+                           :opiskeluoikeus nil
+                           ::palaute/type kysely-type)))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate if it is already handled by herätepalvelu"
@@ -328,13 +334,16 @@
                       :heratepvm (:osaamisen-saavuttamisen-pvm
                                    hoks-test/hoks-1)})))
           (are [kysely-type]
-               (= :heratepalvelussa (op/initiate-if-needed! ctx kysely-type))
+               (= :heratepalvelussa
+                  (op/initiate-if-needed!
+                    (assoc ctx ::palaute/type kysely-type)))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate kysely if one already exists for HOKS"
           (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                          WHERE hoks_id=12345 RETURNING *"])
-          (are [kysely-type] (nil? (op/initiate-if-needed! ctx kysely-type))
+          (are [kysely-type] (nil? (op/initiate-if-needed!
+                                     (assoc ctx ::palaute/type kysely-type)))
             :aloituskysely :paattokysely))))))
 
 (defn create-arvo-kyselylinkki!

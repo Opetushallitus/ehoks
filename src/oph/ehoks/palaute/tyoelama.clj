@@ -71,7 +71,7 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [jakso existing-palaute] :as ctx} kysely-type]
+  [{:keys [jakso existing-palaute] :as ctx}]
   (cond
     (not (palaute/nil-or-unhandled? existing-palaute))
     [nil :yksiloiva-tunniste :jo-lahetetty]
@@ -131,7 +131,8 @@
     [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx :jakso jakso))
           [proposed-state field reason]
-          (initial-palaute-state-and-reason ctx :ohjaajakysely)
+          (initial-palaute-state-and-reason
+            (assoc ctx ::palaute/type :ohjaajakysely))
           state
           (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
           lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]

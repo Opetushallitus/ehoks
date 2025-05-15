@@ -180,8 +180,7 @@
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
   collected because it's not part of kohderyhmä; otherwise returns nil."
-  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate
-           existing-palaute] :as ctx}
+  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate] :as ctx}
    herate-date-field]
   (let [herate-date (get (or jakso hoks) herate-date-field)]
     (cond

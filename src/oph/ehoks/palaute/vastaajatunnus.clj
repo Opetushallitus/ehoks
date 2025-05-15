@@ -208,7 +208,8 @@
   [{:keys [existing-palaute hoks jakso] :as ctx}
    {:keys [check-palaute] :as handlers}]
   (let [[state field reason]
-        (check-palaute ctx (make-kysely-type existing-palaute))]
+        (check-palaute
+          (assoc ctx ::palaute/type (make-kysely-type existing-palaute)))]
     (log/info "Requested state for palaute" (:id existing-palaute)
               "of HOKS" (:id hoks) "is" (or state :ei-kasitella)
               "because of" reason "in" field)
