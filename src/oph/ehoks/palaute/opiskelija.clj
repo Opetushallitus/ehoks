@@ -257,10 +257,13 @@
        :alkupvm alkupvm
        :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
        :toimipiste_oid toimipiste
-       :lahetystila "ei_lahetetty"  ; FIXME when it can have other states
+       :lahetystila ; FIXME when it can have other states
+       (if (not-empty (:sahkoposti hoks))
+         "ei_lahetetty"
+         "ei_laheteta")
        :puhelinnumero (:puhelinnumero hoks)
        :hankintakoulutuksen_toteuttaja @hk-toteuttaja
-       :ehoks_id (:id hoks)
+       :ehoks-id (:id hoks)
        :herate-source (or (translate-source (:herate-source existing-palaute))
                           "sqs_viesti_ehoksista")
        :koulutustoimija koulutustoimija
@@ -273,6 +276,12 @@
        :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
        :osaamisala (str/join "," (suoritus/get-osaamisalat suoritus heratepvm))
        :rahoituskausi rahoituskausi
+       :sms-lahetystila (if (and (or (= kyselytyyppi "tutkinnon_suorittaneet")
+                                     (= kyselytyyppi
+                                        "tutkinnon_osia_suorittaneet"))
+                                 (not-empty (:puhelinnumero hoks)))
+                          "ei_lahetetty"
+                          "ei_laheteta")
        :tallennuspvm (date/now)
        :toimija_oppija (str koulutustoimija "/" oppija-oid)
        :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)
