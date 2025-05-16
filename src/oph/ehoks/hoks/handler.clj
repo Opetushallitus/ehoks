@@ -319,7 +319,8 @@
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]
           (assoc
-            (if-let [old-data (select-kyselylinkki (:kyselylinkki data))]
+            (if-let [old-data (first
+                                (select-kyselylinkki (:kyselylinkki data)))]
               (do (kyselylinkki/update! data)
                   (assoc (response/no-content)
                          ::audit/changes
