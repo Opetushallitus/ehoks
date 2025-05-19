@@ -296,5 +296,5 @@
    :arvo-builder #'build-kyselylinkki-request-body
    :arvo-caller #'arvo/create-kyselytunnus!
    :heratepalvelu-builder #'build-amisherate-record-for-heratepalvelu
-   :heratepalvelu-caller #'dynamodb/sync-amis-herate!
+   :heratepalvelu-caller #'dynamodb/sync-amis-herate-if-not-exists!
    :extra-handlers []})
