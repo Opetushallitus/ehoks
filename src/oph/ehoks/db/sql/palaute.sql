@@ -114,6 +114,13 @@ where deleted_at is null and palaute_handled_at is null
 order by id desc  -- process newer HOKSes first
 limit	:batchsize
 
+-- :name mark-hoks-palaute-initiated! :? :1
+-- :doc Mark all palautteet as initiated for given HOKS
+update hoksit
+set palaute_handled_at = now()
+where id = :hoks-id
+returning *
+
 -- :name get-by-id! :? :1
 -- :doc Get palaute by palaute id.
 select * from palautteet

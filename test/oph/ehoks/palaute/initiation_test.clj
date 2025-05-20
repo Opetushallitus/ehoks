@@ -86,9 +86,11 @@
               ["ei_laheteta" "tyopaikkajakson_suorittaneet"]
               ["ei_laheteta" "tyopaikkajakson_suorittaneet"]
               ["ei_laheteta" "tyopaikkajakson_suorittaneet"]]))
-      (is (some? (-> (:id hoks-test/hoks-1)
-                     (db-hoks/select-hoks-by-id #{:palaute_handled_at})
-                     :palaute-handled-at))))
+      (is (-> (:id hoks-test/hoks-1)
+              (db-hoks/select-hoks-by-id #{:palaute_handled_at})
+              :palaute-handled-at
+              (inst-ms)
+              (> (inst-ms #inst "2025-05-20")))))
     (testing "reinit-palautteet-for-uninitiated-hokses! is idemponent"
       (init/reinit-palautteet-for-uninitiated-hokses! 7)
       (is (= (->> {:hoks-id (:id hoks-test/hoks-1)
