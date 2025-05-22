@@ -28,8 +28,8 @@
         suoritus (find-first suoritus/ammatillinen?
                              (:suoritukset opiskeluoikeus))]
     (assoc ctx
-           :niputuspvm            (tep/next-niputus-date (date/now))
-           :vastaamisajan-alkupvm (tep/next-niputus-date
+           :niputuspvm            (palaute/next-niputus-date (date/now))
+           :vastaamisajan-alkupvm (palaute/next-niputus-date
                                     (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus

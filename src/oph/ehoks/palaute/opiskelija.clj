@@ -30,21 +30,6 @@
   {:aloituskysely :aloitusherate_kasitelty
    :paattokysely :paattoherate_kasitelty})
 
-(defn build!
-  "Builds opiskelijapalaute to be inserted to DB. Uses `palaute/build!` to build
-  an initial `palaute` map, then `assoc`s opiskelijapalaute specific values to
-  that."
-  [{:keys [hoks opiskeluoikeus ::palaute/type] :as ctx} tila]
-  {:pre [(some? tila)]}
-  (let [heratepvm (get hoks (herate-date-basis type))
-        alkupvm   (greatest heratepvm (date/now))]
-    (assoc (palaute/build! ctx tila)
-           :kyselytyyppi      (palaute/kyselytyyppi type opiskeluoikeus)
-           :heratepvm         heratepvm
-           :voimassa-alkupvm  alkupvm
-           :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
-                                heratepvm alkupvm))))
-
 (defn initiate!
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
   Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
@@ -61,7 +46,7 @@
       tx {:id (:id amisherate-kasittelytila)
           (kysely-kasittely-field-mapping type)
           target-kasittelytila})
-    (->> (build! ctx state)
+    (->> (palaute/build! ctx state)
          (palaute/upsert! tx)
          (tapahtuma/build-and-insert! ctx state reason lisatiedot))
     (when (= :odottaa-kasittelya state)

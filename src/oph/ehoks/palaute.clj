@@ -2,7 +2,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
-            [medley.core :refer [assoc-some find-first]]
+            [medley.core :refer [assoc-some find-first greatest]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.koski :as koski]
@@ -105,7 +105,7 @@
                        (suoritus/tyyppi)
                        (koski-suoritustyyppi->kyselytyyppi)
                        (or "valmistuneet"))
-    :tyopaikkakysely "tyopaikkajakson_suorittaneet"))
+    :ohjaajakysely "tyopaikkajakson_suorittaneet"))
 
 (def translate-kyselytyyppi
   "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
@@ -115,19 +115,54 @@
    "valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
-(defn build!
-  "A helper function to build palaute, utilized by functions with a similar name
-  in `palaute.opiskelija` and `palaute.tyoelama` namespaces. Fetches some of the
-  required information from Organisaatiopalvelu and Koski.
+(def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
+                        :paattokysely  :osaamisen-saavuttamisen-pvm})
 
-  NOTE: This doesn't build a complete palaute that should be inserted to DB but
-  only part of it."
-  [{:keys [hoks opiskeluoikeus koulutustoimija existing-palaute] :as ctx} tila]
+(defn next-niputus-date
+  "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
+  Niputuspäivämäärät ovat kuun ensimmäinen ja kuudestoista päivä."
+  ^LocalDate [^LocalDate pvm]
+  (let [year  (.getYear pvm)
+        month (.getMonthValue pvm)
+        day   (.getDayOfMonth pvm)]
+    (if (< day 16)
+      (LocalDate/of year month 16)
+      (if (= 12 month)
+        (LocalDate/of (inc year) 1 1)
+        (LocalDate/of year (inc month) 1)))))
+
+(defn- heratepvm
+  "Returns the heratepvm for the palaute type."
+  [{:keys [hoks jakso ::type] :as ctx}]
+  {:post [(some? %)]}
+  (if (= type :ohjaajakysely)
+    (:loppu jakso)
+    (get hoks (herate-date-basis type))))
+
+(defn- alkupvm
+  [type heratepvm]
+  {:post [(some? %)]}
+  (if (= type :ohjaajakysely)
+    (next-niputus-date heratepvm)
+    (greatest heratepvm (date/now))))
+
+(defn build!
+  "Builds a palaute to be inserted to DB."
+  [{:keys [hoks jakso opiskeluoikeus koulutustoimija existing-palaute ::type]
+    :as ctx}
+   tila]
   {:pre [(some? tila) (nil-or-unhandled? existing-palaute)]}
-  (let [suoritus (find-first suoritus/ammatillinen?
-                             (:suoritukset opiskeluoikeus))]
+  (let [heratepvm (heratepvm ctx)
+        alkupvm   (alkupvm type heratepvm)
+        suoritus  (find-first suoritus/ammatillinen?
+                              (:suoritukset opiskeluoikeus))]
     (assoc-some
       {:hoks-id                        (:id hoks)
+       :kyselytyyppi                   (kyselytyyppi type opiskeluoikeus)
+       :heratepvm                      heratepvm
+       :voimassa-alkupvm               alkupvm
+       :voimassa-loppupvm              (vastaamisajan-loppupvm
+                                         heratepvm alkupvm)
        :tila                           (utils/to-underscore-str tila)
        :suorituskieli                  (suoritus/kieli suoritus)
        :koulutustoimija                (or koulutustoimija
@@ -137,7 +172,8 @@
        :tutkintonimike                 (suoritus/tutkintonimike suoritus)
        :tutkintotunnus                 (suoritus/tutkintotunnus suoritus)
        :hankintakoulutuksen-toteuttaja (hankintakoulutuksen-toteuttaja! hoks)
-       :herate-source                  "ehoks_update"}
+       :herate-source                  "ehoks_update"
+       :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)}
       :id
       (:id existing-palaute))))
 
@@ -228,9 +264,6 @@
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
-
-(def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
-                        :paattokysely  :osaamisen-saavuttamisen-pvm})
 
 (defn- dispatch-fn
   [ctx]

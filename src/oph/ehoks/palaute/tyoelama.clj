@@ -13,8 +13,7 @@
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]
-            [oph.ehoks.utils.string :as u-str])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.utils.string :as u-str]))
 
 (defn finished-workplace-periods!
   "Queries for all finished workplace periods between start and end"
@@ -41,35 +40,6 @@
   [hoks]
   (filter oht/tyopaikkajakso? (oht/osaamisen-hankkimistavat hoks)))
 
-(defn next-niputus-date
-  "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
-  Niputuspäivämäärät ovat kuun ensimmäinen ja kuudestoista päivä."
-  ^LocalDate [^LocalDate pvm]
-  (let [year  (.getYear pvm)
-        month (.getMonthValue pvm)
-        day   (.getDayOfMonth pvm)]
-    (if (< day 16)
-      (LocalDate/of year month 16)
-      (if (= 12 month)
-        (LocalDate/of (inc year) 1 1)
-        (LocalDate/of year (inc month) 1)))))
-
-(defn build!
-  "Builds tyoelamapalaute to be inserted to DB. Uses `palaute/build!` to build
-  an initial `palaute` map, then `assoc`s tyoelamapalaute specific values to
-  that."
-  [{:keys [jakso] :as ctx} tila]
-  {:pre [(some? tila)]}
-  (let [heratepvm (:loppu jakso)
-        alkupvm   (next-niputus-date heratepvm)]
-    (assoc (palaute/build! ctx tila)
-           :kyselytyyppi              "tyopaikkajakson_suorittaneet"
-           :jakson-yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-           :heratepvm                 heratepvm
-           :voimassa-alkupvm          alkupvm
-           :voimassa-loppupvm         (palaute/vastaamisajan-loppupvm
-                                        heratepvm alkupvm))))
-
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
@@ -84,7 +54,7 @@
                 "of HOKS" (:id hoks) "will be" (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
       (if state
-        (->> (build! ctx state)
+        (->> (palaute/build! ctx state)
              (palaute/upsert! tx)
              (tapahtuma/build-and-insert! ctx state reason lisatiedot))
         (when (:existing-palaute ctx)

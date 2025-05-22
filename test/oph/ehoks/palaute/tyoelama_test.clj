@@ -228,7 +228,7 @@
 
 (deftest test-next-niputus-date
   (testing "The function returns the correct niputus date when given `pvm-str`."
-    (are [pvm-str expected] (= (tep/next-niputus-date (LocalDate/parse pvm-str))
+    (are [pvm-str expected] (= (palaute/next-niputus-date (LocalDate/parse pvm-str))
                                (LocalDate/parse expected))
       "2021-12-03" "2021-12-16"
       "2021-12-27" "2022-01-01"
@@ -360,7 +360,7 @@
 (defn- build-expected-herate
   [jakso hoks]
   (let [heratepvm (:loppu jakso)
-        voimassa-alkupvm (tep/next-niputus-date heratepvm)]
+        voimassa-alkupvm (palaute/next-niputus-date heratepvm)]
     {:tila                           "odottaa_kasittelya"
      :kyselytyyppi                   "tyopaikkajakson_suorittaneet"
      :hoks-id                        (:id hoks)
