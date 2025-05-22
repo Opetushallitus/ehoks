@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
-            [clojure.java.jdbc :as jdbc]
             [taoensso.faraday :as far]
             [medley.core :refer [remove-vals find-first]]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
@@ -9,7 +8,6 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
@@ -31,8 +29,6 @@
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-both-dbs-after-test)
-
-(def sqs-msg (atom nil))
 
 (defn test-not-initiated
   ([ctx reason]
@@ -181,21 +177,6 @@
                  [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm
                   :hoks-tallennettu])))))))
 
-(defn expected-msg
-  [kysely-type hoks]
-  {:ehoks-id           (:id hoks)
-   :kyselytyyppi       (case kysely-type
-                         :aloituskysely "aloittaneet"
-                         :paattokysely  "tutkinnon_suorittaneet")
-   :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-   :oppija-oid         (:oppija-oid hoks)
-   :sahkoposti         (:sahkoposti hoks)
-   :puhelinnumero      (:puhelinnumero hoks)
-   :alkupvm
-   (str (case kysely-type
-          :aloituskysely (:ensikertainen-hyvaksyminen hoks)
-          :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
-
 (defn mock-get-opiskeluoikeus-info-raw [oo]
   (if (= oo "1.2.246.562.15.57401181193")
     (throw (ex-info "opiskeluoikeus not found"
@@ -210,10 +191,11 @@
     (with-redefs [organisaatio/get-organisaatio!
                   organisaatio-test/mock-get-organisaatio!]
       (doseq [kysely-type [:aloituskysely :paattokysely]]
-        (op/initiate-if-needed! {:hoks            hoks-test/hoks-1
-                                 :opiskeluoikeus  oo-test/opiskeluoikeus-1
-                                 ::palaute/type kysely-type
-                                 ::tapahtuma/type :hoks-tallennus})))
+        (palaute/initiate-if-needed!
+          {:hoks            hoks-test/hoks-1
+           :opiskeluoikeus  oo-test/opiskeluoikeus-1
+           ::palaute/type kysely-type
+           ::tapahtuma/type :hoks-tallennus})))
     (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                    WHERE hoks_id=? RETURNING *" (:id hoks-test/hoks-1)])
 
@@ -249,8 +231,7 @@
           :aloituskysely :paattokysely)))))
 
 (deftest test-initiate-if-needed!
-  (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
-                date/now (constantly (LocalDate/of 2023 4 18))
+  (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 oppijaindex/get-hankintakoulutus-oids-by-master-oid
                 oppijaindex-test/mock-get-hankintakoulutus-oids-by-master-oid
                 koski/get-opiskeluoikeus-info-raw
@@ -266,15 +247,10 @@
                                   (:opiskeluoikeus-oid hoks-test/hoks-1))
                ::tapahtuma/type :hoks-tallennus}]
       (testing "Testing that function `initiate-if-needed!`"
-        (testing (str "stores kysely info to `palautteet` DB table and "
-                      "successfully sends aloituskysely and paattokysely "
-                      "herate to SQS queue")
-          (are [kysely-type] (= (expected-msg kysely-type hoks-test/hoks-1)
-                                (do (op/initiate-if-needed!
-                                      (assoc ctx ::palaute/type kysely-type))
-                                    @sqs-msg))
-            :aloituskysely
-            :paattokysely)
+        (testing "stores kysely info to `palautteet` DB table"
+          (doseq [kysely-type [:aloituskysely :paattokysely]]
+            (palaute/initiate-if-needed!
+              (assoc ctx ::palaute/type kysely-type)))
           (is (= (set (map
                         (juxt :kyselytyyppi :uusi-tila :syy)
                         (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
@@ -313,7 +289,7 @@
         (testing "if opiskeluoikeus is not found, will wait for heratepvm"
           (are [kysely-type]
                (= :odottaa-kasittelya
-                  (op/initiate-if-needed!
+                  (palaute/initiate-if-needed!
                     (assoc ctx
                            :opiskeluoikeus nil
                            ::palaute/type kysely-type)))
@@ -340,14 +316,14 @@
                                    hoks-test/hoks-1)})))
           (are [kysely-type]
                (= :heratepalvelussa
-                  (op/initiate-if-needed!
+                  (palaute/initiate-if-needed!
                     (assoc ctx ::palaute/type kysely-type)))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate kysely if one already exists for HOKS"
           (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                          WHERE hoks_id=12345 RETURNING *"])
-          (are [kysely-type] (nil? (op/initiate-if-needed!
+          (are [kysely-type] (nil? (palaute/initiate-if-needed!
                                      (assoc ctx ::palaute/type kysely-type)))
             :aloituskysely :paattokysely))))))
 

@@ -14,8 +14,8 @@
   "Initialise all palautteet (opiskelija & tyoelama) that should be."
   [{:keys [hoks] :as ctx}]
   (try
-    (op/initiate-if-needed! (assoc ctx ::palaute/type :aloituskysely))
-    (op/initiate-if-needed! (assoc ctx ::palaute/type :paattokysely))
+    (palaute/initiate-if-needed! (assoc ctx ::palaute/type :aloituskysely))
+    (palaute/initiate-if-needed! (assoc ctx ::palaute/type :paattokysely))
     (tep/initiate-all-uninitiated! (assoc ctx ::palaute/type :ohjaajakysely))
     (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
     (catch clojure.lang.ExceptionInfo e

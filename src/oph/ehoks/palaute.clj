@@ -2,7 +2,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
-            [medley.core :refer [assoc-some find-first greatest]]
+            [medley.core :refer [assoc-some find-first greatest map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.koski :as koski]
@@ -140,9 +140,9 @@
     (get hoks (herate-date-basis type))))
 
 (defn- alkupvm
-  [type heratepvm]
+  [kysely-type heratepvm]
   {:post [(some? %)]}
-  (if (= type :ohjaajakysely)
+  (if (= kysely-type :ohjaajakysely)
     (next-niputus-date heratepvm)
     (greatest heratepvm (date/now))))
 
@@ -391,3 +391,31 @@
          (delay (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
                   (:id hoks) (:yksiloiva-tunniste jakso)))
          :existing-palaute (existing! ctx)))
+
+(defn initiate-if-needed!
+  "Saves heräte data required for apalautekysely to database and sends it to
+  Returns the initial state of kysely if it was created, `nil` otherwise."
+  [{:keys [hoks jakso ::type] :as ctx}]
+  (jdbc/with-db-transaction
+    [tx db/spec {:isolation :serializable}]
+    (let [ctx (enrich-ctx! (assoc ctx :tx tx))
+          [proposed-state field reason] (initial-state-and-reason ctx)
+          state (if (= field :opiskeluoikeus-oid)
+                  :odottaa-kasittelya
+                  proposed-state)
+          lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
+      (log/infof
+        "Initial state for %s%s of HOKS %d will be %s because of %s in %s"
+        type
+        (if jakso (str " of jakso " (:yksiloiva-tunniste jakso)) "")
+        (:id hoks)
+        (or state :ei-luoda-ollenkaan)
+        reason
+        field)
+      (if state
+        (->> (build! ctx state)
+             (upsert! tx)
+             (tapahtuma/build-and-insert! ctx state reason lisatiedot))
+        (when (:existing-palaute ctx)
+          (tapahtuma/build-and-insert! ctx reason lisatiedot)))
+      state)))

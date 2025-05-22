@@ -1,14 +1,11 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
-  (:require [clojure.java.jdbc :as jdbc]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [medley.core :refer [greatest map-vals]]
-            [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
@@ -18,80 +15,18 @@
             [oph.ehoks.utils.date :as date]))
 
 (def kyselytyypit #{"aloittaneet" "valmistuneet" "osia_suorittaneet"})
-(def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
-                        :paattokysely  :osaamisen-saavuttamisen-pvm})
 
 (def translate-source
   "Translate palaute-db heräte source name to equivalent used in Herätepalvelu."
   {"ehoks_update" "sqs_viesti_ehoksista"
    "koski_update" "tiedot_muuttuneet_koskessa"})
 
-(def kysely-kasittely-field-mapping
-  {:aloituskysely :aloitusherate_kasitelty
-   :paattokysely :paattoherate_kasitelty})
-
-(defn initiate!
-  "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
-  Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
-  the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
-  was successfully initiated, `nil` or `false` otherwise."
-  [{:keys [tx hoks opiskeluoikeus state reason lisatiedot ::palaute/type]
-    :as ctx}]
-  (let [heratepvm            (get hoks (herate-date-basis type))
-        target-kasittelytila (not= state :odottaa-kasittelya)
-        amisherate-kasittelytila
-        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
-          (:id hoks))]
-    (db-hoks/update-amisherate-kasittelytilat!
-      tx {:id (:id amisherate-kasittelytila)
-          (kysely-kasittely-field-mapping type)
-          target-kasittelytila})
-    (->> (palaute/build! ctx state)
-         (palaute/upsert! tx)
-         (tapahtuma/build-and-insert! ctx state reason lisatiedot))
-    (when (= :odottaa-kasittelya state)
-      (log/info "Making" type "heräte for HOKS" (:id hoks))
-      (sqs/send-amis-palaute-message
-        {:ehoks-id           (:id hoks)
-         :kyselytyyppi       (translate-kyselytyyppi
-                               (palaute/kyselytyyppi type opiskeluoikeus))
-         :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-         :oppija-oid         (:oppija-oid hoks)
-         :sahkoposti         (:sahkoposti hoks)
-         :puhelinnumero      (:puhelinnumero hoks)
-         :alkupvm            (str heratepvm)}))))
-
-(defn initiate-if-needed!
-  "Saves heräte data required for opiskelijapalautekysely
-  (`:aloituskysely` or `:paattokysely`) to database and sends it to
-  appropriate DynamoDB table of Herätepalvelu if no check is preventing
-  the sending. Returns the initial state of kysely if it was created,
-  `nil` otherwise."
-  [{:keys [hoks ::palaute/type] :as ctx}]
-  (jdbc/with-db-transaction
-    [tx db/spec {:isolation :serializable}]
-    (let [ctx (palaute/enrich-ctx! (assoc ctx :tx tx))
-          [proposed-state field reason]
-          (palaute/initial-state-and-reason ctx)
-          state
-          (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
-          lisatiedot (map-vals str (select-keys hoks [field]))]
-      (log/info "Initial state for" type "for HOKS" (:id hoks)
-                "will be" (or state :ei-luoda-ollenkaan)
-                "because of" reason "in" field)
-      (if state
-        (initiate!
-          (assoc ctx :state state :reason reason :lisatiedot lisatiedot))
-        (when (:existing-palaute ctx)
-          (tapahtuma/build-and-insert! ctx reason lisatiedot)))
-      state)))
-
 (defn initiate-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
   but also returns a count of the number of kyselys initiated."
   [kysely-type hoksit]
   (count (filter #(= :odottaa-kasittelya
-                     (initiate-if-needed!
+                     (palaute/initiate-if-needed!
                        {:hoks           %
                         :opiskeluoikeus (koski/get-opiskeluoikeus!
                                           (:opiskeluoikeus-oid %))

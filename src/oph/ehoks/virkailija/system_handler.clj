@@ -253,7 +253,7 @@
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
           (if (= :odottaa-kasittelya
-                 (op/initiate-if-needed!
+                 (palaute/initiate-if-needed!
                    {:hoks            hoks
                     :opiskeluoikeus  (koski/get-existing-opiskeluoikeus!
                                        (:opiskeluoikeus-oid hoks))
@@ -275,7 +275,7 @@
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
           (if (= :odottaa-kasittelya
-                 (op/initiate-if-needed!
+                 (palaute/initiate-if-needed!
                    {:hoks            hoks
                     :opiskeluoikeus  (koski/get-existing-opiskeluoikeus!
                                        (:opiskeluoikeus-oid hoks))

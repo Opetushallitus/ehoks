@@ -1,15 +1,11 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]
-            [medley.core :refer [map-vals]]
-            [oph.ehoks.db :as db]
+  (:require [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]
@@ -40,32 +36,12 @@
   [hoks]
   (filter oht/tyopaikkajakso? (oht/osaamisen-hankkimistavat hoks)))
 
-(defn initiate-if-needed!
-  [{:keys [hoks] :as ctx} jakso]
-  (jdbc/with-db-transaction
-    [tx db/spec {:isolation :serializable}]
-    (let [ctx (palaute/enrich-ctx! (assoc ctx :tx tx :jakso jakso))
-          [proposed-state field reason]
-          (palaute/initial-state-and-reason ctx)
-          state
-          (if (= field :opiskeluoikeus-oid) :odottaa-kasittelya proposed-state)
-          lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
-      (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
-                "of HOKS" (:id hoks) "will be" (or state :ei-luoda-ollenkaan)
-                "because of" reason "in" field)
-      (if state
-        (->> (palaute/build! ctx state)
-             (palaute/upsert! tx)
-             (tapahtuma/build-and-insert! ctx state reason lisatiedot))
-        (when (:existing-palaute ctx)
-          (tapahtuma/build-and-insert! ctx reason lisatiedot)))
-      state)))
-
 (defn initiate-all-uninitiated!
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
   tyopaikkajaksos in HOKS for which palaute has not been already initiated."
   [{:keys [hoks] :as ctx}]
-  (run! #(initiate-if-needed! ctx %) (tyopaikkajaksot hoks)))
+  (run! #(palaute/initiate-if-needed! (assoc ctx :jakso %))
+        (tyopaikkajaksot hoks)))
 
 (defn ensure-tpo-nippu!
   "Makes sure that the nippu for the työelämäpalaute exists in
