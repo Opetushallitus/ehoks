@@ -35,6 +35,12 @@
   [oht]
   (tyopaikkajakso-type? (:osaamisen-hankkimistapa-koodi-uri oht)))
 
+(defn tyopaikkajaksot
+  "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
+  that are tyopaikkajaksos. Returns a lazy sequence."
+  [hoks]
+  (filter tyopaikkajakso? (osaamisen-hankkimistavat hoks)))
+
 (defn fully-keskeytynyt?
   "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
   [tyoelamajakso]

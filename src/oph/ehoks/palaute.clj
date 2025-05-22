@@ -419,3 +419,45 @@
         (when (:existing-palaute ctx)
           (tapahtuma/build-and-insert! ctx reason lisatiedot)))
       state)))
+
+(defn initiate-all!
+  "Initialise all palautteet (opiskelija & tyoelama) that should be."
+  [{:keys [hoks] :as ctx}]
+  (try
+    (run! initiate-if-needed!
+          (concat (map #(assoc ctx ::type %) [:aloituskysely :paattokysely])
+                  (map #(assoc ctx ::type :ohjaajakysely :jakso %)
+                       (oht/tyopaikkajaksot hoks))))
+    (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
+    (catch clojure.lang.ExceptionInfo e
+      (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))
+        (throw (ex-info (str "HOKS contains an unknown organisation"
+                             (:organisation-oid (ex-data e)))
+                        (assoc (ex-data e) :type ::disallowed-update)))
+        (log/error e "exception in heräte initiation with" (ex-data e))))
+    (catch Exception e
+      (log/error e "exception in heräte initiation"))))
+
+(defn initiate-by-hoks-ids!
+  "Call initiate-all-palautteet! for the hokses with hoks-id's"
+  [hoks-ids]
+  (doseq [hoks-id hoks-ids]
+    (log/info "initiate-all-palautteet-for-hoks-ids!: HOKS id" hoks-id)
+    (let [hoks (hoks/get-by-id hoks-id)
+          opiskeluoikeus (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
+          ctx {:hoks            hoks
+               :opiskeluoikeus  opiskeluoikeus
+               ::tapahtuma/type :reinit-palaute}]
+      (initiate-all! ctx))))
+
+(defn reinit-for-uninitiated-hokses!
+  "Fetch <batchsize> HOKSes from DB that do not have corresponding palaute
+  records, and initiate palautteet for them to make sure that their
+  palautteet will be handled when they are due (their heratepvm)."
+  [batchsize]
+  (log/info "reinit-palautteet-for-uninitiated-hokses!: making batch of"
+            batchsize "HOKSes")
+  (->> {:batchsize batchsize}
+       (get-hokses-with-unhandled-palautteet! db/spec)
+       (map :id)
+       (initiate-by-hoks-ids!)))

@@ -3,7 +3,6 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
-            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
@@ -29,19 +28,6 @@
       (count periods) limit start end)
     (heratepalvelu/send-workplace-periods! periods)
     periods))
-
-(defn tyopaikkajaksot
-  "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
-  that are tyopaikkajaksos. Returns a lazy sequence."
-  [hoks]
-  (filter oht/tyopaikkajakso? (oht/osaamisen-hankkimistavat hoks)))
-
-(defn initiate-all-uninitiated!
-  "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
-  tyopaikkajaksos in HOKS for which palaute has not been already initiated."
-  [{:keys [hoks] :as ctx}]
-  (run! #(palaute/initiate-if-needed! (assoc ctx :jakso %))
-        (tyopaikkajaksot hoks)))
 
 (defn ensure-tpo-nippu!
   "Makes sure that the nippu for the työelämäpalaute exists in

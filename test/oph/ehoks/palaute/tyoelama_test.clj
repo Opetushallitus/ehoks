@@ -15,6 +15,7 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
@@ -235,13 +236,6 @@
       "2021-12-27" "2022-01-01"
       "2021-04-25" "2021-05-01"
       "2022-06-24" "2022-07-01")))
-
-(deftest test-tyopaikkajaksot
-  (testing (str "The function returns osaamisen hankkimistavat with koodi-uri"
-                "\"osaamisenhankkimistapa_koulutussopimus\" or "
-                "\"osaamisenhankkimistapa_oppisopimus\"")
-    (is (= (map :yksiloiva-tunniste (tep/tyopaikkajaksot hoks-test/hoks-1))
-           '("1" "3" "4" "7" "9")))))
 
 (deftest test-initial-state-and-reason
   (testing "On HOKS creation or update"
@@ -492,31 +486,6 @@
             (is (logged? 'oph.ehoks.palaute
                          :info
                          #":jo-lahetetty"))))))))
-
-(deftest test-initiate-all-uninitiated!
-  (with-redefs [date/now (constantly (LocalDate/of 2023 10 18))
-                organisaatio/get-organisaatio!
-                organisaatio-test/mock-get-organisaatio!]
-    (db-hoks/insert-hoks!
-      {:id                 (:id hoks-test/hoks-1)
-       :oppija-oid         (:oppija-oid hoks-test/hoks-1)
-       :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
-    (testing (str "The function successfully initiates kyselys for every "
-                  "tyopaikkajakso in HOKS.")
-      (tep/initiate-all-uninitiated! {:hoks hoks-test/hoks-1
-                                      :opiskeluoikeus oo-test/opiskeluoikeus-1
-                                      ::palaute/type :ohjaajakysely
-                                      ::tapahtuma/type :hoks-tallennus})
-      (doseq [jakso (tep/tyopaikkajaksot hoks-test/hoks-1)]
-        (let [real (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                         db/spec
-                         {:hoks-id            (:id hoks-test/hoks-1)
-                          :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-                       (dissoc :id :created-at :updated-at)
-                       (->> (remove-vals nil?)))
-              expected (build-expected-herate jakso hoks-test/hoks-1)]
-          (is (= real expected)
-              ["diff: " (clojure.data/diff real expected)]))))))
 
 (defn clear-ddb-jakso-table! []
   (doseq [jakso (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})]

@@ -13,7 +13,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :as mw]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.initiation :as palaute]
+            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.restful :as rest]
@@ -190,7 +190,7 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
-      (palaute/initiate-all-palautteet!
+      (palaute/initiate-all!
         (assoc ctx :hoks hoks :tx tx ::tapahtuma/type :hoks-tallennus))
       hoks)))
 
@@ -202,7 +202,7 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [updated-hoks (db-handler hoks)]
-      (palaute/initiate-all-palautteet!
+      (palaute/initiate-all!
         (assoc ctx :hoks updated-hoks :tx tx ::tapahtuma/type :hoks-tallennus))
       updated-hoks)))
 
