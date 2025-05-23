@@ -1,16 +1,12 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]
             [medley.core :refer [greatest map-vals]]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]))
 
@@ -20,31 +16,6 @@
   "Translate palaute-db heräte source name to equivalent used in Herätepalvelu."
   {"ehoks_update" "sqs_viesti_ehoksista"
    "koski_update" "tiedot_muuttuneet_koskessa"})
-
-(defn initiate-every-needed!
-  "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
-  but also returns a count of the number of kyselys initiated."
-  [kysely-type hoksit]
-  (count (filter #(= :odottaa-kasittelya
-                     (palaute/initiate-if-needed!
-                       {:hoks           %
-                        :opiskeluoikeus (koski/get-opiskeluoikeus!
-                                          (:opiskeluoikeus-oid %))
-                        ::palaute/type kysely-type
-                        ::tapahtuma/type :reinit-palaute}))
-                 hoksit)))
-
-(defn reinitiate-hoksit-between!
-  "Hakee ei-TUVA-HOKSit tietyllä aikavälillä ja päivittää niiden
-  palautteet ja lähettää SQS-viestit samaan tapaan kuin HOKSit olisi
-  juuri tallennettu."
-  [kyselytyyppi from to]
-  (log/info "Reinitiating" kyselytyyppi "for HOKSit between" from "and" to)
-  (let [fetcher
-        (case kyselytyyppi
-          :aloituskysely db-hoks/select-non-tuva-hoksit-started-between
-          :paattokysely db-hoks/select-non-tuva-hoksit-finished-between)]
-    (initiate-every-needed! kyselytyyppi (fetcher from to))))
 
 (defn osaamisen-hankkimistavat->tutkinnonosat-hankkimistavoittain
   [ohts]

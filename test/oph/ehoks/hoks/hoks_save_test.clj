@@ -715,14 +715,6 @@
             #{["odottaa_kasittelya" "aloittaneet" (LocalDate/of 2021 1 1)]
               ["odottaa_kasittelya" "valmistuneet" (LocalDate/of 2022 12 15)]
               ["lahetetty" "aloittaneet" (LocalDate/of 2019 3 18)]})
-        (is (= 1 (opalaute/reinitiate-hoksit-between!
-                   :aloituskysely
-                   (LocalDate/of 2021 1 1)
-                   (LocalDate/of 2021 6 1))))
-        (is (= 1 (opalaute/reinitiate-hoksit-between!
-                   :paattokysely
-                   (LocalDate/of 2022 12 1)
-                   (LocalDate/of 2022 12 30))))
         (eq (set (map (juxt :tila :kyselytyyppi :heratepvm)
                       (palaute/get-by-hoks-id-and-kyselytyypit!
                         db/spec

@@ -1,7 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [clojure.tools.logging :as log]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.arvo :as arvo]
+  (:require [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
@@ -9,25 +7,6 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]
             [oph.ehoks.utils.string :as u-str]))
-
-(defn finished-workplace-periods!
-  "Queries for all finished workplace periods between start and end"
-  [start end limit]
-  (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot "hyto" start end limit)
-        hptos (db-hoks/select-paattyneet-tyoelamajaksot "hpto" start end limit)
-        hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end limit)]
-    (concat hytos hptos hatos)))
-
-(defn process-finished-workplace-periods!
-  "Finds all finished workplace periods between dates start and
-  end and sends them to a SQS queue"
-  [start end limit]
-  (let [periods (finished-workplace-periods! start end limit)]
-    (log/infof
-      "Sending %d  (limit %d) finished workplace periods between %s - %s"
-      (count periods) limit start end)
-    (heratepalvelu/send-workplace-periods! periods)
-    periods))
 
 (defn ensure-tpo-nippu!
   "Makes sure that the nippu for the työelämäpalaute exists in
