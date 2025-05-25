@@ -194,8 +194,8 @@
         (palaute/initiate-if-needed!
           {:hoks            hoks-test/hoks-1
            :opiskeluoikeus  oo-test/opiskeluoikeus-1
-           ::palaute/type kysely-type
-           ::tapahtuma/type :hoks-tallennus})))
+           ::tapahtuma/type :hoks-tallennus}
+          kysely-type)))
     (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                    WHERE hoks_id=? RETURNING *" (:id hoks-test/hoks-1)])
 
@@ -249,8 +249,7 @@
       (testing "Testing that function `initiate-if-needed!`"
         (testing "stores kysely info to `palautteet` DB table"
           (doseq [kysely-type [:aloituskysely :paattokysely]]
-            (palaute/initiate-if-needed!
-              (assoc ctx ::palaute/type kysely-type)))
+            (palaute/initiate-if-needed! ctx kysely-type))
           (is (= (set (map
                         (juxt :kyselytyyppi :uusi-tila :syy)
                         (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
@@ -289,10 +288,8 @@
         (testing "if opiskeluoikeus is not found, will wait for heratepvm"
           (are [kysely-type]
                (= :odottaa-kasittelya
-                  (palaute/initiate-if-needed!
-                    (assoc ctx
-                           :opiskeluoikeus nil
-                           ::palaute/type kysely-type)))
+                  (palaute/initiate-if-needed! (assoc ctx :opiskeluoikeus nil)
+                                               kysely-type))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate if it is already handled by herätepalvelu"
@@ -316,15 +313,14 @@
                                    hoks-test/hoks-1)})))
           (are [kysely-type]
                (= :heratepalvelussa
-                  (palaute/initiate-if-needed!
-                    (assoc ctx ::palaute/type kysely-type)))
+                  (palaute/initiate-if-needed! ctx kysely-type))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate kysely if one already exists for HOKS"
           (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                          WHERE hoks_id=12345 RETURNING *"])
-          (are [kysely-type] (nil? (palaute/initiate-if-needed!
-                                     (assoc ctx ::palaute/type kysely-type)))
+          (are [kysely-type] (nil? (palaute/initiate-if-needed! ctx
+                                                                kysely-type))
             :aloituskysely :paattokysely))))))
 
 (defn create-arvo-kyselylinkki!

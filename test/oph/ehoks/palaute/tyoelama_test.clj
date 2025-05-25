@@ -386,8 +386,8 @@
           {:hoks            hoks-test/hoks-1
            :jakso           test-jakso
            :opiskeluoikeus  oo-test/opiskeluoikeus-1
-           ::palaute/type   :ohjaajakysely
-           ::tapahtuma/type :hoks-tallennus})
+           ::tapahtuma/type :hoks-tallennus}
+          :ohjaajakysely)
         (let [real (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                          db/spec
                          {:hoks-id            (:id hoks-test/hoks-1)
@@ -431,8 +431,8 @@
             {:hoks            hoks-test/hoks-1
              :jakso           test-jakso
              :opiskeluoikeus  oo-test/opiskeluoikeus-1
-             ::palaute/type   :ohjaajakysely
-             ::tapahtuma/type :hoks-tallennus})
+             ::tapahtuma/type :hoks-tallennus}
+            :ohjaajakysely)
           (is (= (map (juxt :vanha-tila :uusi-tila)
                       (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                         db/spec
@@ -444,8 +444,8 @@
             {:hoks            hoks-test/hoks-1
              :jakso           test-jakso
              :opiskeluoikeus  oo-test/opiskeluoikeus-1
-             ::palaute/type   :ohjaajakysely
-             ::tapahtuma/type :hoks-tallennus})
+             ::tapahtuma/type :hoks-tallennus}
+            :ohjaajakysely)
           (is (= (map (juxt :vanha-tila :uusi-tila :syy)
                       (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                         db/spec
@@ -469,8 +469,8 @@
               {:hoks            hoks-test/hoks-1
                :jakso           test-jakso
                :opiskeluoikeus  oo-test/opiskeluoikeus-1
-               ::palaute/type   :ohjaajakysely
-               ::tapahtuma/type :hoks-tallennus})
+               ::tapahtuma/type :hoks-tallennus}
+              :ohjaajakysely)
             (is (= (map (juxt :vanha-tila :uusi-tila :syy)
                         (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                           db/spec

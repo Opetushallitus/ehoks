@@ -395,10 +395,10 @@
 (defn initiate-if-needed!
   "Saves heräte data required for apalautekysely to database and sends it to
   Returns the initial state of kysely if it was created, `nil` otherwise."
-  [{:keys [hoks jakso ::type] :as ctx}]
+  [{:keys [hoks jakso] :as ctx} kysely-type]
   (jdbc/with-db-transaction
     [tx db/spec {:isolation :serializable}]
-    (let [ctx (enrich-ctx! (assoc ctx :tx tx))
+    (let [ctx (enrich-ctx! (assoc ctx ::type kysely-type :tx tx))
           [proposed-state field reason] (initial-state-and-reason ctx)
           state (if (= field :opiskeluoikeus-oid)
                   :odottaa-kasittelya
@@ -406,7 +406,7 @@
           lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
       (log/infof
         "Initial state for %s%s of HOKS %d will be %s because of %s in %s"
-        type
+        kysely-type
         (if jakso (str " of jakso " (:yksiloiva-tunniste jakso)) "")
         (:id hoks)
         (or state :ei-luoda-ollenkaan)
@@ -424,10 +424,10 @@
   "Initialise all palautteet (opiskelija & tyoelama) that should be."
   [{:keys [hoks] :as ctx}]
   (try
-    (run! initiate-if-needed!
-          (concat (map #(assoc ctx ::type %) [:aloituskysely :paattokysely])
-                  (map #(assoc ctx ::type :ohjaajakysely :jakso %)
-                       (oht/tyopaikkajaksot hoks))))
+    (initiate-if-needed! ctx :aloituskysely)
+    (initiate-if-needed! ctx :paattokysely)
+    (run! #(initiate-if-needed! (assoc ctx :jakso %) :ohjaajakysely)
+          (oht/tyopaikkajaksot hoks))
     (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
     (catch clojure.lang.ExceptionInfo e
       (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))
