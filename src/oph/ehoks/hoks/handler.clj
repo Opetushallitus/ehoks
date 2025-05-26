@@ -318,10 +318,12 @@
         (c-api/PATCH "/kyselylinkki" request
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]
+          (log/info "PATCHing kyselylinkki with data" data)
           (assoc
             (if-let [old-data
                      (not-empty (select-kyselylinkki (:kyselylinkki data)))]
-              (do (kyselylinkki/update! data)
+              (do (log/info "Kyselylinkki found with data" old-data)
+                  (kyselylinkki/update! data)
                   (assoc (response/no-content)
                          ::audit/changes
                          {:old old-data
@@ -386,14 +388,19 @@
             (c-api/POST "/kyselylinkki" request
               :summary "Lisää kyselylinkin hoksille"
               :body [data hoks-schema/kyselylinkki]
-              (if (not-empty (:hoks request))
-                (let [enriched-data
-                      (assoc
-                        data
-                        :oppija-oid (get-in request [:hoks :oppija-oid])
-                        :hoks-id (get-in request [:hoks :id]))]
-                  (kyselylinkki/insert! enriched-data)
-                  (assoc (response/no-content)
-                         ::audit/changes {:new enriched-data}))
-                (response/not-found
-                  {:error "HOKS not found with given HOKS ID"})))))))))
+              (let [oppija-oid (get-in request [:hoks :oppija-oid])
+                    hoks-id (get-in request [:hoks :id])
+                    enriched-data
+                    (assoc data :oppija-oid oppija-oid :hoks-id hoks-id)]
+                (log/info "POSTing kyselylinkki for hoks" hoks-id
+                          "with data" enriched-data)
+                (assoc
+                  (if (not-empty (:hoks request))
+                    (do
+                      (log/info "creating kyselylinkki as" enriched-data)
+                      (kyselylinkki/insert! enriched-data)
+                      (assoc (response/no-content)
+                             ::audit/changes {:new enriched-data}))
+                    (response/not-found
+                      {:error "HOKS not found with given HOKS ID"}))
+                  ::audit/target {:kyselylinkki (:kyselylinkki data)})))))))))
