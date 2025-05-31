@@ -23,8 +23,7 @@
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date]
             [taoensso.faraday :as far])
-  (:import [clojure.lang ExceptionInfo]
-           (java.time LocalDate)
+  (:import (java.time LocalDate)
            (java.util UUID)))
 
 (use-fixtures :once test-utils/migrate-database)
@@ -292,7 +291,7 @@
                     :opiskeluoikeus oo-test/opiskeluoikeus-5
                     :jakso nil}
                    :ohjaajakysely)
-                 [nil :osaamisen-hankkimistapa :poistunut])))
+                 [:ei-laheteta :osaamisen-hankkimistapa :poistunut])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
@@ -719,6 +718,18 @@
             (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
             (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                    "ei_laheteta"))))
+        (testing (str "Doesn't create vastaajatunnus if herate already exists "
+                      "in Heratepalvelu.")
+          ; Reset aloituskysely and paattokysely to back to state
+          ; before vastaajatunnus creation.
+          (palaute/update! db/spec {:id 5 :jakson-yksiloiva-tunniste 4})
+          (is (= 2 @create-jaksotunnus-counter))
+          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+          (is (= 3 @create-jaksotunnus-counter))
+          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+          (is (= 3 @create-jaksotunnus-counter))
+          (is (= "heratepalvelussa"
+                 (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)})))))
         (testing (str "If jakso has disappeared before checks, "
                       "it should be marked as `ei_laheteta`.")
           (db-helpers/query ["UPDATE osaamisen_hankkimistavat
@@ -728,13 +739,13 @@
                              SET tila='odottaa_kasittelya'
                              WHERE jakson_yksiloiva_tunniste='4' RETURNING *"])
           (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
-          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
+          (is (= 3 @create-jaksotunnus-counter))
           (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                  "ei_laheteta")))
         (testing (str "Palaute should be marked as \"ei_laheteta\" when there "
                       "are one or more open keskeytymisajanjakso. No call to "
                       "Arvo should be made.")
           (vt/handle-palaute-waiting-for-heratepvm! kesk-palaute)
-          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
+          (is (= 3 @create-jaksotunnus-counter))
           (is (= (:tila (palaute/get-by-id! db/spec {:id (:id kesk-palaute)}))
                  "ei_laheteta")))))))

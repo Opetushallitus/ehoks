@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
-            [clojure.java.jdbc :as jdbc]
             [taoensso.faraday :as far]
             [medley.core :refer [remove-vals find-first]]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
@@ -581,7 +580,11 @@
     (let [hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
                  {:hoks hoks-test/hoks-4
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
-          vastauslinkki-counter (atom 0)]
+          vastauslinkki-counter (atom 0)
+          [aloituskysely paattokysely]
+          (palaute/get-by-hoks-id-and-kyselytyypit!
+            db/spec
+            {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "handle-amis-palautteet-on-heratepvm!"
         (client/set-post!
           (fn [^String url options]
@@ -592,11 +595,27 @@
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/bar"
                                           @vastauslinkki-counter)
                       :voimassa_loppupvm "2024-10-10"}})))
-        (vt/handle-amis-palautteet-on-heratepvm! {})
+        (is (= ["bar1" "bar2"]
+               (vt/handle-amis-palautteet-on-heratepvm! {})))
         (is (= [["kysely_muodostettu" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
                      :kyselytyypit ["aloittaneet" "valmistuneet"]}
                     (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                     (map (juxt :tila :kyselytyyppi)))))
+        (testing (str "Doesn't create kyselylinkki if herate already exists "
+                      "in Heratepalvelu.")
+          ; Reset aloituskysely and paattokysely to back to state
+          ; before vastaajatunnus creation.
+          (palaute/update! db/spec aloituskysely)
+          (palaute/update! db/spec paattokysely)
+          (is (= 2 @vastauslinkki-counter))
+          (vt/handle-amis-palautteet-on-heratepvm! {})
+          (is (= 2 @vastauslinkki-counter)) ; shouldn't be incremented
+          (is (= [["heratepalvelussa" "aloittaneet"]
+                  ["heratepalvelussa" "valmistuneet"]]
+                 (->> {:hoks-id (:id hoks)
+                       :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                      (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                      (map (juxt :tila :kyselytyyppi))))))
         (client/reset-functions!)))))
