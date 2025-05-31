@@ -77,7 +77,7 @@
     [nil :yksiloiva-tunniste :jo-lahetetty]
 
     (nil? jakso)
-    [nil :osaamisen-hankkimistapa :poistunut]
+    [:ei-laheteta :osaamisen-hankkimistapa :poistunut]
 
     (not (get jakso :loppu))
     [nil :loppu :ei-ole]

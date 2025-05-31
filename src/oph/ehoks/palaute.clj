@@ -143,7 +143,8 @@
   [{:keys [existing-palaute] :as ctx} tila reason lisatiedot]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (update! tx {:id (:id existing-palaute) :tila tila})
+    (update! tx {:id   (:id existing-palaute)
+                 :tila (utils/to-underscore-str tila)})
     (tapahtuma/build-and-insert! ctx tila reason lisatiedot)))
 
 (defn feedback-collecting-prevented?

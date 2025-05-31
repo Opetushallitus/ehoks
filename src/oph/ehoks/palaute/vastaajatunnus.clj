@@ -1,21 +1,22 @@
 (ns oph.ehoks.palaute.vastaajatunnus
-  (:require [medley.core :refer [find-first map-vals]]
+  (:require [clojure.java.jdbc :as jdbc]
             [clojure.set]
+            [clojure.tools.logging :as log]
+            [medley.core :refer [find-first map-vals]]
+            [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
-            [oph.ehoks.db :as db]
-            [oph.ehoks.utils :as utils]
-            [oph.ehoks.utils.date :as date]
-            [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]
-            [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
-            [oph.ehoks.palaute.tyoelama :as tep])
+            [oph.ehoks.palaute.tyoelama :as tep]
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
            (java.util UUID)))
 
@@ -26,15 +27,29 @@
   (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))
         suoritus (find-first suoritus/ammatillinen?
-                             (:suoritukset opiskeluoikeus))]
+                             (:suoritukset opiskeluoikeus))
+        koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
     (assoc ctx
+           :existing-ddb-herate
+           (delay
+             (if (:jakson-yksiloiva-tunniste existing-palaute)
+               (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+                 (:id hoks) (:jakson-yksiloiva-tunniste existing-palaute))
+               (ddb/get-item!
+                 :amis
+                 {:toimija_oppija (str koulutustoimija "/" (:oppija-oid hoks))
+                  :tyyppi_kausi   (format "%s/%s"
+                                          (amis/translate-kyselytyyppi
+                                            (:kyselytyyppi existing-palaute))
+                                          (palaute/rahoituskausi
+                                            (:heratepvm existing-palaute)))})))
            :niputuspvm            (tep/next-niputus-date (date/now))
            :vastaamisajan-alkupvm (tep/next-niputus-date
                                     (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus
            :hk-toteuttaja (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
-           :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+           :koulutustoimija koulutustoimija
            :toimipiste (palaute/toimipiste-oid! suoritus))))
 
 (defn- handle-exception
@@ -208,17 +223,18 @@
   [{:keys [existing-palaute hoks jakso] :as ctx}
    {:keys [check-palaute] :as handlers}]
   (let [[state field reason]
-        (check-palaute ctx (make-kysely-type existing-palaute))]
+        (check-palaute ctx (make-kysely-type existing-palaute))
+        lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
     (log/info "Requested state for palaute" (:id existing-palaute)
               "of HOKS" (:id hoks) "is" (or state :ei-kasitella)
               "because of" reason "in" field)
-    (if (not= :odottaa-kasittelya state)
-      (->> (select-keys (merge jakso hoks) [field])
-           (map-vals str)
-           (palaute/update-tila! ctx "ei_laheteta" reason))
-      (-> ctx
-          (create-and-save-tunnus! handlers)
-          (sync-to-heratepalvelu! handlers)))))
+    (if state
+      (if (= :odottaa-kasittelya state)
+        (-> ctx
+            (create-and-save-tunnus! handlers)
+            (sync-to-heratepalvelu! handlers))
+        (palaute/update-tila! ctx state reason lisatiedot))
+      (tapahtuma/build-and-insert! ctx reason lisatiedot))))
 
 (defn handle-palaute-waiting-for-heratepvm!
   "Check that palaute is part of kohderyhmä and create and save
