@@ -28,8 +28,8 @@
         suoritus (find-first suoritus/ammatillinen?
                              (:suoritukset opiskeluoikeus))]
     (assoc ctx
-           :niputuspvm            (tep/next-niputus-date (date/now))
-           :vastaamisajan-alkupvm (tep/next-niputus-date
+           :niputuspvm            (palaute/next-niputus-date (date/now))
+           :vastaamisajan-alkupvm (palaute/next-niputus-date
                                     (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus
@@ -115,12 +115,12 @@
                 (:jakson-yksiloiva-tunniste palaute)
                 (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))]
     (enrich-ctx! {:hoks hoks :jakso jakso :existing-palaute palaute
-                  :tapahtumatyyppi :arvo-luonti
+                  ::tapahtuma/type :arvo-luonti
                   :request-id (str (UUID/randomUUID))})))
 
 (defn make-kysely-type
   "Map DB-level kyselytyyppi back into what is expected by
-  initial-palaute-state-and-reason"
+  initial-state-and-reason"
   [palaute]
   (-> (:kyselytyyppi palaute)
       ({"aloittaneet" :aloituskysely
@@ -205,10 +205,10 @@
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so, using the given functions for appropriately
   handling different amis- and tep-palaute."
-  [{:keys [existing-palaute hoks jakso] :as ctx}
-   {:keys [check-palaute] :as handlers}]
+  [{:keys [existing-palaute hoks jakso] :as ctx} handlers]
   (let [[state field reason]
-        (check-palaute ctx (make-kysely-type existing-palaute))]
+        (palaute/initial-state-and-reason
+          (assoc ctx ::palaute/type (make-kysely-type existing-palaute)))]
     (log/info "Requested state for palaute" (:id existing-palaute)
               "of HOKS" (:id hoks) "is" (or state :ei-kasitella)
               "because of" reason "in" field)
@@ -237,7 +237,7 @@
         [tx db/spec]
         (-> (:ctx (ex-data e))
             (or {:existing-palaute palaute})
-            (assoc :tapahtumatyyppi :arvo-luonti :tx tx)
+            (assoc ::tapahtuma/type :arvo-luonti :tx tx)
             (handle-exception e)))
       nil) ; no arvo-tunnus created
     (catch Exception e

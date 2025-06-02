@@ -12,14 +12,14 @@
   ([ctx state reason lisatiedot]
     (build ctx state reason lisatiedot nil))
 
-  ([{:keys [tapahtumatyyppi existing-palaute request-id] :as ctx}
+  ([{:keys [::type existing-palaute request-id] :as ctx}
     state reason lisatiedot palaute]
-    {:pre [(some? tapahtumatyyppi) (some? state)]}
+    {:pre [(some? type) (some? state)]}
     {:palaute-id      (or (:id palaute) (:id existing-palaute))
      :vanha-tila      (utils/to-underscore-str
                         (or (:tila existing-palaute) state))
      :uusi-tila       (utils/to-underscore-str state)
-     :tapahtumatyyppi (utils/to-underscore-str tapahtumatyyppi)
+     :tapahtumatyyppi (utils/to-underscore-str type)
      :syy             (utils/to-underscore-str (or reason :hoks-tallennettu))
      :lisatiedot      (assoc lisatiedot :request-id request-id)}))
 

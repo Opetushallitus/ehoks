@@ -10,8 +10,10 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema.oid :as oid-schema]
             [oph.ehoks.virkailija.middleware :as m]
@@ -242,73 +244,4 @@
                ::audit/target  (audit/hoks-target-data hoks-id))
         (assoc
           (response/not-found {:error "No HOKS found with given hoks-id"})
-          ::audit/target {:hoks-id hoks-id})))
-
-    (c-api/POST "/hoks/:hoks-id/resend-aloitusherate" request
-      :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
-      :header-params [caller-id :- s/Str]
-      :path-params [hoks-id :- s/Int]
-      (assoc
-        (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (= :odottaa-kasittelya
-                 (op/initiate-if-needed!
-                   {:hoks           hoks
-                    :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                                      (:opiskeluoikeus-oid hoks))}
-                   :aloituskysely))
-            (response/no-content)
-            (response/bad-request
-              {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
-                           "HOKS is TUVA related.")}))
-          (do (log/warn "No HOKS found with given hoks-id " hoks-id)
-              (response/not-found {:error "No HOKS found with given hoks-id"})))
-        ::audit/operation :system/resend-aloitusherate
-        ::audit/target    {:hoks-id hoks-id}))
-
-    (c-api/POST "/hoks/:hoks-id/resend-paattoherate" request
-      :summary "Lähettää uuden päättökyselyherätteen herätepalveluun"
-      :header-params [caller-id :- s/Str]
-      :path-params [hoks-id :- s/Int]
-      (assoc
-        (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (= :odottaa-kasittelya
-                 (op/initiate-if-needed!
-                   {:hoks hoks
-                    :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                                      (:opiskeluoikeus-oid hoks))}
-                   :paattokysely))
-            (response/no-content)
-            (response/bad-request
-              {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
-                           "`osaamisen-hankkimisen-pvm` has not been set or "
-                           "HOKS is TUVA related.")}))
-          (do (log/warn "No HOKS found with given hoks-id:" hoks-id)
-              (response/not-found {:error "No HOKS found with given hoks-id"})))
-        ::audit/operation :system/resend-paattoherate
-        ::audit/target    {:hoks-id hoks-id}))
-
-    (c-api/POST "/hoks/resend-aloitusherate" request
-      :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun.
-               Tätä kutsutaan käsin käyttöliittymän ylläpitonäkymästä."
-      :header-params [caller-id :- s/Str]
-      :query-params [from :- LocalDate
-                     to :- LocalDate]
-      :return {:count s/Int}
-      (let [result (op/reinitiate-hoksit-between! :aloituskysely from to)]
-        (assoc (restful/ok {:count result})
-               ::audit/operation :system/resend-aloitusheratteet
-               ::audit/target {:hoksit-from from
-                               :hoksit-to   to})))
-
-    (c-api/POST "/hoks/resend-paattoherate" request
-      :summary "Lähettää uudet päättökyselyherätteet herätepalveluun.
-               Tätä kutsutaan käsin käyttöliittymän ylläpitonäkymästä."
-      :header-params [caller-id :- s/Str]
-      :query-params [from :- LocalDate
-                     to :- LocalDate]
-      :return {:count s/Int}
-      (let [result (op/reinitiate-hoksit-between! :paattokysely from to)]
-        (assoc (restful/ok {:count result})
-               ::audit/operation :system/resend-paattoheratteet
-               ::audit/target    {:hoksit-from from
-                                  :hoksit-to   to})))))
+          ::audit/target {:hoks-id hoks-id})))))

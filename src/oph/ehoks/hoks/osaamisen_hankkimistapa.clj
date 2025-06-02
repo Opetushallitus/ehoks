@@ -1,7 +1,8 @@
 (ns oph.ehoks.hoks.osaamisen-hankkimistapa
-  (:require [medley.core :refer [find-first]]
+  (:require [hugsql.core :as hugsql]
+            [medley.core :refer [find-first]]
             [oph.ehoks.utils :refer [get-in-and-propagate-fields]]
-            [hugsql.core :as hugsql])
+            [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/hoks/osaamisen_hankkimistapa.sql")
@@ -33,6 +34,23 @@
   "Whether osaamisen hankkimistapa `oht` is tyopaikkajakso."
   [oht]
   (tyopaikkajakso-type? (:osaamisen-hankkimistapa-koodi-uri oht)))
+
+(defn tyopaikkajaksot
+  "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
+  that are tyopaikkajaksos. Returns a lazy sequence."
+  [hoks]
+  (filter tyopaikkajakso? (osaamisen-hankkimistavat hoks)))
+
+(defn fully-keskeytynyt?
+  "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
+  [tyoelamajakso]
+  (some (fn [k-jakso]
+          (and (:loppu tyoelamajakso)
+               (date/is-same-or-before (:alku k-jakso) (:loppu tyoelamajakso))
+               (or (not (:loppu k-jakso))
+                   (date/is-same-or-before (:loppu tyoelamajakso)
+                                           (:loppu k-jakso)))))
+        (:keskeytymisajanjaksot tyoelamajakso)))
 
 (defn palautteenkeruu-allowed-tyopaikkajakso?
   "Whether oht is a työpaikkajakso from which we can collect feedback."

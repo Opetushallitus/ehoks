@@ -2,11 +2,13 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
-            [medley.core :refer [assoc-some find-first]]
+            [medley.core :refer [assoc-some find-first greatest map-vals]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -103,21 +105,64 @@
                        (suoritus/tyyppi)
                        (koski-suoritustyyppi->kyselytyyppi)
                        (or "valmistuneet"))
-    :tyopaikkakysely "tyopaikkajakson_suorittaneet"))
+    :ohjaajakysely "tyopaikkajakson_suorittaneet"))
+
+(def translate-kyselytyyppi
+  "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
+  i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
+  This should not be needed when eHOKS-Herätepalvelu integration is done."
+  {"aloittaneet"       "aloittaneet"
+   "valmistuneet"      "tutkinnon_suorittaneet"
+   "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
+
+(def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
+                        :paattokysely  :osaamisen-saavuttamisen-pvm})
+
+(defn next-niputus-date
+  "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
+  Niputuspäivämäärät ovat kuun ensimmäinen ja kuudestoista päivä."
+  ^LocalDate [^LocalDate pvm]
+  (let [year  (.getYear pvm)
+        month (.getMonthValue pvm)
+        day   (.getDayOfMonth pvm)]
+    (if (< day 16)
+      (LocalDate/of year month 16)
+      (if (= 12 month)
+        (LocalDate/of (inc year) 1 1)
+        (LocalDate/of year (inc month) 1)))))
+
+(defn- heratepvm
+  "Returns the heratepvm for the palaute type."
+  [{:keys [hoks jakso ::type] :as ctx}]
+  {:post [(some? %)]}
+  (if (= type :ohjaajakysely)
+    (:loppu jakso)
+    (get hoks (herate-date-basis type))))
+
+(defn- alkupvm
+  [kysely-type heratepvm]
+  {:post [(some? %)]}
+  (if (= kysely-type :ohjaajakysely)
+    (next-niputus-date heratepvm)
+    (greatest heratepvm (date/now))))
 
 (defn build!
-  "A helper function to build palaute, utilized by functions with a similar name
-  in `palaute.opiskelija` and `palaute.tyoelama` namespaces. Fetches some of the
-  required information from Organisaatiopalvelu and Koski.
-
-  NOTE: This doesn't build a complete palaute that should be inserted to DB but
-  only part of it."
-  [{:keys [hoks opiskeluoikeus koulutustoimija existing-palaute] :as ctx} tila]
+  "Builds a palaute to be inserted to DB."
+  [{:keys [hoks jakso opiskeluoikeus koulutustoimija existing-palaute ::type]
+    :as ctx}
+   tila]
   {:pre [(some? tila) (nil-or-unhandled? existing-palaute)]}
-  (let [suoritus (find-first suoritus/ammatillinen?
-                             (:suoritukset opiskeluoikeus))]
+  (let [heratepvm (heratepvm ctx)
+        alkupvm   (alkupvm type heratepvm)
+        suoritus  (find-first suoritus/ammatillinen?
+                              (:suoritukset opiskeluoikeus))]
     (assoc-some
       {:hoks-id                        (:id hoks)
+       :kyselytyyppi                   (kyselytyyppi type opiskeluoikeus)
+       :heratepvm                      heratepvm
+       :voimassa-alkupvm               alkupvm
+       :voimassa-loppupvm              (vastaamisajan-loppupvm
+                                         heratepvm alkupvm)
        :tila                           (utils/to-underscore-str tila)
        :suorituskieli                  (suoritus/kieli suoritus)
        :koulutustoimija                (or koulutustoimija
@@ -127,7 +172,8 @@
        :tutkintonimike                 (suoritus/tutkintonimike suoritus)
        :tutkintotunnus                 (suoritus/tutkintotunnus suoritus)
        :hankintakoulutuksen-toteuttaja (hankintakoulutuksen-toteuttaja! hoks)
-       :herate-source                  "ehoks_update"}
+       :herate-source                  "ehoks_update"
+       :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)}
       :id
       (:id existing-palaute))))
 
@@ -176,12 +222,11 @@
   [opiskeluoikeus]
   (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
-(defn initial-palaute-state-and-reason-if-not-kohderyhma
+(defn- initial-state-and-reason-if-not-kohderyhma
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
   collected because it's not part of kohderyhmä; otherwise returns nil."
-  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate
-           existing-palaute] :as ctx}
+  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate] :as ctx}
    herate-date-field]
   (let [herate-date (get (or jakso hoks) herate-date-field)]
     (cond
@@ -219,3 +264,200 @@
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
+
+(defn- dispatch-fn
+  [ctx]
+  {:pre [(::type ctx)]}
+  (get {:aloituskysely :opiskelijapalaute
+        :paattokysely  :opiskelijapalaute
+        :ohjaajakysely :tyoelamapalaute}
+       (::type ctx)))
+
+(defmulti existing!
+  "Returns an existing palaute if one already exists for palaute type."
+  dispatch-fn)
+
+(defmethod existing! :opiskelijapalaute
+  [{:keys [tx hoks koulutustoimija ::type] :as ctx}]
+  (let [rkausi        (rahoituskausi
+                        (get hoks (herate-date-basis type)))
+        kyselytyypit  (case type
+                        :aloituskysely ["aloittaneet"]
+                        :paattokysely  ["valmistuneet" "osia_suorittaneet"])
+        params        {:kyselytyypit     kyselytyypit
+                       :oppija-oid       (:oppija-oid hoks)
+                       :koulutustoimija  koulutustoimija}]
+    (->> (get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
+         (vec)
+         (filterv #(= rkausi (rahoituskausi (:heratepvm %))))
+         ((fn [existing-palautteet]
+            (when (> (count existing-palautteet) 1)
+              (log/errorf (str "Found more than one existing herate for "
+                               "`%s` of HOKS `%d` in rahoituskausi `%s`.")
+                          type
+                          (:id hoks)
+                          rkausi))
+            existing-palautteet))
+         first)))
+
+(defmethod existing! :tyoelamapalaute
+  [{:keys [hoks jakso tx] :as ctx}]
+  (get-by-hoks-id-and-yksiloiva-tunniste!
+    tx {:hoks-id            (:id hoks)
+        :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
+
+(defmulti initial-state-and-reason
+  "Runs several checks against HOKS and opiskeluoikeus to determine if
+  opiskelijapalautekysely or tyoelamapalaute process for jakso should be
+  initiated. Returns the initial state of the palaute (or nil if it cannot be
+  formed at all), the field the decision was based on, and the reason for
+  picking that state."
+  dispatch-fn)
+
+(defmethod initial-state-and-reason :opiskelijapalaute
+  [{:keys [hoks existing-palaute ::type] :as ctx}]
+  (let [herate-basis (herate-date-basis type)]
+    (cond
+      (not (nil-or-unhandled? existing-palaute))
+      [nil herate-basis :jo-lahetetty]
+
+      (and (:hoks-id existing-palaute)
+           (not= (:hoks-id existing-palaute) (:id hoks)))
+      [nil :id :ei-palautteen-alkuperainen-hoks]
+
+      (not (get hoks herate-basis))
+      [nil herate-basis :ei-ole]
+
+      ;; order dependency: nil rules must come first
+
+      (not (:osaamisen-hankkimisen-tarve hoks))
+      [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
+
+      :else
+      (or (initial-state-and-reason-if-not-kohderyhma ctx herate-basis)
+          [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
+
+(defmethod initial-state-and-reason :tyoelamapalaute
+  [{:keys [jakso existing-palaute] :as ctx}]
+  (cond
+    (not (nil-or-unhandled? existing-palaute))
+    [nil :yksiloiva-tunniste :jo-lahetetty]
+
+    (nil? jakso)
+    [nil :osaamisen-hankkimistapa :poistunut]
+
+    (not (get jakso :loppu))
+    [nil :loppu :ei-ole]
+
+    ;; order dependency: nil rules must come first
+
+    (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
+    [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
+
+    (not (oht/has-required-osa-aikaisuustieto? jakso))
+    [:ei-laheteta :osa-aikaisuustieto :ei-ole]
+
+    (oht/fully-keskeytynyt? jakso)
+    [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
+
+    :else
+    (or (initial-state-and-reason-if-not-kohderyhma ctx :loppu)
+        [:odottaa-kasittelya :loppu :hoks-tallennettu])))
+
+(defmulti enrich-ctx!
+  "Add information needed by palaute initiation into context."
+  dispatch-fn)
+
+(defmethod enrich-ctx! :opiskelijapalaute
+  [{:keys [hoks opiskeluoikeus ::type] :as ctx}]
+  (let [koulutustoimija (koulutustoimija-oid! opiskeluoikeus)
+        heratepvm (get hoks (herate-date-basis type))
+        toimija-oppija (str koulutustoimija "/" (:oppija-oid hoks))
+        kyselytyyppi (translate-kyselytyyppi
+                       (kyselytyyppi type opiskeluoikeus))
+        rahoituskausi (rahoituskausi heratepvm)
+        tyyppi-kausi (str kyselytyyppi "/" rahoituskausi)
+        ddb-key {:toimija_oppija toimija-oppija :tyyppi_kausi tyyppi-kausi}
+        existing-palaute-ctx (assoc ctx :koulutustoimija koulutustoimija)]
+    (assoc existing-palaute-ctx
+           :existing-ddb-key ddb-key
+           :existing-ddb-herate (delay (ddb/get-item! :amis ddb-key))
+           :existing-palaute (existing! existing-palaute-ctx))))
+
+(defmethod enrich-ctx! :tyoelamapalaute
+  [{:keys [hoks jakso] :as ctx}]
+  (assoc ctx
+         :existing-ddb-herate
+         (delay (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+                  (:id hoks) (:yksiloiva-tunniste jakso)))
+         :existing-palaute (existing! ctx)))
+
+(defn initiate-if-needed!
+  "Saves heräte data required for apalautekysely to database and sends it to
+  Returns the initial state of kysely if it was created, `nil` otherwise."
+  [{:keys [hoks jakso] :as ctx} kysely-type]
+  (jdbc/with-db-transaction
+    [tx db/spec {:isolation :serializable}]
+    (let [ctx (enrich-ctx! (assoc ctx ::type kysely-type :tx tx))
+          [proposed-state field reason] (initial-state-and-reason ctx)
+          state (if (= field :opiskeluoikeus-oid)
+                  :odottaa-kasittelya
+                  proposed-state)
+          lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
+      (log/infof
+        "Initial state for %s%s of HOKS %d will be %s because of %s in %s"
+        kysely-type
+        (if jakso (str " of jakso " (:yksiloiva-tunniste jakso)) "")
+        (:id hoks)
+        (or state :ei-luoda-ollenkaan)
+        reason
+        field)
+      (if state
+        (->> (build! ctx state)
+             (upsert! tx)
+             (tapahtuma/build-and-insert! ctx state reason lisatiedot))
+        (when (:existing-palaute ctx)
+          (tapahtuma/build-and-insert! ctx reason lisatiedot)))
+      state)))
+
+(defn initiate-all!
+  "Initialise all palautteet (opiskelija & tyoelama) that should be."
+  [{:keys [hoks] :as ctx}]
+  (try
+    (initiate-if-needed! ctx :aloituskysely)
+    (initiate-if-needed! ctx :paattokysely)
+    (run! #(initiate-if-needed! (assoc ctx :jakso %) :ohjaajakysely)
+          (oht/tyopaikkajaksot hoks))
+    (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
+    (catch clojure.lang.ExceptionInfo e
+      (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))
+        (throw (ex-info (str "HOKS contains an unknown organisation"
+                             (:organisation-oid (ex-data e)))
+                        (assoc (ex-data e) :type ::disallowed-update)))
+        (log/error e "exception in heräte initiation with" (ex-data e))))
+    (catch Exception e
+      (log/error e "exception in heräte initiation"))))
+
+(defn initiate-by-hoks-ids!
+  "Call initiate-all-palautteet! for the hokses with hoks-id's"
+  [hoks-ids]
+  (doseq [hoks-id hoks-ids]
+    (log/info "initiate-all-palautteet-for-hoks-ids!: HOKS id" hoks-id)
+    (let [hoks (hoks/get-by-id hoks-id)
+          opiskeluoikeus (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
+          ctx {:hoks            hoks
+               :opiskeluoikeus  opiskeluoikeus
+               ::tapahtuma/type :reinit-palaute}]
+      (initiate-all! ctx))))
+
+(defn reinit-for-uninitiated-hokses!
+  "Fetch <batchsize> HOKSes from DB that do not have corresponding palaute
+  records, and initiate palautteet for them to make sure that their
+  palautteet will be handled when they are due (their heratepvm)."
+  [batchsize]
+  (log/info "reinit-palautteet-for-uninitiated-hokses!: making batch of"
+            batchsize "HOKSes")
+  (->> {:batchsize batchsize}
+       (get-hokses-with-unhandled-palautteet! db/spec)
+       (map :id)
+       (initiate-by-hoks-ids!)))

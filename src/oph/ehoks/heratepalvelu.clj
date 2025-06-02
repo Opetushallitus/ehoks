@@ -6,7 +6,6 @@
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki])
   (:import (java.time LocalDate)))
 
@@ -36,28 +35,6 @@
                        :vastattu (:vastattu status))))
             %1)
          (kyselylinkki/get-by-oppija-oid! oppija-oid))))
-
-(defn set-tep-kasitelty
-  "Marks an osaamisen hankkimistapa as handled (käsitelty)."
-  [hankkimistapa-id to]
-  (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
-
-(defn process-hoksit-without-kyselylinkit
-  "Finds all HOKSit for which kyselylinkit haven't been created and sends them
-  to the SQS queue"
-  [start end limit]
-  (let [aloittaneet
-        (db-hoks/select-hoksit-with-kasittelemattomat-aloitusheratteet
-          start end limit)
-        paattyneet
-        (db-hoks/select-hoksit-with-kasittelemattomat-paattoheratteet
-          start end limit)]
-    (log/infof
-      "Sending %d (limit %d) hoksit between %s and %s"
-      (+ (count aloittaneet) (count paattyneet)) (* 2 limit) start end)
-    (op/initiate-every-needed! :aloituskysely aloittaneet)
-    (op/initiate-every-needed! :paattokysely  paattyneet)
-    (concat aloittaneet paattyneet)))
 
 (defn set-aloitusherate-kasitelty
   "Marks aloitusheräte handled (käsitelty) for a given HOKS."

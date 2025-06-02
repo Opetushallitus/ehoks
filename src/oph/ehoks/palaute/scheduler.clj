@@ -1,8 +1,8 @@
 (ns oph.ehoks.palaute.scheduler
   (:require [chime.core :as chime]
             [clojure.tools.logging :as log]
+            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils :as util]
-            [oph.ehoks.palaute.initiation :as palaute]
             [oph.ehoks.palaute.vastaajatunnus :as vt])
   (:import (java.lang AutoCloseable)
            (java.time Instant LocalTime ZonedDateTime ZoneId Period Duration)))
@@ -28,7 +28,7 @@
   (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
   (let [result (util/with-timeout
                  (* 45 60 1000)
-                 #(palaute/reinit-palautteet-for-uninitiated-hokses! 3000))]
+                 #(palaute/reinit-for-uninitiated-hokses! 3000))]
     (log/info "reinit-palautteet-for-uninitiated-hokses!: ended with result"
               result))
   true)
