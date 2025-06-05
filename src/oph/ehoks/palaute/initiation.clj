@@ -17,7 +17,7 @@
     (op/initiate-if-needed! ctx :aloituskysely)
     (op/initiate-if-needed! ctx :paattokysely)
     (tep/initiate-all-uninitiated! ctx)
-    (hoks/update! (assoc hoks :palaute-handled-at (date/now)))
+    (palaute/mark-hoks-palaute-initiated! db/spec {:hoks-id (:id hoks)})
     (catch clojure.lang.ExceptionInfo e
       (if (= ::organisaatio/organisation-not-found (:type (ex-data e)))
         (throw (ex-info (str "HOKS contains an unknown organisation"
