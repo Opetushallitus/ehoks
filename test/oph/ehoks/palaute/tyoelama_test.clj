@@ -78,14 +78,14 @@
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
     :tutkinto "123456"
-    :alkupvm "2023-12-16"
+    :alkupvm "2024-01-01"
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2023-12-01"
     :ohjaaja_email "olli.ohjaaja@esimerkki.com"
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-01-14"}
+    :viimeinen_vastauspvm "2024-01-30"}
    {:osa_aikaisuus 100
     :ohjaaja_nimi "Olli Ohjaaja"
     :tutkinnonosa_nimi "Testiosa"
@@ -107,14 +107,14 @@
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
     :tutkinto "123456"
-    :alkupvm "2024-01-16"
+    :alkupvm "2024-02-01"
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2024-01-01"
     :ohjaaja_email "olli.ohjaaja@esimerkki.com"
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-02-14"}
+    :viimeinen_vastauspvm "2024-03-01"}
    {:osa_aikaisuus 80
     :ohjaaja_nimi "Matti Meikäläinen"
     :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
@@ -195,14 +195,14 @@
     :tyopaikan_normalisoitu_nimi "ohjaus_oy"
     :toimipiste_oid "1.2.246.562.10.12345678903"
     :tutkinto "123456"
-    :alkupvm "2024-04-16"
+    :alkupvm "2024-05-01"
     :koulutustoimija "1.2.246.562.10.346830761110"
     :jakso_alkupvm "2024-04-01"
     :ohjaaja_email "olli.ohjaaja@esimerkki.com"
     :oppija_oid "1.2.246.562.24.12312312319"
     :rahoituskausi "2023-2024"
     :tutkintonimike "(\"12345\" \"23456\")"
-    :viimeinen_vastauspvm "2024-05-15"}])
+    :viimeinen_vastauspvm "2024-05-30"}])
 
 (def expected-ddb-niput
   [{:tyopaikka                   "Ohjaus Oy"
@@ -230,7 +230,7 @@
   (testing "The function returns the correct niputus date when given `pvm-str`."
     (are [pvm-str expected] (= (tep/next-niputus-date (LocalDate/parse pvm-str))
                                (LocalDate/parse expected))
-      "2021-12-03" "2021-12-16"
+      "2021-12-03" "2022-01-01"
       "2021-12-27" "2022-01-01"
       "2021-04-25" "2021-05-01"
       "2022-06-24" "2022-07-01")))
