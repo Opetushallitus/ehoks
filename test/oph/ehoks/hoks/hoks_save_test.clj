@@ -555,9 +555,9 @@
   #{["ei_laheteta" "1"
      (LocalDate/of 2019 3 1) (LocalDate/of 2019 3 30)]
     ["odottaa_kasittelya" "1234567890"
-     (LocalDate/of 2019 3 16) (LocalDate/of 2019 4 14)]
+     (LocalDate/of 2019 4 1) (LocalDate/of 2019 4 30)]
     ["odottaa_kasittelya" "abcd"
-     (LocalDate/of 2019 2 16) (LocalDate/of 2019 3 17)]})
+     (LocalDate/of 2019 3 1) (LocalDate/of 2019 3 30)]})
 
 (def ^:private palaute-tapahtumat-after-creation
   #{["aloittaneet" (LocalDate/of 2019 3 18)
@@ -580,9 +580,9 @@
 
 (def ^:private palautteet-after-updated-hoks
   #{["ei_laheteta" "tyopaikkajakson_suorittaneet"
-     "abcd" (LocalDate/parse "2019-02-16")]
+     "abcd" (LocalDate/parse "2019-03-01")]
     ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"
-     "1234567890" (LocalDate/parse "2019-07-16")]
+     "1234567890" (LocalDate/parse "2019-08-01")]
     ["ei_laheteta" "tyopaikkajakson_suorittaneet"
      "1" (LocalDate/parse "2019-03-01")]
     ["odottaa_kasittelya" "valmistuneet"

@@ -44,16 +44,14 @@
 
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
-  Niputuspäivämäärät ovat kuun ensimmäinen ja kuudestoista päivä."
+  Asetusmuutoksen myötä 1.7.2025 niputus tapahtuu kerran kuukaudessa, kuun
+  ensimmäisenä päivänä."
   ^LocalDate [^LocalDate pvm]
   (let [year  (.getYear pvm)
-        month (.getMonthValue pvm)
-        day   (.getDayOfMonth pvm)]
-    (if (< day 16)
-      (LocalDate/of year month 16)
-      (if (= 12 month)
-        (LocalDate/of (inc year) 1 1)
-        (LocalDate/of year (inc month) 1)))))
+        month (.getMonthValue pvm)]
+    (if (= 12 month)
+      (LocalDate/of (inc year) 1 1)
+      (LocalDate/of year (inc month) 1))))
 
 (defn fully-keskeytynyt?
   "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
