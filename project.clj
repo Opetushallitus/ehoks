@@ -76,7 +76,7 @@
                          ;; postgresql
                          [org.clojure/java.jdbc "0.7.12"]
                          [org.flywaydb/flyway-core "6.5.7"]
-                         [org.postgresql/postgresql "42.7.4"]
+                         [org.postgresql/postgresql "42.7.7"]
                          [com.layerware/hugsql "0.5.3"]
 
                          ;; other
@@ -84,6 +84,7 @@
                          [com.taoensso/faraday "1.12.3" ]
                          [org.clojure/core.async "1.6.681"]
                          [org.clojure/core.memoize "1.1.266"]
+                         [org.apache.commons/commons-fileupload2-core "2.0.0-M4"]
                          [commons-codec "1.17.1"]
                          [commons-fileupload "1.5"]
                          [commons-io "2.17.0"]
