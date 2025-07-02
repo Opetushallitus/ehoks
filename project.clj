@@ -4,7 +4,6 @@
   :pedantic? :abort
   :dependencies [[org.clojure/clojure]
                  [clj-http]
-                 [clj-tuple]
                  [cheshire]
                  [com.googlecode.libphonenumber/libphonenumber]
                  [dev.weavejester/medley]
@@ -29,7 +28,6 @@
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
   :managed-dependencies [[org.clojure/clojure "1.12.0"]
-                         [clj-tuple "0.2.2"]
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
