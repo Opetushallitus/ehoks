@@ -28,7 +28,7 @@
   (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
   (let [result (util/with-timeout
                  (* 45 60 1000)
-                 #(palaute/reinit-palautteet-for-uninitiated-hokses! 3000))]
+                 #(palaute/reinit-palautteet-for-uninitiated-hokses! 300))]
     (log/info "reinit-palautteet-for-uninitiated-hokses!: ended with result"
               result))
   true)
@@ -44,7 +44,7 @@
   [{:action daily-actions!
     :start (time->instant 6 0 0) :period (Period/ofDays 1)}
    {:action reinit-uninitiated-hoksen!
-    :start (time->instant 0 0 0) :period (Duration/ofHours 1)}])
+    :start (time->instant 0 0 0) :period (Duration/ofHours 3)}])
 
 (defn run-scheduler!
   "Run a given action periodically starting at start-time and repeating
