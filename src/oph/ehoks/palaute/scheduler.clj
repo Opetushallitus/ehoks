@@ -12,25 +12,30 @@
   [opts]
   (log/info "Commencing palaute daily actions.")
   (try
-    (log/info "Handling palautteet that have reached their heratepvm.")
-    (vt/handle-palautteet-waiting-for-heratepvm!
-      ["aloittaneet" "valmistuneet" "osia_suorittaneet"
-       "tyopaikkajakson_suorittaneet"])
+    true  ;; nothing at the moment
     (catch Exception e
       (log/error e "Unhandled exception in daily-actions!.")))
   (log/info "Done palaute daily actions.")
   true)
 
-(defn reinit-uninitiated-hoksen!
-  "Look for HOKSes that are missing corresponding palaute records and
-  initiate all palautteet for those HOKSes."
+(defn hourly-actions!
+  "Run all palaute checks that are to be run every hour."
   [opts]
-  (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
-  (let [result (util/with-timeout
-                 (* 45 60 1000)
-                 #(palaute/reinit-palautteet-for-uninitiated-hokses! 3000))]
-    (log/info "reinit-palautteet-for-uninitiated-hokses!: ended with result"
-              result))
+  (log/info "Commencing palaute hourly actions.")
+  (try
+    (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
+    (let [result (util/with-timeout
+                   (* 45 60 1000)
+                   #(palaute/reinit-palautteet-for-uninitiated-hokses! 300))]
+      (log/info "reinit-palautteet-for-uninitiated-hokses!: ended with result"
+                result))
+    (log/info "Handling palautteet that have reached their heratepvm.")
+    (vt/handle-palautteet-waiting-for-heratepvm!
+      ["aloittaneet" "valmistuneet" "osia_suorittaneet"
+       "tyopaikkajakson_suorittaneet"])
+    (catch Exception e
+      (log/error e "Unhandled exception in hourly-actions!.")))
+  (log/info "Done palaute hourly actions.")
   true)
 
 (defn time->instant
@@ -43,8 +48,8 @@
 (def schedules
   [{:action daily-actions!
     :start (time->instant 6 0 0) :period (Period/ofDays 1)}
-   {:action reinit-uninitiated-hoksen!
-    :start (time->instant 0 0 0) :period (Duration/ofHours 1)}])
+   {:action hourly-actions!
+    :start (time->instant 1 0 0) :period (Duration/ofHours 1)}])
 
 (defn run-scheduler!
   "Run a given action periodically starting at start-time and repeating
