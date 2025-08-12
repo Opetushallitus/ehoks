@@ -1,4 +1,6 @@
 (ns oph.ehoks.hoks-test
+  (:require [clojure.test :refer [deftest is testing]]
+            [oph.ehoks.hoks :as hoks])
   (:import [java.time LocalDate]))
 
 (def hoks-1
@@ -176,3 +178,40 @@
    :osaamisen-saavuttamisen-pvm (LocalDate/of 2024 11 05)
    :sahkoposti                  "testi.testaaja@testidomain.testi"
    :puhelinnumero               "0123456789"})
+
+(deftest test-tutkinnon-osat
+  (testing "Returns all tutkinnon osat from all sections"
+    (let [hoks {:hankittavat-ammat-tutkinnon-osat [{:id 1} {:id 2}]
+                :hankittavat-paikalliset-tutkinnon-osat [{:id 3}]
+                :hankittavat-yhteiset-tutkinnon-osat
+                [{:osa-alueet [{:id 4} {:id 5}]}]}]
+      (is (= (hoks/tutkinnon-osat hoks)
+             [{:id 1} {:id 2} {:id 3} {:id 4} {:id 5}]))))
+
+  (testing "Handles missing or empty keys"
+    (let [hoks {}]
+      (is (= (hoks/tutkinnon-osat hoks) '())))
+
+    (let [hoks {:hankittavat-ammat-tutkinnon-osat []
+                :hankittavat-paikalliset-tutkinnon-osat []
+                :hankittavat-yhteiset-tutkinnon-osat []}]
+      (is (= (hoks/tutkinnon-osat hoks) '()))))
+
+  (testing "Handles `nil` values in keys"
+    (let [hoks {:hankittavat-ammat-tutkinnon-osat nil
+                :hankittavat-paikalliset-tutkinnon-osat [{:id 1}]
+                :hankittavat-yhteiset-tutkinnon-osat nil}]
+      (is (= (hoks/tutkinnon-osat hoks) [{:id 1}]))))
+
+  (testing
+   "Handles missing osa-alueet in `:hankittavat-yhteiset-tutkinnon-osat`"
+    (let [hoks {:hankittavat-yhteiset-tutkinnon-osat [{:id 1}]}]
+      (is (= (hoks/tutkinnon-osat hoks) '()))))
+
+  (testing "Ignores `nils` and flattens the result"
+    (let [hoks {:hankittavat-ammat-tutkinnon-osat [nil {:id 1}]
+                :hankittavat-paikalliset-tutkinnon-osat [nil]
+                :hankittavat-yhteiset-tutkinnon-osat
+                [{:osa-alueet [nil {:id 2}]}]}]
+      (is (= (hoks/tutkinnon-osat hoks)
+             [{:id 1} {:id 2}])))))

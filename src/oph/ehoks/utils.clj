@@ -71,5 +71,29 @@
   (map #(merge % (select-keys obj fields-to-propagate))
        (get-in obj field-to-get)))
 
-(defn koodiuri->koodi [koodiuri]
-  (some-> koodiuri (clojure.string/split #"_") (last)))
+(defn koodi-uri->koodi
+  "Extracts the Koodisto code from the Koodisto koodi URI string (`koodi-uri`).
+
+  Example:
+   (koodi-uri->koodi \"koodisto_uri_123\") ; => \"123\"
+  "
+  [koodi-uri]
+  (some-> koodi-uri (clojure.string/split #"_") (last)))
+
+(defn distinct-vals
+  "Returns a sequence of distinct, non-nil values for the given key `k`
+   found in each map in `maps`.
+
+   Arguments:
+   - k The key whose values you want to extract.
+   - maps A sequence of maps.
+
+   Example:
+   (distinct-vals :a [{:a 1} {:a 2} {:a 1} {:b 3}])
+   ;; => (1 2)
+  "
+  [k maps]
+  (->> maps
+       (map k)
+       (filter some?)
+       distinct))

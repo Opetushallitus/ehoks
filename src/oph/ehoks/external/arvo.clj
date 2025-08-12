@@ -66,7 +66,7 @@
      :tyopaikka                 t-nimi
      :tyopaikka_normalisoitu    (u-str/normalize t-nimi)
      :tutkintotunnus            (suoritus/tutkintotunnus suoritus)
-     :tutkinnon_osa             (utils/koodiuri->koodi
+     :tutkinnon_osa             (utils/koodi-uri->koodi
                                   (:tutkinnon-osa-koodi-uri jakso))
      :paikallinen_tutkinnon_osa (:nimi jakso)
      :tutkintonimike            (map :koodiarvo (:tutkintonimike suoritus))
@@ -76,9 +76,9 @@
      :tyopaikkajakson_loppupvm  (str (:loppu jakso))
      :rahoituskausi_pvm         (str (:loppu jakso))
      :osa_aikaisuus             (:osa-aikaisuustieto jakso)
-     :sopimustyyppi             (utils/koodiuri->koodi
+     :sopimustyyppi             (utils/koodi-uri->koodi
                                   (:osaamisen-hankkimistapa-koodi-uri jakso))
-     :oppisopimuksen_perusta    (utils/koodiuri->koodi
+     :oppisopimuksen_perusta    (utils/koodi-uri->koodi
                                   (:oppisopimuksen-perusta-koodi-uri jakso))
      :vastaamisajan_alkupvm     (str niputuspvm)
      :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
