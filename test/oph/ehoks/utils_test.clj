@@ -1,5 +1,5 @@
 (ns oph.ehoks.utils-test
-  (:require [clojure.test :refer [are deftest testing]]
+  (:require [clojure.test :refer [are deftest is testing]]
             [oph.ehoks.utils :as utils]))
 
 (deftest test-replace-in
@@ -19,3 +19,28 @@
                         test-map)
         :f      :a
         [:b :a] :a))))
+
+(deftest test-distinct-vals
+  (testing "Returns distinct values for a key"
+    (is (= (set (utils/distinct-vals :a [{:a 1} {:a 2} {:a 1}]))
+           #{1 2})))
+
+  (testing "Ignores nil values"
+    (is (= (set (utils/distinct-vals :a [{:a nil} {:a 1} {:a nil} {:a 2}]))
+           #{1 2})))
+
+  (testing "Handles missing keys"
+    (is (= (set (utils/distinct-vals :a [{:a 1} {:b 2} {:a 3}]))
+           #{1 3})))
+
+  (testing "Returns empty collection if no values"
+    (is (= (utils/distinct-vals :a [{:b 2} {:b 3}])
+           '())))
+
+  (testing "Handles empty input"
+    (is (= (utils/distinct-vals :a [])
+           '())))
+
+  (testing "Handles all nils"
+    (is (= (utils/distinct-vals :a [{:a nil} {:a nil}])
+           '()))))

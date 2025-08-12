@@ -33,6 +33,72 @@
 
 (def sqs-msg (atom nil))
 
+(deftest test-transform-tutkinnon-osa-for-arvo
+  (let [nil-values {:tutkinnon_osa nil
+                    :osaamisen_hankkimistavat nil
+                    :oppisopimuksen_perustat nil}]
+    (testing (str "Transforms tutkinnon-osa with various osaamisen "
+                  "hankkimistavat and perusta codes")
+      (is (= (#'op/transform-tutkinnon-osa-for-arvo
+               {:tutkinnon-osa-koodi-uri "tutkinnonosa_123"
+                :osaamisen-hankkimistavat
+                [{:osaamisen-hankkimistapa-koodi-uri
+                  "osaamisenhankkimistapa_koulutussopimus"
+                  :oppisopimuksen-perusta-koodi-uri
+                  "oppisopimuksenperusta_1"}
+                 {:osaamisen-hankkimistapa-koodi-uri
+                  "osaamisenhankkimistapa_oppisopimus"
+                  :oppisopimuksen-perusta-koodi-uri
+                  "oppisopimuksenperusta_2"}
+                 {:osaamisen-hankkimistapa-koodi-uri
+                  "osaamisenhankkimistapa_koulutussopimus"
+                  :oppisopimuksen-perusta-koodi-uri
+                  "oppisopimuksenperusta_1"}]})
+             {:osaamisen_hankkimistavat ["koulutussopimus" "oppisopimus"]
+              :oppisopimuksen_perustat ["1" "2"]
+              :tutkinnon_osa "123"}))
+      (is (= (#'op/transform-tutkinnon-osa-for-arvo
+               {:tutkinnon-osa-koodi-uri "tutkinnonosa_789"
+                :osaamisen-hankkimistavat
+                [{:osaamisen-hankkimistapa-koodi-uri
+                  "osaamisenhankkimistapa_koulutussopimus"}]})
+             {:osaamisen_hankkimistavat ["koulutussopimus"]
+              :oppisopimuksen_perustat nil
+              :tutkinnon_osa "789"}))
+      (is (= (#'op/transform-tutkinnon-osa-for-arvo
+               {:tutkinnon-osa-koodi-uri "tutkinnonosa_456"
+                :osaamisen-hankkimistavat []})
+             (assoc nil-values :tutkinnon_osa "456")))
+      (is (= (#'op/transform-tutkinnon-osa-for-arvo
+               {:osaamisen-hankkimistavat
+                [{:osaamisen-hankkimistapa-koodi-uri
+                  "osaamisenhankkimistapa_oppisopimus"
+                  :oppisopimuksen-perusta-koodi-uri
+                  "oppisopimuksenperusta_01"}]})
+             (assoc nil-values
+                    :osaamisen_hankkimistavat ["oppisopimus"]
+                    :oppisopimuksen_perustat ["01"]))))
+    (testing (str "Exception thrown if oppisopimus present but "
+                  "oppisopimuksen_perustat is nil")
+      (is (thrown-with-msg?
+            clojure.lang.ExceptionInfo
+            #"`:oppisopimuksen_perustat` cannot be `nil`"
+            (#'op/transform-tutkinnon-osa-for-arvo
+              {:tutkinnon-osa-koodi-uri "tutkinnonosa_999"
+               :osaamisen-hankkimistavat
+               [{:osaamisen-hankkimistapa-koodi-uri
+                 "osaamisenhankkimistapa_oppisopimus"}]}))))
+    (testing
+     "Handles nil, missing, and empty values gracefully"
+      (are [input expected]
+           (= (#'op/transform-tutkinnon-osa-for-arvo input) nil-values)
+        {}
+        {:tutkinnon-osa-koodi-uri nil :osaamisen-hankkimistavat nil}
+        {:tutkinnon-osa-koodi-uri nil :osaamisen-hankkimistavat []}
+        {:tutkinnon-osa-koodi-uri "" :osaamisen-hankkimistavat []}
+        {:osaamisen-hankkimistavat []}
+        {:tutkinnon-osa-koodi-uri nil}))))
+
 (defn test-not-initiated
   ([ctx reason]
     (test-not-initiated nil ctx reason))

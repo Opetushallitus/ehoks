@@ -10,6 +10,7 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
@@ -211,13 +212,44 @@
   [ohts]
   (->> ohts
        (map (juxt (comp keyword
-                        utils/koodiuri->koodi
+                        utils/koodi-uri->koodi
                         :osaamisen-hankkimistapa-koodi-uri)
                   :tutkinnon-osa-koodi-uri))
        (filter second)  ; ei paikallisia (joilta tutkinnonosakoodi puuttuu)
        (set)            ; ei duplikaatteja
        (group-by first)
        (map-vals (partial map second))))
+
+(defn- distinct-koodisto-codes
+  [ohts koodi-uri-key]
+  (->> (utils/distinct-vals koodi-uri-key ohts)
+       (map utils/koodi-uri->koodi)
+       not-empty))
+
+(defn- transform-tutkinnon-osa-for-arvo
+  "Transforms a `tutkinnon-osa` map into a format suitable for Arvo reporting.
+
+  Extracts and converts relevant Koodisto codes from the
+  `osaamisen-hankkimistavat` collection inside `tutkinnon-osa` map, and
+  associates them with the corresponding Arvo field names. The function also
+  extracts the `oppisopimuksen_perustat` codes and `tutkinnon-osa` code. Throws
+  an exception if the input contains an 'oppisopimus' hankkimistapa but no
+  corresponding `oppisopimuksen_perustat` value."
+  [tutkinnon-osa]
+  (let [ohts                     (:osaamisen-hankkimistavat tutkinnon-osa)
+        osaamisen_hankkimistavat (distinct-koodisto-codes
+                                   ohts :osaamisen-hankkimistapa-koodi-uri)
+        oppisopimuksen_perustat  (distinct-koodisto-codes
+                                   ohts :oppisopimuksen-perusta-koodi-uri)]
+    (when (and (some #(= % "oppisopimus") osaamisen_hankkimistavat)
+               (nil? oppisopimuksen_perustat))
+      (throw (ex-info "`:oppisopimuksen_perustat` cannot be `nil` when there is
+                      `\"oppisopimus\"` in an `:osaamisen_hankkimistavat`"
+                      {:tutkinnon-osa-id (:id tutkinnon-osa)})))
+    {:osaamisen_hankkimistavat osaamisen_hankkimistavat
+     :oppisopimuksen_perustat  oppisopimuksen_perustat
+     :tutkinnon_osa            (utils/koodi-uri->koodi
+                                 (:tutkinnon-osa-koodi-uri tutkinnon-osa))}))
 
 (defn build-kyselylinkki-request-body
   "For the given palaute, create Arvo request for creating its kyselylinkki."
@@ -236,6 +268,9 @@
      :vastaamisajan_loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
      :toimipiste_oid toimipiste
      :tutkintotunnus (str (suoritus/tutkintotunnus suoritus))
+     :tutkinnon_osat (->> (hoks/tutkinnon-osat hoks)
+                          (map transform-tutkinnon-osa-for-arvo)
+                          not-empty)
      :oppilaitos_oid (:oid (:oppilaitos opiskeluoikeus))
      :koulutustoimija_oid (or koulutustoimija "")
      :heratepvm (:heratepvm existing-palaute)
