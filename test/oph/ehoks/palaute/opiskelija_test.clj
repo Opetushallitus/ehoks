@@ -336,7 +336,7 @@
 (defn create-arvo-kyselylinkki!
   [palaute]
   (-> palaute
-      (vt/build-ctx)
+      (vt/build-ctx!)
       (op/build-kyselylinkki-request-body)
       (arvo/create-kyselytunnus!)))
 

@@ -121,7 +121,7 @@
   (utils/with-fifo-ttl-cache
     hoks/get-by-id hoks-cache-time hoks-cache-amount {}))
 
-(defn build-ctx
+(defn build-ctx!
   "Creates a full information context (i.e. background information)
   for a given palaute."
   [palaute]
@@ -246,7 +246,7 @@
       (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
                 "palaute" (:id palaute))
       (palaute-check-call-arvo-save-and-sync!
-        (assoc (build-ctx palaute) :tx tx)
+        (assoc (build-ctx! palaute) :tx tx)
         (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers)))
     (catch ExceptionInfo e
       (jdbc/with-db-transaction
