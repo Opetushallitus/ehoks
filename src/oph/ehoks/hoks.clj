@@ -337,6 +337,32 @@
                       {:type               ::disallowed-update
                        :opiskeluoikeus-oid opiskeluoikeus-oid})))))
 
+(defn tutkinnon-osat
+  "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
+  sections, with :type stored as metadata:
+   - :hankittavat-ammat-tutkinnon-osat => metadata {:type :ammatillinen}
+   - :hankittavat-paikalliset-tutkinnon-osat => metadata {:type :paikallinen}
+   - :hankittavat-yhteiset-tutkinnon-osat (collecting all :osa-alueet from
+     each entry) => metadata {:type :yhteisen-osa-alue}
+
+  Example:
+   (tutkinnon-osat
+     {:hankittavat-ammat-tutkinnon-osat [{:id 1}]
+      :hankittavat-paikalliset-tutkinnon-osat [{:id 2}]
+      :hankittavat-yhteiset-tutkinnon-osat [{:osa-alueet [{:id 3} {:id 4}]}]})
+   ;; => ({:id 1} {:id 2} {:id 3} {:id 4})
+   (-> tutkinnon-osa meta :type)
+   ;; => :ammatillinen / :paikallinen / :yhteisen-osa-alue
+  "
+  [hoks]
+  (concat
+    (map #(assoc % :type :ammatillinen)
+         (:hankittavat-ammat-tutkinnon-osat hoks))
+    (map #(assoc % :type :paikallinen)
+         (:hankittavat-paikalliset-tutkinnon-osat hoks))
+    (map #(assoc % :type :yhteisen-osa-alue)
+         (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+
 (defn get-with-hankittavat-koulutuksen-osat!
   [hoks-id]
   (assoc (db-hoks/select-hoks-by-id hoks-id)
