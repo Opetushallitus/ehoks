@@ -70,7 +70,9 @@
         (catch Exception e
           (log/error e "While trying to clean up tunnus from Arvo"))))
     (case ex-type
-      (::koski/opiskeluoikeus-not-found ::arvossa-ei-kyselya)
+      (::koski/opiskeluoikeus-not-found
+        ::hoks/invalid-data
+        ::arvossa-ei-kyselya)
       (do (log/warnf "%s. Setting `tila` to `ei_laheteta` for palaute `%d`."
                      (ex-message ex) (:id existing-palaute))
           (palaute/update-tila!
