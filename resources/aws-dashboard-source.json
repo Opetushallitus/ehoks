@@ -2,11 +2,11 @@
     "start": "-PT24H",
     "widgets": [
         {
-            "height": 9,
-            "width": 6,
-            "y": 37,
-            "x": 18,
             "type": "metric",
+            "x": 16,
+            "y": 30,
+            "width": 8,
+            "height": 9,
             "properties": {
                 "metrics": [
                     [ "AWS/Lambda", "Errors", "FunctionName", "sade-services-heratepalvelu--tepSmsHandlerB591FA4E-4yRfHHXHE7tp", { "region": "eu-west-1", "label": "tepSmsHandler" } ],
@@ -14,36 +14,38 @@
                     [ "...", "sade-services-heratepalvelu-niputusHandlerBCD0B908-xWvmnkGqzTJK", { "region": "eu-west-1", "label": "niputusHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISEmailStatusHandler7A-33VGtNpgyygz", { "region": "eu-west-1", "label": "AMISEmailStatusHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISHerateEmailHandler81-1F0R0F5M08JQ0", { "region": "eu-west-1", "label": "AMISHerateEmailHandler" } ],
-                    [ "...", "sade-services-heratepalve-AMISHerateHandler90F6579-XJB28DX9L09U", { "region": "eu-west-1", "label": "AMISHerateHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISMuistutusHandlerCB34-266MG3WHG0GF", { "region": "eu-west-1", "label": "AMISMuistutusHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISTimedOperationsHandl-2CjOgVUWsffE", { "region": "eu-west-1", "label": "AMISTimedOperationsHandler" } ],
                     [ ".", ".", ".", "sade-services-heratepalvel-TEPemailHandlerDEE98FD4-W7m7n3obB7hQ", "Resource", "sade-services-heratepalvel-TEPemailHandlerDEE98FD4-W7m7n3obB7hQ", { "region": "eu-west-1", "label": "TEPemailHandler" } ],
-                    [ "...", "sade-services-heratepalvel-TEPJaksoHandler37AFC156-KZortbgHHtzv", ".", "sade-services-heratepalvel-TEPJaksoHandler37AFC156-KZortbgHHtzv", { "region": "eu-west-1", "label": "TEPJaksoHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISEmailResendHandlerF9-11Q29X3QL9HAA", ".", "sade-services-heratepalve-AMISEmailResendHandlerF9-11Q29X3QL9HAA", { "region": "eu-west-1", "label": "AMISEmailResendHandler" } ],
-                    [ "...", "sade-services-heratepalve-AMISMassHerateResendHand-3mC7JD9B5k1M", ".", "sade-services-heratepalve-AMISMassHerateResendHand-3mC7JD9B5k1M", { "region": "eu-west-1", "label": "AMISMassHerateResendHandler" } ],
                     [ "...", "sade-services-heratepalve-EhoksOpiskeluoikeusUpdat-0Jz3W5TtFYfq", ".", "sade-services-heratepalve-EhoksOpiskeluoikeusUpdat-0Jz3W5TtFYfq", { "region": "eu-west-1", "label": "EhoksOpiskeluoikeusUpdate" } ],
                     [ "...", "sade-services-heratepalve-EmailMuistutusHandler350-oFsteHtdi7ll", ".", "sade-services-heratepalve-EmailMuistutusHandler350-oFsteHtdi7ll", { "region": "eu-west-1", "label": "EmailMuistutusHandler" } ],
                     [ "...", "sade-services-heratepalve-ONRhenkilomodifyHandler1-NrZUkqk4Qhx9", ".", "sade-services-heratepalve-ONRhenkilomodifyHandler1-NrZUkqk4Qhx9", { "region": "eu-west-1", "label": "ONRhenkilomodifyHandler" } ]
                 ],
-                "view": "timeSeries",
-                "stacked": false,
+                "view": "bar",
+                "stacked": true,
                 "region": "eu-west-1",
                 "stat": "Sum",
                 "period": 3600,
-                "title": "Lambda unhandled exceptions"
+                "title": "Lambda unhandled exceptions / time range",
+                "table": {
+                    "summaryColumns": [
+                        "SUM"
+                    ]
+                },
+                "setPeriodToTimeRange": true,
+                "liveData": true
             }
         },
         {
-            "height": 8,
-            "width": 6,
-            "y": 28,
-            "x": 18,
             "type": "metric",
+            "x": 4,
+            "y": 36,
+            "width": 4,
+            "height": 8,
             "properties": {
                 "metrics": [
-                    [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "sade-services-heratepalvelu-tep-HerateDLQE2401433-1O6EGXTY7SV2G", { "region": "eu-west-1" } ],
-                    [ "...", "sade-services-heratepalvelu-HerateDeadLetterQueue63A3CFFB-QYZJMK04J1VO", { "region": "eu-west-1" } ],
-                    [ "...", "sade-services-heratepalvelu-AmisResendDLQueueD15EB4B1-BZX2L8SBRX6Q", { "region": "eu-west-1" } ],
+                    [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "sade-services-heratepalvelu-AmisResendDLQueueD15EB4B1-BZX2L8SBRX6Q", { "region": "eu-west-1" } ],
                     [ "...", "sade-services-heratepalvelu-ONRhenkilomodifyDLQ6346A8D4-YeUvjZoYMI4l", { "region": "eu-west-1" } ],
                     [ "...", "sade-services-heratepalvelu-AmisDeleteTunnusDLQueueC2208233-1QHZYXFR0AE31", { "region": "eu-west-1" } ]
                 ],
@@ -51,66 +53,77 @@
                 "stacked": false,
                 "region": "eu-west-1",
                 "stat": "Maximum",
-                "period": 900,
-                "title": "Number of messages in SQS dead-letter queues (past 15 minutes)",
+                "period": 3600,
+                "title": "Number of messages in SQS dead-letter queues (data point = # msgs/hour)",
                 "sparkline": true
             }
         },
         {
-            "height": 9,
-            "width": 6,
-            "y": 37,
-            "x": 12,
             "type": "metric",
+            "x": 8,
+            "y": 30,
+            "width": 8,
+            "height": 9,
             "properties": {
                 "metrics": [
                     [ "AWS/Lambda", "Duration", "FunctionName", "sade-services-heratepalve-AMISMuistutusHandlerCB34-266MG3WHG0GF", { "region": "eu-west-1", "label": "AMISMuistutusHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISEmailStatusHandler7A-33VGtNpgyygz", { "region": "eu-west-1", "label": "AMISEmailStatusHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISEmailResendHandlerF9-11Q29X3QL9HAA", { "region": "eu-west-1", "label": "AMISEmailResendHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISHerateEmailHandler81-1F0R0F5M08JQ0", { "region": "eu-west-1", "label": "AMISHerateEmailHandler" } ],
-                    [ "...", "sade-services-heratepalve-AMISHerateHandler90F6579-XJB28DX9L09U", { "region": "eu-west-1", "label": "AMISHerateHandler" } ],
-                    [ "...", "sade-services-heratepalve-AMISMassHerateResendHand-3mC7JD9B5k1M", { "region": "eu-west-1", "label": "AMISMassHerateResendHandler" } ],
                     [ "...", "sade-services-heratepalve-AMISTimedOperationsHandl-2CjOgVUWsffE", { "region": "eu-west-1", "label": "AMISTimedOperationsHandler" } ],
                     [ "...", "sade-services-heratepalve-EhoksOpiskeluoikeusUpdat-0Jz3W5TtFYfq", { "region": "eu-west-1", "label": "EhoksOpiskeluoikeusUpdate" } ],
                     [ "...", "sade-services-heratepalve-EmailMuistutusHandler350-oFsteHtdi7ll", { "region": "eu-west-1", "label": "EmailMuistutusHandler" } ],
                     [ "...", "sade-services-heratepalve-SmsMuistutusHandler575CB-Se6NtsG4Vvbc", { "region": "eu-west-1", "label": "SmsMuistutusHandler" } ],
                     [ "...", "sade-services-heratepalve-ONRhenkilomodifyHandler1-NrZUkqk4Qhx9", { "region": "eu-west-1", "label": "ONRhenkilomodifyHandler" } ],
-                    [ "...", "sade-services-heratepalve-TEPEmailStatusHandler49D-wKloA3u01Q5z", { "region": "eu-west-1", "label": "TEPEmailStatusHandler" } ],
-                    [ "...", "sade-services-heratepalve-timedOperationsHandlerB3-Tynb7SpzyRHJ", { "region": "eu-west-1", "label": "timedOperationsHandler" } ],
-                    [ "...", "sade-services-heratepalve-UpdatedOOHandler8E3D5120-1JWEXOC8RCPAW", { "region": "eu-west-1", "label": "UpdatedOOHandler" } ],
-                    [ "...", "sade-services-heratepalvel-TEPemailHandlerDEE98FD4-W7m7n3obB7hQ", { "region": "eu-west-1", "label": "TEPemailHandler" } ],
-                    [ "...", "sade-services-heratepalvel-TEPJaksoHandler37AFC156-KZortbgHHtzv", { "region": "eu-west-1", "label": "TEPJaksoHandler" } ],
-                    [ "...", "sade-services-heratepalvelu--tepSmsHandlerB591FA4E-4yRfHHXHE7tp", { "region": "eu-west-1", "label": "tepSmsHandler" } ],
-                    [ "...", "sade-services-heratepalvelu-AMISSMSHandler854FCA2F-s0slkv5SnElO", { "region": "eu-west-1", "label": "AMISSMSHandler" } ],
-                    [ "...", "sade-services-heratepalvelu-niputusHandlerBCD0B908-xWvmnkGqzTJK", { "region": "eu-west-1", "label": "niputusHandler" } ]
+                    [ "...", "sade-services-heratepalve-TEPEmailStatusHandler49D-wKloA3u01Q5z", { "region": "eu-west-1", "label": "TEPEmailStatusHandler", "period": 900 } ],
+                    [ "...", "sade-services-heratepalvel-TEPemailHandlerDEE98FD4-W7m7n3obB7hQ", { "region": "eu-west-1", "label": "TEPemailHandler", "period": 900 } ],
+                    [ "...", "sade-services-heratepalvelu--tepSmsHandlerB591FA4E-4yRfHHXHE7tp", { "region": "eu-west-1", "label": "tepSmsHandler", "period": 900 } ],
+                    [ "...", "sade-services-heratepalvelu-AMISSMSHandler854FCA2F-s0slkv5SnElO", { "region": "eu-west-1", "label": "AMISSMSHandler", "period": 900 } ],
+                    [ "...", "sade-services-heratepalvelu-niputusHandlerBCD0B908-xWvmnkGqzTJK", { "region": "eu-west-1", "label": "niputusHandler", "period": 900 } ]
                 ],
-                "view": "timeSeries",
-                "stacked": false,
+                "view": "table",
+                "stacked": true,
                 "region": "eu-west-1",
-                "period": 900,
+                "period": 3600,
                 "stat": "Average",
-                "title": "Lambda execution duration"
+                "title": "Lambda execution duration",
+                "sparkline": true,
+                "liveData": true,
+                "singleValueFullPrecision": false,
+                "setPeriodToTimeRange": true,
+                "table": {
+                    "summaryColumns": [
+                        "MAX",
+                        "AVG"
+                    ],
+                    "stickySummary": false,
+                    "showTimeSeriesData": false,
+                    "layout": "horizontal"
+                },
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
             }
         },
         {
-            "height": 8,
-            "width": 6,
-            "y": 28,
-            "x": 12,
             "type": "metric",
+            "x": 0,
+            "y": 36,
+            "width": 4,
+            "height": 8,
             "properties": {
                 "metrics": [
-                    [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "sade-services-heratepalvelu-tep-HerateQueue", { "region": "eu-west-1", "label": "tep-HerateQueue" } ],
-                    [ "...", "sade-services-heratepalvelu-eHOKSHerateQueue", { "region": "eu-west-1", "label": "eHOKSHerateQueue" } ],
-                    [ "...", "sade-services-heratepalvelu-eHOKSAmisResendQueue", { "region": "eu-west-1", "label": "eHOKSAmisResendQueue" } ],
+                    [ "AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "sade-services-heratepalvelu-eHOKSAmisResendQueue", { "region": "eu-west-1", "label": "eHOKSAmisResendQueue" } ],
                     [ "...", "sade-services-heratepalvelu-ehokshenkilomodify", { "region": "eu-west-1", "label": "ehokshenkilomodify" } ],
                     [ "...", "sade-services-heratepalvelu-amisDeleteTunnusQueue", { "region": "eu-west-1", "label": "amisDeleteTunnusQueue" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,
                 "region": "eu-west-1",
-                "title": "Number of messages in queues (past 15 minutes)",
-                "period": 900,
+                "title": "Number of messages in queues (data point = # msgs/hour)",
+                "period": 3600,
                 "stat": "Sum",
                 "legend": {
                     "position": "bottom"
@@ -119,20 +132,22 @@
             }
         },
         {
-            "height": 5,
-            "width": 4,
-            "y": 20,
-            "x": 4,
             "type": "metric",
+            "x": 12,
+            "y": 2,
+            "width": 4,
+            "height": 6,
             "properties": {
                 "metrics": [
-                    [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "sade-ehoks", { "region": "eu-west-1" } ]
+                    [ "AWS/RDS", "CPUUtilization", "DBClusterIdentifier", "sade-ehoks", { "region": "eu-west-1", "label": "sade-ehoks (Cluster)" } ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf", { "region": "eu-west-1" } ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq", { "region": "eu-west-1" } ]
                 ],
                 "view": "timeSeries",
                 "stacked": false,
                 "region": "eu-west-1",
                 "legend": {
-                    "position": "hidden"
+                    "position": "bottom"
                 },
                 "title": "CPU utilization",
                 "period": 60,
@@ -140,163 +155,133 @@
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 0,
-            "x": 0,
             "type": "text",
+            "x": 0,
+            "y": 0,
+            "width": 24,
+            "height": 1,
             "properties": {
-                "markdown": "# eHOKS"
+                "markdown": "# eHOKS ([source](https://github.com/Opetushallitus/ehoks/blob/f221f1d1ebad463a3b2095c7a491fdaad657346c/resources/aws-dashboard-source.json))"
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 19,
-            "x": 0,
             "type": "text",
+            "x": 12,
+            "y": 1,
+            "width": 12,
+            "height": 1,
             "properties": {
                 "markdown": "## Database metrics (RDS)"
             }
         },
         {
-            "height": 5,
-            "width": 4,
-            "y": 20,
-            "x": 8,
             "type": "metric",
+            "x": 12,
+            "y": 8,
+            "width": 4,
+            "height": 6,
             "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "DatabaseConnections", "DBClusterIdentifier", "sade-ehoks", { "region": "eu-west-1", "label": "sade-ehoks (Cluster)" } ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf", { "region": "eu-west-1" } ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq", { "region": "eu-west-1" } ]
+                ],
                 "view": "timeSeries",
                 "stacked": false,
-                "metrics": [
-                    [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "sade-ehoks", { "period": 60, "region": "eu-west-1" } ]
-                ],
                 "region": "eu-west-1",
                 "legend": {
-                    "position": "hidden"
+                    "position": "bottom"
                 },
                 "title": "Database connections",
-                "period": 300
+                "period": 60,
+                "stat": "Average"
             }
         },
         {
-            "height": 5,
-            "width": 4,
-            "y": 25,
-            "x": 0,
             "type": "metric",
+            "x": 16,
+            "y": 2,
+            "width": 4,
+            "height": 6,
             "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "FreeableMemory", "DBClusterIdentifier", "sade-ehoks", { "region": "eu-west-1", "label": "sade-ehoks (Cluster)" } ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf", { "region": "eu-west-1" } ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq", { "region": "eu-west-1" } ]
+                ],
                 "view": "timeSeries",
                 "stacked": false,
-                "metrics": [
-                    [ "AWS/RDS", "FreeStorageSpace", "DBInstanceIdentifier", "sade-ehoks", { "period": 60 } ]
-                ],
                 "region": "eu-west-1",
                 "legend": {
-                    "position": "hidden"
+                    "position": "bottom"
                 },
-                "title": "Free storage space"
+                "title": "Freeable Memory",
+                "period": 60,
+                "stat": "Minimum"
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 0,
-            "x": 12,
             "type": "text",
+            "x": 0,
+            "y": 28,
+            "width": 24,
+            "height": 1,
             "properties": {
                 "markdown": "# Herätepalvelu"
             }
         },
         {
-            "height": 25,
-            "width": 6,
-            "y": 2,
-            "x": 18,
             "type": "metric",
+            "x": 4,
+            "y": 30,
+            "width": 4,
+            "height": 5,
             "properties": {
                 "metrics": [
-                    [ "AWS/Logs", "IncomingLogEvents", "LogGroupName", "/aws/lambda/sade-services-heratepalve-AMISHerateHandler90F6579-XJB28DX9L09U", { "region": "eu-west-1", "label": "AMISHerateHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-AMISEmailStatusHandler7A-33VGtNpgyygz", { "region": "eu-west-1", "label": "AMISEmailStatusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-AMISHerateEmailHandler81-1F0R0F5M08JQ0", { "region": "eu-west-1", "label": "AMISHerateEmailHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-AMISMuistutusHandlerCB34-266MG3WHG0GF", { "region": "eu-west-1", "label": "AMISMuistutusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalvelu-niputusHandlerBCD0B908-xWvmnkGqzTJK", { "region": "eu-west-1", "label": "niputusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalvelu--tepSmsHandlerB591FA4E-4yRfHHXHE7tp", { "region": "eu-west-1", "label": "tepSmsHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalvel-TEPemailHandlerDEE98FD4-W7m7n3obB7hQ", { "region": "eu-west-1", "label": "TEPemailHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-UpdatedOOHandler8E3D5120-1JWEXOC8RCPAW", { "region": "eu-west-1", "label": "UpdatedOOHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-timedOperationsHandlerB3-Tynb7SpzyRHJ", { "region": "eu-west-1", "label": "timedOperationsHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-TEPEmailStatusHandler49D-wKloA3u01Q5z", { "region": "eu-west-1", "label": "TEPEmailStatusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-AMISTimedOperationsHandl-2CjOgVUWsffE", { "region": "eu-west-1", "label": "AMISTimedOperationsHandl" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalvelu-AMISSMSHandler854FCA2F-s0slkv5SnElO", { "region": "eu-west-1", "label": "AMISSMSHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-SmsMuistutusHandler575CB-Se6NtsG4Vvbc", { "region": "eu-west-1", "label": "SmsMuistutusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalvel-TEPJaksoHandler37AFC156-KZortbgHHtzv", { "region": "eu-west-1", "label": "TEPJaksoHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-EmailMuistutusHandler350-oFsteHtdi7ll", { "region": "eu-west-1", "label": "EmailMuistutusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-AMISEmailResendHandlerF9-11Q29X3QL9HAA", { "region": "eu-west-1", "label": "AMISEmailResendHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-EhoksOpiskeluoikeusUpdat-0Jz3W5TtFYfq", { "region": "eu-west-1", "label": "EhoksOpiskeluoikeusUpdat" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-AMISMassHerateResendHand-3mC7JD9B5k1M", { "region": "eu-west-1", "label": "AMISMassHerateResendHand" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-TPKNiputusHandler045E4FB-FM7sYBGu7STK", { "region": "eu-west-1", "label": "TPKNiputusHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-TPKArvoCallHandlerC3E485-w2vkAxlFD32s", { "region": "eu-west-1", "label": "TPKArvoCallHandler" } ],
-                    [ "...", "/aws/lambda/sade-services-heratepalve-ONRhenkilomodifyHandler1-NrZUkqk4Qhx9", { "region": "eu-west-1", "label": "ONRhenkilomodifyHandler" } ]
+                    [ "AWS/Logs", "IncomingLogEvents", "LogGroupName", "sade-heratepalvelu-amis", { "region": "eu-west-1" } ],
+                    [ "...", "sade-heratepalvelu-tep", { "region": "eu-west-1" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,
                 "region": "eu-west-1",
                 "period": 3600,
                 "stat": "Sum",
-                "title": "Number of log events (past 1 hour)",
+                "title": "Number of log events (data point = avg/hour)",
                 "setPeriodToTimeRange": false,
                 "sparkline": true,
                 "trend": true
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 1,
-            "x": 12,
             "type": "text",
+            "x": 0,
+            "y": 29,
+            "width": 8,
+            "height": 1,
             "properties": {
                 "markdown": "## Log events"
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 27,
-            "x": 12,
             "type": "text",
+            "x": 0,
+            "y": 35,
+            "width": 8,
+            "height": 1,
             "properties": {
                 "markdown": "## SQS queues"
             }
         },
         {
-            "height": 21,
-            "width": 6,
-            "y": 2,
-            "x": 12,
             "type": "metric",
+            "x": 0,
+            "y": 30,
+            "width": 4,
+            "height": 5,
             "properties": {
                 "metrics": [
-                    [ "OpintopolkuLogMetrics", "sade/heratepalvelu/AMISHerateHandler/errors", { "region": "eu-west-1", "id": "m12", "label": "AMISHerateHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISEmailStatusHandler/errors", { "region": "eu-west-1", "id": "m14", "label": "AMISEmailStatusHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISHerateEmailHandler/errors", { "region": "eu-west-1", "id": "m13", "label": "AMISHerateEmailHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISMuistutusHandler/errors", { "region": "eu-west-1", "id": "m11", "label": "AMISMuistutusHandler" } ],
-                    [ ".", "sade/heratepalvelu/niputusHandler/errors", { "region": "eu-west-1", "id": "m7", "label": "niputusHandler" } ],
-                    [ ".", "sade/heratepalvelu/tepSmsHandler/errors", { "region": "eu-west-1", "id": "m3", "label": "tepSmsHandler" } ],
-                    [ ".", "sade/heratepalvelu/TEPemailHandler/errors", { "region": "eu-west-1", "id": "m5", "label": "TEPemailHandler" } ],
-                    [ ".", "sade/heratepalvelu/UpdatedOOHandler/errors", { "region": "eu-west-1", "id": "m1", "label": "UpdatedOOHandler" } ],
-                    [ ".", "sade/heratepalvelu/timedOperationsHandler/errors", { "region": "eu-west-1", "id": "m2", "label": "timedOperationsHandler" } ],
-                    [ ".", "sade/heratepalvelu/TEPEmailStatusHandler/errors", { "region": "eu-west-1", "id": "m4", "label": "TEPEmailStatusHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISTimedOperationsHandler/errors", { "region": "eu-west-1", "id": "m9", "label": "AMISTimedOperationsHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISSMSHandler/errors", { "region": "eu-west-1", "id": "m10", "label": "AMISSMSHandler" } ],
-                    [ ".", "sade/heratepalvelu/SmsMuistutusHandler/errors", { "region": "eu-west-1", "id": "m6", "label": "SmsMuistutusHandler" } ],
-                    [ ".", "sade/heratepalvelu/TEPJaksoHandler/errors", { "region": "eu-west-1", "label": "TEPJaksoHandler" } ],
-                    [ ".", "sade/heratepalvelu/EmailMuistutusHandler/errors", { "region": "eu-west-1", "id": "m8", "label": "EmailMuistutusHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISEmailResendHandler/errors", { "region": "eu-west-1", "label": "AMISEmailResendHandler" } ],
-                    [ ".", "sade/heratepalvelu/EhoksOpiskeluoikeusUpdateHandler/errors", { "region": "eu-west-1", "id": "m15", "label": "EhoksOpiskeluoikeusUpdateHandler" } ],
-                    [ ".", "sade/heratepalvelu/AMISMassHerateResendHandler/errors", { "region": "eu-west-1", "label": "AMISMassHerateResendHandler" } ],
-                    [ ".", "sade/heratepalvelu/TPKNiputusHandler/errors", { "region": "eu-west-1", "label": "TPKNiputusHandler" } ],
-                    [ ".", "sade/heratepalvelu/TPKArvoCallHandler/errors", { "region": "eu-west-1", "label": "TPKArvoCallHandler" } ]
+                    [ "OpintopolkuLogMetrics", "sade/heratepalvelu/amis/errors", { "region": "eu-west-1" } ],
+                    [ ".", "sade/heratepalvelu/tep/errors", { "region": "eu-west-1" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,
@@ -306,69 +291,78 @@
                 "setPeriodToTimeRange": false,
                 "sparkline": true,
                 "trend": true,
-                "title": "Number of ERRORs (past 1 hour)",
-                "liveData": true
+                "title": "Number of ERRORs (data point = avg/hour)",
+                "liveData": true,
+                "singleValueFullPrecision": true
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 36,
-            "x": 12,
             "type": "text",
+            "x": 8,
+            "y": 29,
+            "width": 16,
+            "height": 1,
             "properties": {
                 "markdown": "## Lambda statistics"
             }
         },
         {
-            "height": 5,
-            "width": 4,
-            "y": 25,
-            "x": 4,
             "type": "metric",
+            "x": 12,
+            "y": 14,
+            "width": 4,
+            "height": 6,
             "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "ReadIOPS", "DBClusterIdentifier", "sade-ehoks", { "region": "eu-west-1", "label": "sade-ehoks (Cluster)" } ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf", { "region": "eu-west-1" } ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq", { "region": "eu-west-1" } ]
+                ],
                 "view": "timeSeries",
                 "stacked": false,
-                "metrics": [
-                    [ "AWS/RDS", "ReadIOPS", "DBInstanceIdentifier", "sade-ehoks", { "period": 60 } ]
-                ],
                 "region": "eu-west-1",
                 "legend": {
-                    "position": "hidden"
+                    "position": "bottom"
                 },
-                "title": "Read IOPS"
+                "title": "Read IOPS",
+                "period": 60,
+                "stat": "Average"
             }
         },
         {
-            "height": 5,
-            "width": 4,
-            "y": 25,
-            "x": 8,
             "type": "metric",
+            "x": 16,
+            "y": 14,
+            "width": 4,
+            "height": 6,
             "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "WriteIOPS", "DBClusterIdentifier", "sade-ehoks" ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf" ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq" ]
+                ],
                 "view": "timeSeries",
                 "stacked": false,
-                "metrics": [
-                    [ "AWS/RDS", "WriteIOPS", "DBInstanceIdentifier", "sade-ehoks", { "period": 60 } ]
-                ],
                 "region": "eu-west-1",
                 "legend": {
-                    "position": "hidden"
+                    "position": "bottom"
                 },
-                "title": "Write IOPS"
+                "title": "Write IOPS",
+                "period": 60,
+                "stat": "Average"
             }
         },
         {
-            "height": 8,
-            "width": 6,
-            "y": 11,
+            "type": "metric",
             "x": 0,
-            "type": "metric",
+            "y": 11,
+            "width": 12,
+            "height": 4,
             "properties": {
                 "metrics": [
-                    [ { "expression": "m1 + m2 + m3", "label": "HTTP 5XX", "id": "e3", "color": "#d62728", "region": "eu-west-1" } ],
-                    [ { "expression": "m4 + m5 + m6", "label": "HTTP 4XX", "id": "e2", "region": "eu-west-1", "color": "#ffbb78" } ],
                     [ { "expression": "m7 + m8 + m9", "label": "HTTP 2XX", "id": "e1", "color": "#2ca02c", "region": "eu-west-1", "yAxis": "left" } ],
+                    [ { "expression": "m4 + m5 + m6", "label": "HTTP 4XX", "id": "e2", "region": "eu-west-1", "color": "#ffbb78" } ],
+                    [ { "expression": "m1 + m2 + m3", "label": "HTTP 5XX", "id": "e3", "color": "#d62728", "region": "eu-west-1", "yAxis": "left" } ],
                     [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "TargetGroup", "targetgroup/sade-ehoks-virkailija-FTG/b73692b4fea8bf3e", "LoadBalancer", "app/sade-ALB/d9414606100fe733", "AvailabilityZone", "eu-west-1a", { "color": "#d62728", "region": "eu-west-1", "id": "m1", "visible": false } ],
                     [ "...", "eu-west-1b", { "region": "eu-west-1", "color": "#d62728", "id": "m2", "visible": false } ],
                     [ "...", "eu-west-1c", { "region": "eu-west-1", "color": "#d62728", "id": "m3", "visible": false } ],
@@ -379,25 +373,28 @@
                     [ "...", "eu-west-1b", { "color": "#2ca02c", "region": "eu-west-1", "id": "m8", "visible": false } ],
                     [ "...", "eu-west-1c", { "color": "#2ca02c", "region": "eu-west-1", "id": "m9", "visible": false } ]
                 ],
-                "view": "timeSeries",
+                "view": "singleValue",
                 "stacked": true,
                 "region": "eu-west-1",
-                "period": 900,
+                "period": 3600,
                 "stat": "Sum",
-                "title": "ehoks-virkailija HTTP status codes"
+                "title": "ehoks-virkailija HTTP status codes (data point = #/hour)",
+                "liveData": true,
+                "singleValueFullPrecision": true,
+                "sparkline": true
             }
         },
         {
-            "height": 8,
-            "width": 6,
-            "y": 11,
-            "x": 6,
             "type": "metric",
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 4,
             "properties": {
                 "metrics": [
-                    [ { "expression": "m1 + m2 + m3", "label": "HTTP 5XX", "id": "e1", "color": "#d62728", "region": "eu-west-1" } ],
+                    [ { "expression": "m7 + m8 + m9", "label": "HTTP 2XX", "id": "e3", "region": "eu-west-1", "color": "#2ca02c" } ],
                     [ { "expression": "m4 + m5 + m6", "label": "HTTP 4XX", "id": "e2", "color": "#ffbb78", "region": "eu-west-1" } ],
-                    [ { "expression": "m7 + m8 + m9", "label": "HTTP 2XX", "id": "e3", "region": "eu-west-1" } ],
+                    [ { "expression": "m1 + m2 + m3", "label": "HTTP 5XX", "id": "e1", "color": "#d62728", "region": "eu-west-1" } ],
                     [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "TargetGroup", "targetgroup/sade-ehoks-oppija-FTG/214e9c0025e7c739", "LoadBalancer", "app/sade-ALB/d9414606100fe733", "AvailabilityZone", "eu-west-1b", { "region": "eu-west-1", "color": "#d62728", "id": "m1", "visible": false } ],
                     [ "...", "eu-west-1c", { "color": "#d62728", "region": "eu-west-1", "id": "m2", "visible": false } ],
                     [ "...", "AvailabilityZone", "eu-west-1a", "LoadBalancer", "app/sade-ALB/d9414606100fe733", { "id": "m3", "color": "#d62728", "region": "eu-west-1", "visible": false } ],
@@ -408,46 +405,52 @@
                     [ "...", "LoadBalancer", "app/sade-ALB/d9414606100fe733", "AvailabilityZone", "eu-west-1b", { "region": "eu-west-1", "color": "#2ca02c", "id": "m8", "visible": false } ],
                     [ "...", "eu-west-1c", { "region": "eu-west-1", "color": "#2ca02c", "id": "m9", "visible": false } ]
                 ],
-                "view": "timeSeries",
+                "view": "singleValue",
                 "stacked": true,
                 "region": "eu-west-1",
                 "stat": "Sum",
-                "period": 900,
-                "title": "ehoks-oppija HTTP status codes"
+                "period": 3600,
+                "title": "ehoks-oppija HTTP status codes (data point = #/hour)",
+                "singleValueFullPrecision": true,
+                "liveData": true,
+                "sparkline": true
             }
         },
         {
-            "height": 4,
-            "width": 6,
-            "y": 2,
-            "x": 0,
             "type": "metric",
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 4,
             "properties": {
                 "metrics": [
-                    [ "OpintopolkuLogMetrics", "sade/ERROR/AppEhoksVirkailija", { "region": "eu-west-1", "label": "ehoks-virkailija" } ],
-                    [ ".", "sade/ERROR/AppEhoksOppija", { "region": "eu-west-1", "color": "#2ca02c", "label": "ehoks-oppija" } ]
+                    [ "OpintopolkuLogMetrics", "sade/ERROR/AppEhoksVirkailija", { "label": "ehoks-virkailija", "region": "eu-west-1" } ],
+                    [ ".", "sade/ERROR/AppEhoksPalaute", { "region": "eu-west-1", "label": "ehoks-palaute" } ],
+                    [ ".", "sade/ERROR/AppEhoksOppija", { "label": "ehoks-oppija", "region": "eu-west-1" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,
                 "region": "eu-west-1",
                 "stat": "Sum",
                 "period": 3600,
-                "title": "Number of ERRORs (past 1 hour)",
-                "sparkline": true
+                "title": "Number of ERRORs (data point = # errors/hour)",
+                "sparkline": true,
+                "setPeriodToTimeRange": false,
+                "liveData": true,
+                "singleValueFullPrecision": true
             }
         },
         {
-            "height": 8,
-            "width": 6,
-            "y": 2,
-            "x": 6,
             "type": "metric",
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 4,
             "properties": {
                 "metrics": [
                     [ "AWS/Logs", "IncomingLogEvents", "LogGroupName", "sade-app-ehoks-virkailija", { "region": "eu-west-1", "label": "ehoks-virkailija" } ],
-                    [ "...", "sade-app-ehoks-virkailija-ui", { "region": "eu-west-1", "label": "ehoks-virkailija-ui" } ],
-                    [ "...", "sade-app-ehoks-oppija", { "region": "eu-west-1", "label": "ehoks-oppija" } ],
-                    [ "...", "sade-app-ehoks-oppija-ui", { "region": "eu-west-1", "label": "ehoks-oppija-ui" } ]
+                    [ "...", "sade-app-ehoks-palaute", { "label": "ehoks-palaute", "region": "eu-west-1" } ],
+                    [ "...", "sade-app-ehoks-oppija", { "region": "eu-west-1", "label": "ehoks-oppija" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,
@@ -455,78 +458,165 @@
                 "stat": "Sum",
                 "period": 3600,
                 "sparkline": true,
-                "title": "Number of log events (past 1 hour)"
+                "title": "Number of log events (data point = # events/hour)",
+                "setPeriodToTimeRange": false,
+                "liveData": true,
+                "singleValueFullPrecision": true
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 1,
-            "x": 0,
             "type": "text",
+            "x": 0,
+            "y": 1,
+            "width": 12,
+            "height": 1,
             "properties": {
                 "markdown": "## Log events"
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 10,
-            "x": 0,
             "type": "text",
+            "x": 0,
+            "y": 10,
+            "width": 12,
+            "height": 1,
             "properties": {
                 "markdown": "## HTTP status codes (load balancer)"
             }
         },
         {
-            "height": 5,
-            "width": 4,
-            "y": 20,
-            "x": 0,
             "type": "metric",
+            "x": 16,
+            "y": 8,
+            "width": 4,
+            "height": 6,
             "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "DBLoad", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf", { "region": "eu-west-1", "color": "#ff7f0e" } ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq", { "region": "eu-west-1", "color": "#2ca02c" } ]
+                ],
                 "view": "timeSeries",
                 "stacked": false,
-                "metrics": [
-                    [ "AWS/RDS", "DBLoad", "DBInstanceIdentifier", "sade-ehoks", { "period": 60 } ]
-                ],
                 "region": "eu-west-1",
                 "legend": {
-                    "position": "hidden"
+                    "position": "bottom"
                 },
-                "title": "DB load"
+                "title": "DB load",
+                "period": 60,
+                "stat": "Average",
+                "setPeriodToTimeRange": true,
+                "liveData": true
             }
         },
         {
-            "height": 5,
-            "width": 12,
-            "y": 31,
-            "x": 0,
             "type": "metric",
+            "x": 0,
+            "y": 24,
+            "width": 12,
+            "height": 4,
             "properties": {
                 "metrics": [
                     [ "AWS/ECS", "MemoryUtilization", "ServiceName", "sade-services-ehoks-virkailija-ServiceStaticFargateForehoksvirkailija-Cf2z1FmKktnt", "ClusterName", "sade-ecs-ECSCluster-9161ECJQVYYF", { "region": "eu-west-1", "label": "ehoks-virkailija (5 GB)" } ],
-                    [ "...", "sade-services-ehoks-virkailija-ui-ServiceStaticFargateForehoksvirkailijaui-wK5nvSSIDSUs", ".", ".", { "region": "eu-west-1", "label": "ehoks-virkailija-ui (2 GB)" } ],
-                    [ "...", "sade-services-ehoks-oppija-ServiceStaticFargateForehoksoppija-qPBOgvlkw5rs", ".", ".", { "region": "eu-west-1", "label": "ehoks-oppija (2 GB)" } ],
-                    [ "...", "sade-services-ehoks-oppija-ui-ServiceStaticFargateForehoksoppijaui-bLB1pzJck7WU", ".", ".", { "region": "eu-west-1", "label": "ehoks-oppija-ui (1 GB)" } ]
+                    [ "...", "sade-services-ehoks-palaute-ServiceStaticFargateForehokspalaute-p3PBW4kR4Ayw", ".", ".", { "label": "ehoks-palaute", "region": "eu-west-1" } ],
+                    [ "...", "sade-services-ehoks-oppija-ServiceStaticFargateForehoksoppija-qPBOgvlkw5rs", ".", ".", { "region": "eu-west-1", "label": "ehoks-oppija (2 GB)" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,
                 "region": "eu-west-1",
                 "sparkline": true,
-                "period": 900,
-                "stat": "Maximum",
-                "title": "Container memory utilization"
+                "period": 3600,
+                "stat": "Average",
+                "title": "Container memory utilization (data point = avg/hour)"
             }
         },
         {
-            "height": 1,
-            "width": 12,
-            "y": 30,
-            "x": 0,
             "type": "text",
+            "x": 0,
+            "y": 19,
+            "width": 12,
+            "height": 1,
             "properties": {
                 "markdown": "## ECS metrics"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 20,
+            "y": 8,
+            "width": 4,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "VolumeBytesUsed", "DBClusterIdentifier", "sade-ehoks", { "region": "eu-west-1", "label": "sade-ehoks (Cluster)" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "title": "Volume Bytes Used",
+                "period": 60,
+                "stat": "Average"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 20,
+            "y": 2,
+            "width": 4,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "NetworkThroughput", "DBClusterIdentifier", "sade-ehoks" ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf" ],
+                    [ "...", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq" ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Average",
+                "period": 60,
+                "title": "Network Throughput"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 20,
+            "y": 14,
+            "width": 4,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "Deadlocks", "DBClusterIdentifier", "sade-ehoks", { "region": "eu-west-1" } ],
+                    [ "...", "DBInstanceIdentifier", "sade-aurora-ehoks-sadeehoksreader41b1336a-gu5as4ml75yq", { "region": "eu-west-1" } ],
+                    [ "...", "sade-aurora-ehoks-sadeehokswriterd880d7e7-rrxnhxlg3qwf", { "region": "eu-west-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "period": 3600
+            }
+        },
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 20,
+            "width": 12,
+            "height": 4,
+            "properties": {
+                "metrics": [
+                    [ "AWS/ECS", "CPUUtilization", "ServiceName", "sade-services-ehoks-virkailija-ServiceStaticFargateForehoksvirkailija-Cf2z1FmKktnt", "ClusterName", "sade-ecs-ECSCluster-9161ECJQVYYF", { "label": "ehoks-virkailija", "region": "eu-west-1" } ],
+                    [ "...", "sade-services-ehoks-palaute-ServiceStaticFargateForehokspalaute-p3PBW4kR4Ayw", ".", ".", { "label": "ehoks-palaute", "region": "eu-west-1" } ],
+                    [ "...", "sade-services-ehoks-oppija-ServiceStaticFargateForehoksoppija-qPBOgvlkw5rs", ".", ".", { "label": "ehoks-oppija", "region": "eu-west-1" } ]
+                ],
+                "view": "singleValue",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Average",
+                "period": 3600,
+                "title": "Container CPU utilization (data point = avg/hour)",
+                "singleValueFullPrecision": false,
+                "liveData": true,
+                "sparkline": true
             }
         }
     ]
