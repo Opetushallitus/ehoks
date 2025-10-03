@@ -58,6 +58,7 @@
   {:osa__id                         :id
    :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
    :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
+   :osa__tutkinnon_osan_perusteen_diaarinro :tutkinnon_osan_perusteen_diaarinro
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
    :osa__module_id                  :module_id
