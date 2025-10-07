@@ -183,6 +183,7 @@
 (s/defschema KoskiOsasuoritus
              "Osasuoritus Koskessa"
              {:koulutusmoduuli KoskiKoulutusmoduuli
+              (s/optional-key :tutkinto) KoskiKoulutusmoduuli  ; close enough
               (s/optional-key :yksilöllistettyOppimäärä) s/Bool
               (s/optional-key :painotettuOpetus) s/Bool
               :arviointi [KoskiArviointi]
