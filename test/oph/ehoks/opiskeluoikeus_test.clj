@@ -69,7 +69,8 @@
                    :koodistoUri "koskiopiskeluoikeudentila"
                    :koodistoVersio 1}}]}
    :suoritukset
-   [{:koulutusmoduuli
+   [{:tyyppi {:koodiarvo "ammatillinentutkinto"}
+     :koulutusmoduuli
      {:tunniste
       {:koodiarvo "351407"
        :nimi {:fi "Testialan perustutkinto"
