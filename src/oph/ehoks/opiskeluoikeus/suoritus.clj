@@ -1,5 +1,6 @@
 (ns oph.ehoks.opiskeluoikeus.suoritus
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [medley.core :refer [find-first]]))
 
 (defn tyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 
@@ -24,6 +25,18 @@
 (defn tutkintotunnus
   [suoritus]
   (get-in suoritus [:koulutusmoduuli :tunniste :koodiarvo]))
+
+(defn tutkinto-nimi
+  "Extract tutkinnon nimi from suoritus"
+  [suoritus]
+  (get-in suoritus [:koulutusmoduuli :tunniste :nimi] {:fi "" :sv ""}))
+
+(defn osaamisala-nimi
+  "Extract osaamisalan nimi from suoritus"
+  [suoritus]
+  (or (some #(or (get-in % [:nimi]) (get-in % [:osaamisala :nimi]))
+            (:osaamisala suoritus))
+      {:fi "" :sv ""}))
 
 (defn tutkintonimike
   "Palauttaa suoritukseen liittyvien tutkintonimikkeiden koodiarvot merkkijonona
