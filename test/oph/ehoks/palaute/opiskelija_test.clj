@@ -160,6 +160,19 @@
             {:hoks hoks :opiskeluoikeus oo-test/opiskeluoikeus-1}
             :ei-ole))))
 
+    (testing "initiate for osittainen and useasta tutkinnosta"
+      (are [suoritustyyppi]
+           (= (op/initial-palaute-state-and-reason
+                {:hoks hoks-test/hoks-1
+                 :opiskeluoikeus
+                 (assoc-in oo-test/opiskeluoikeus-1
+                           [:suoritukset 0 :tyyppi :koodiarvo] suoritustyyppi)}
+                :aloituskysely)
+              [:odottaa-kasittelya :ensikertainen-hyvaksyminen
+               :hoks-tallennettu])
+        "ammatillinentutkintoosittainen"
+        "ammatillinentutkintoosittainenuseastatutkinnosta"))
+
     (testing "On HOKS creation"
       (let [ctx {:hoks hoks-test/hoks-1
                  :opiskeluoikeus oo-test/opiskeluoikeus-1}]

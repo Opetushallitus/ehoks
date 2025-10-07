@@ -7,7 +7,9 @@
   "Varmistaa, että suorituksen tyyppi on joko ammatillinen tutkinto tai
   osittainen ammatillinen tutkinto."
   [suoritus]
-  (some? (#{"ammatillinentutkinto" "ammatillinentutkintoosittainen"}
+  (some? (#{"ammatillinentutkinto"
+            "ammatillinentutkintoosittainen"
+            "ammatillinentutkintoosittainenuseastatutkinnosta"}
            (tyyppi suoritus))))
 
 (defn telma?
