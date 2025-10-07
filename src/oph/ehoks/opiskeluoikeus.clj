@@ -52,6 +52,20 @@
   (some #(and (suoritus/ammatillinen? %) (get-in % [:vahvistus :päivä]))
         (:suoritukset opiskeluoikeus)))
 
+(defn tutkinto-nimi
+  "Extract tutkinnon nimi from opiskeluoikeus"
+  [opiskeluoikeus]
+  (->> (:suoritukset opiskeluoikeus)
+       (find-first suoritus/ammatillinen?)
+       (suoritus/tutkinto-nimi)))
+
+(defn osaamisala-nimi
+  "Extract osaamisalan nimi from opiskeluoikeus"
+  [opiskeluoikeus]
+  (->> (:suoritukset opiskeluoikeus)
+       (find-first suoritus/ammatillinen?)
+       (suoritus/osaamisala-nimi)))
+
 (defn get-opiskeluoikeusjakso-for-date
   "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
   [opiskeluoikeus ^String pvm]
