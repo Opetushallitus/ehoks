@@ -1,27 +1,27 @@
 (ns oph.ehoks.oppija.handler
-  (:require [compojure.api.sweet :as c-api]
-            [compojure.api.core :refer [route-middleware]]
+  (:require [compojure.api.core :refer [route-middleware]]
+            [compojure.api.sweet :as c-api]
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
-            [schema.core :as s]
-            [ring.util.http-response :as response]
-            [oph.ehoks.restful :as rest]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.heratepalvelu :as heratepalvelu]
-            [oph.ehoks.middleware :refer [wrap-authorize]]
-            [oph.ehoks.oppija.auth-handler :as auth-handler]
-            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
-            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
-            [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
+            [oph.ehoks.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
+            [oph.ehoks.middleware :refer [wrap-authorize]]
+            [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.oppija.auth-handler :as auth-handler]
+            [oph.ehoks.oppija.oppija-external :as oppija-external]
             [oph.ehoks.oppija.share-handler :as share-handler]
-            [oph.ehoks.oppija.oppija-external :as oppija-external])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.restful :as rest]
+            [ring.util.http-response :as response]
+            [schema.core :as s]))
 
 (defn wrap-match-user
   "Allow request to be handled if route params OID equals session user OID"
@@ -102,10 +102,7 @@
                     :summary "Palauttaa oppijan aktiiviset kyselylinkit"
                     :return (rest/response [s/Any])
                     (->> (heratepalvelu/get-oppija-kyselylinkit oid)
-                         (filter #(and (not (:vastattu %))
-                                       (not (.isAfter
-                                              (LocalDate/now)
-                                              (:voimassa-loppupvm %)))))
+                         (filter kyselylinkki/active?)
                          (map :kyselylinkki)
                          rest/ok)))))
 
