@@ -1522,7 +1522,7 @@
       (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
                     (fn [_]
                       {:vastattu false
-                       :voimassa_loppupvm (str loppupvm "Z")})]
+                       :voimassa-loppupvm (str loppupvm "Z")})]
         (test-utils/with-db
           (v-utils/add-oppija
             {:oid "1.2.246.562.24.44000000008"

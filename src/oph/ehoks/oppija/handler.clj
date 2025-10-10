@@ -8,7 +8,6 @@
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -20,6 +19,7 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.restful :as rest]
+            [oph.ehoks.utils :refer [map-when]]
             [ring.util.http-response :as response]
             [schema.core :as s]))
 
@@ -101,7 +101,9 @@
                   (c-api/GET "/kyselylinkit" []
                     :summary "Palauttaa oppijan aktiiviset kyselylinkit"
                     :return (rest/response [s/Any])
-                    (->> (heratepalvelu/get-oppija-kyselylinkit oid)
+                    (->> (kyselylinkki/get-by-oppija-oid! oid)
+                         (map-when kyselylinkki/active?
+                                   kyselylinkki/update-status!)
                          (filter kyselylinkki/active?)
                          (map :kyselylinkki)
                          rest/ok)))))

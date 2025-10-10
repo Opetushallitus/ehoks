@@ -1,11 +1,9 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
-            [taoensso.faraday :as far]
-            [medley.core :refer [remove-vals find-first]]
-            [oph.ehoks.heratepalvelu :as heratepalvelu]
+            [medley.core :refer [find-first remove-vals]]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -14,18 +12,21 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
-            [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks-test :as hoks-test]
+            [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.oppija.auth-handler-test :refer [mock-get-oppija-raw!]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.test-utils :as test-utils]
-            [oph.ehoks.utils.date :as date])
+            [oph.ehoks.utils :refer [map-when]]
+            [oph.ehoks.utils.date :as date]
+            [taoensso.faraday :as far])
   (:import (java.time LocalDate LocalDateTime)))
 
 (use-fixtures :once test-utils/migrate-database)
@@ -475,9 +476,12 @@
           (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
                         (fn [_]
                           {:vastattu false
-                           :voimassa_loppupvm (str loppupvm "Z")})]
-            (let [kyselylinkit (heratepalvelu/get-oppija-kyselylinkit
-                                 "1.2.246.562.24.12312312319")]
+                           :voimassa-loppupvm (str loppupvm "Z")})]
+            (let [kyselylinkit (->> (kyselylinkki/get-by-oppija-oid!
+                                      "1.2.246.562.24.12312312319")
+                                    (map-when kyselylinkki/active?
+                                              kyselylinkki/update-status!)
+                                    (filter kyselylinkki/active?))]
               (is (= 1 (count kyselylinkit)))
               (is
                 (= (select-keys (first kyselylinkit)

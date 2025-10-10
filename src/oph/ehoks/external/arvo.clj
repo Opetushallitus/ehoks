@@ -25,20 +25,14 @@
 (defn get-kyselylinkki-status!
   "Hakee kyselylinkin tilan Arvosta."
   [kyselylinkki]
-  (->> (str/split kyselylinkki #"/")
-       last
-       (str "/vastauslinkki/v1/status/")
-       (call! :get)))
-
-(defn get-kyselylinkki-status-catch-404!
-  "Hakee kyselylinkin tilan Arvosta, ja käsittelee 404-virheitä."
-  [link]
-  (try
-    (get-kyselylinkki-status! link)
-    (catch ExceptionInfo e
-      (when-not (and (:status (ex-data e))
-                     (= 404 (:status (ex-data e))))
-        (throw e)))))
+  (try (->> (str/split kyselylinkki #"/")
+            last
+            (str "/vastauslinkki/v1/status/")
+            (call! :get)
+            utils/to-dash-keys)
+       (catch ExceptionInfo e
+         (when-not (= 404 (:status (ex-data e)))
+           (throw e)))))
 
 (defn create-kyselytunnus!
   "Luo kyselylinkin Arvoon."
