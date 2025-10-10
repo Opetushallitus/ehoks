@@ -22,7 +22,7 @@
   (filter
     some?
     (map #(if-not (:vastattu %1)
-            (when-let [status (arvo/get-kyselylinkki-status-catch-404
+            (when-let [status (arvo/get-kyselylinkki-status-catch-404!
                                 (:kyselylinkki %1))]
               (let [loppupvm (LocalDate/parse
                                (first

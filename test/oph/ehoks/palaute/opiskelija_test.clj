@@ -472,7 +472,7 @@
         (client/reset-functions!))
       (testing "get kyselylinkit returns linkki from palaute"
         (let [loppupvm (.plusMonths (LocalDateTime/now) 1)]
-          (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status
+          (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
                         (fn [_]
                           {:vastattu false
                            :voimassa_loppupvm (str loppupvm "Z")})]

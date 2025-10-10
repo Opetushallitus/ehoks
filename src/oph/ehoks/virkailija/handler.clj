@@ -181,8 +181,7 @@
   fails for some reason."
   [linkki-info]
   (let [kyselylinkki (:kyselylinkki linkki-info)
-        tunnus       (last (string/split kyselylinkki #"/"))
-        status       (arvo/get-kyselytunnus-status! tunnus)
+        status       (arvo/get-kyselylinkki-status! kyselylinkki)
         loppupvm     (LocalDate/parse
                        (first (string/split (:voimassa_loppupvm status) #"T")))]
     (kyselylinkki/update! {:kyselylinkki kyselylinkki
