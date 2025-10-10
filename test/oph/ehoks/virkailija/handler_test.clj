@@ -1519,7 +1519,7 @@
   (t/testing "Test getting kyselylinkit"
     (let [alkupvm (LocalDate/now)
           loppupvm (.plusMonths (LocalDateTime/now) 1)]
-      (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status
+      (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
                     (fn [_]
                       {:vastattu false
                        :voimassa_loppupvm (str loppupvm "Z")})]
