@@ -1,41 +1,16 @@
 (ns oph.ehoks.heratepalvelu
-  (:require [clojure.string :as string]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
-            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.palaute.opiskelija :as op]))
 
 (defn send-workplace-periods!
   "Formats and sends a list of periods to a SQS queue"
   [periods]
   (doseq [period periods]
     (sqs/send-tyoelamapalaute-message! (sqs/build-tyoelamapalaute-msg period))))
-
-(defn get-oppija-kyselylinkit
-  "Returns all feedback links for oppija"
-  [oppija-oid]
-  (filter
-    some?
-    (map #(if-not (:vastattu %1)
-            (when-let [status (arvo/get-kyselylinkki-status-catch-404!
-                                (:kyselylinkki %1))]
-              (let [loppupvm (LocalDate/parse
-                               (first
-                                 (string/split (:voimassa_loppupvm status)
-                                               #"T")))]
-                (kyselylinkki/update! {:kyselylinkki (:kyselylinkki %1)
-                                       :voimassa_loppupvm loppupvm
-                                       :vastattu (:vastattu status)})
-                (assoc %1
-                       :voimassa-loppupvm loppupvm
-                       :vastattu (:vastattu status))))
-            %1)
-         (kyselylinkki/get-by-oppija-oid! oppija-oid))))
 
 (defn set-tep-kasitelty
   "Marks an osaamisen hankkimistapa as handled (käsitelty)."
