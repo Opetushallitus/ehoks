@@ -95,12 +95,19 @@ psql: stamps/db-running
 test: stamps/db-schema stamps/local-ddb-schema
 	lein test
 
-.PHONY: stop
-stop:
-	-test -f stamps/db-running && docker rm -f ehoks-postgres
-	-rm stamps/db-running
+.PHONY: stop-server
+stop-server:
+	# Sadly, this usually fails to kill the server since lein trampolines
+	# using two processes, the latter of which is detached from its parent.
+	# Consequently, you might need to hunt for the PID of the running
+	# server by hand.
 	-test -f stamps/server-running && kill $$(cat stamps/server-running)
 	-rm stamps/server-running
+
+.PHONY: stop
+stop: stop-server
+	-test -f stamps/db-running && docker rm -f ehoks-postgres
+	-rm stamps/db-running
 	-test -f stamps/local-ddb-running && docker rm -f ehoks-dynamodb
 	-rm stamps/local-ddb-running
 

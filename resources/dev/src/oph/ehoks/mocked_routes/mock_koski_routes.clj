@@ -37,8 +37,16 @@
                  (mock-gen/generate-oppilaitos-oid))
                opiskeluoikeus-tyyppi
                (if (.startsWith opiskeluoikeus-oid "1.2.246.562.15.76811942")
-                 "tuva"
-                 "perusopetus")
+                 {:koodiarvo "tuva"
+                  :nimi
+                  {:fi "Tutkintoon valmistava koulutus"
+                   :sv "Grundläggande utbildning (inte på allvar)"}
+                  :lyhytNimi {:fi "tutkintoon valmistava"}}
+                 {:koodiarvo "ammatillinenkoulutus"
+                  :nimi
+                  {:fi "Ammatillinen koulutus"
+                   :en "Vocational studies"}
+                  :lyhytNimi {:fi "ammatillinen"}})
                tutkinto (mock-gen/generate-tutkinto)]
            (mock-gen/json-response
              {:oid opiskeluoikeus-oid
@@ -103,14 +111,9 @@
                 :suorituskieli {}
                 :osasuoritukset []
                 :tyyppi {:koodiarvo "ammatillinentutkinto"}}]
-              :tyyppi
-              {:koodiarvo opiskeluoikeus-tyyppi
-               :nimi
-               {:fi "Perusopetus"
-                :sv "Grundläggande utbildning"}
-               :lyhytNimi {:fi "Perusopetus"}
-               :koodistoUri "opiskeluoikeudentyyppi"
-               :koodistoVersio 1}
+              :tyyppi (assoc opiskeluoikeus-tyyppi
+                             :koodistoUri "opiskeluoikeudentyyppi"
+                             :koodistoVersio 1)
               :alkamispäivä "2018-11-15"})))
 
     (POST "/koski/api/sure/oids" []
