@@ -71,5 +71,11 @@
   (map #(merge % (select-keys obj fields-to-propagate))
        (get-in obj field-to-get)))
 
-(defn koodiuri->koodi [koodiuri]
-  (some-> koodiuri (clojure.string/split #"_") (last)))
+(defn koodi-uri->koodi
+  "Extracts the Koodisto code from the Koodisto koodi URI string (`koodi-uri`).
+
+  Example:
+   (koodi-uri->koodi \"koodisto_uri_123\") ; => \"123\"
+  "
+  [koodi-uri]
+  (some-> koodi-uri (clojure.string/split #"_") (last)))

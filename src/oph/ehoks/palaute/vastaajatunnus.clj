@@ -70,7 +70,9 @@
         (catch Exception e
           (log/error e "While trying to clean up tunnus from Arvo"))))
     (case ex-type
-      (::koski/opiskeluoikeus-not-found ::arvossa-ei-kyselya)
+      (::koski/opiskeluoikeus-not-found
+        ::hoks/invalid-data
+        ::arvossa-ei-kyselya)
       (do (log/warnf "%s. Setting `tila` to `ei_laheteta` for palaute `%d`."
                      (ex-message ex) (:id existing-palaute))
           (palaute/update-tila!
@@ -121,7 +123,7 @@
   (utils/with-fifo-ttl-cache
     hoks/get-by-id hoks-cache-time hoks-cache-amount {}))
 
-(defn build-ctx
+(defn build-ctx!
   "Creates a full information context (i.e. background information)
   for a given palaute."
   [palaute]
@@ -246,7 +248,7 @@
       (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
                 "palaute" (:id palaute))
       (palaute-check-call-arvo-save-and-sync!
-        (assoc (build-ctx palaute) :tx tx)
+        (assoc (build-ctx! palaute) :tx tx)
         (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers)))
     (catch ExceptionInfo e
       (jdbc/with-db-transaction
