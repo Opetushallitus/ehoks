@@ -556,29 +556,34 @@
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
                         :return (restful/response {:sahkoposti s/Str})
+                        ; NOTE: Kyselylinkit can come from two sources,
+                        ; `kyselylinkit` table or `palautteet` table, so there
+                        ; can be one or two kyselylinkki for same `:hoks-id` and
+                        ; `:tyyppi`.
                         (let [kyselylinkit
                               (->> (kyselylinkki/get-by-oppija-oid! oppija-oid)
+                                   (filter #(and (= (:hoks-id %1) hoks-id)
+                                                 (= (:tyyppi %1)
+                                                    (:tyyppi data))))
                                    (map-when kyselylinkki/active?
-                                             kyselylinkki/update-status!)
-                                   (filter kyselylinkki/active?))
-                              kyselylinkki (first
-                                             (filter
-                                               #(and (= (:hoks-id %1) hoks-id)
-                                                     (= (:tyyppi %1)
-                                                        (:tyyppi data)))
-                                               kyselylinkit))
-                              hoks (db-hoks/select-hoks-by-id hoks-id)]
-                          (if-not (:vastattu kyselylinkki)
+                                             kyselylinkki/update-status!))
+                              linkki     (:kyselylinkki (first kyselylinkit))
+                              sahkoposti (:sahkoposti (:hoks request))]
+                          (if (every? kyselylinkki/active? kyselylinkit)
                             (sqs/send-palaute-resend-message
-                              {:kyselylinkki (:kyselylinkki kyselylinkki)
-                               :sahkoposti (:sahkoposti hoks)})
-                            (kyselylinkki/update!
-                              {:kyselylinkki (:kyselylinkki kyselylinkki)
-                               :sahkoposti (:sahkoposti hoks)
-                               :lahetyspvm (LocalDate/parse (str (t/today)))
-                               :lahetystila "lahetetty"}))
+                              {:kyselylinkki linkki
+                               :sahkoposti   sahkoposti})
+                            (do (log/info
+                                  (str "Kysely with kyselylinkki `" linkki
+                                       "` is expired or has already been "
+                                       "answered. Skipping resend."))
+                                (kyselylinkki/update!
+                                  {:kyselylinkki linkki
+                                   :sahkoposti   sahkoposti
+                                   :lahetyspvm (LocalDate/parse (str (t/today)))
+                                   :lahetystila "lahetetty"})))
                           (assoc
-                            (restful/ok {:sahkoposti (:sahkoposti hoks)})
+                            (restful/ok {:sahkoposti sahkoposti})
                             ::audit/operation ::heratepalvelu/resend-palaute)))
 
                       (c-api/GET "/:hoks-id/opiskelijapalaute" request
