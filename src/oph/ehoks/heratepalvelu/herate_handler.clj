@@ -65,32 +65,6 @@
         (hp/set-paattoherate-kasitelty id true)
         (response/no-content))
 
-      (c-api/POST "/hoksit/resend-aloitusherate" request
-        :summary
-        "Lähettää uudet aloituskyselyherätteet herätepalveluun.
-        Herätepalvelu kutsuu tätä viikon välein saadakseen
-        varmistettua kahden viime viikon herätteet (jotka lähetetään
-        uudestaan)."
-        :header-params [caller-id :- s/Str]
-        :query-params [from :- LocalDate
-                       to :- LocalDate]
-        :return (restful/response {:count s/Int})
-        (let [result (op/reinitiate-hoksit-between! :aloituskysely from to)]
-          (restful/ok {:count result})))
-
-      (c-api/POST "/hoksit/resend-paattoherate" request
-        :summary
-        "Lähettää uudet päättökyselyherätteet herätepalveluun.
-        Herätepalvelu kutsuu tätä viikon välein saadakseen
-        varmistettua kahden viime viikon herätteet (jotka lähetetään
-        uudestaan)."
-        :header-params [caller-id :- s/Str]
-        :query-params [from :- LocalDate
-                       to :- LocalDate]
-        :return (restful/response {:count s/Int})
-        (let [result (op/reinitiate-hoksit-between! :paattokysely from to)]
-          (restful/ok {:count result})))
-
       (c-api/POST "/opiskeluoikeus-update" request
         :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
         :header-params [caller-id :- s/Str]
