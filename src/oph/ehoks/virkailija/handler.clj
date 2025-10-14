@@ -1,14 +1,12 @@
 (ns oph.ehoks.virkailija.handler
   (:require [clj-time.core :as t]
             [clojure.set :refer [rename-keys]]
-            [clojure.string :as string]
             [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.utils :refer [apply-when]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]
@@ -17,23 +15,24 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus
-                                          wrap-hoks wrap-opiskeluoikeus]]
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus wrap-hoks
+                                          wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.resources :as resources]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-s]
             [oph.ehoks.user :as user]
+            [oph.ehoks.utils :refer [apply-when map-when]]
             [oph.ehoks.validation.handler :as validation-handler]
             [oph.ehoks.virkailija.auth :as auth]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
@@ -172,33 +171,15 @@
           (get-in request [:params :oppija-oid]))
         (response/forbidden {:error "User has insufficient privileges"})))))
 
-(defn- update-kyselylinkki-status!
-  "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo
-  and returns an updated `kyselylinkki-info` map. The functions *throws* if
-  kyselytunnus status cannot be fetched from Arvo or if the database update
-  fails for some reason."
-  [linkki-info]
-  (let [kyselylinkki (:kyselylinkki linkki-info)
-        tunnus       (last (string/split kyselylinkki #"/"))
-        status       (arvo/get-kyselytunnus-status! tunnus)
-        loppupvm     (LocalDate/parse
-                       (first (string/split (:voimassa_loppupvm status) #"T")))]
-    (kyselylinkki/update! {:kyselylinkki kyselylinkki
-                           :voimassa_loppupvm loppupvm
-                           :vastattu (:vastattu status)})
-    (assoc linkki-info
-           :voimassa-loppupvm loppupvm
-           :vastattu          (:vastattu status))))
-
 (defn- get-vastaajatunnus-info!
   "Get details of vastaajatunnus from database or Arvo"
   [tunnus]
   (assoc
-    (if-let [linkki-info (some-> (pc/select-kyselylinkit-by-tunnus tunnus)
-                                 first
-                                 not-empty
-                                 (apply-when #(not (:vastattu %))
-                                             update-kyselylinkki-status!))]
+    (if-let [linkki-info (some->> (pc/select-kyselylinkit-by-tunnus tunnus)
+                                  first
+                                  not-empty
+                                  (apply-when kyselylinkki/active?
+                                              kyselylinkki/update-status!))]
       (-> (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid linkki-info))
           :koulutustoimija
           (select-keys [:oid :nimi])
@@ -553,27 +534,34 @@
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
                         :return (restful/response {:sahkoposti s/Str})
+                        ; NOTE: Kyselylinkit can come from two sources,
+                        ; `kyselylinkit` table or `palautteet` table, so there
+                        ; can be one or two kyselylinkki for same `:hoks-id` and
+                        ; `:tyyppi`.
                         (let [kyselylinkit
-                              (heratepalvelu/get-oppija-kyselylinkit
-                                oppija-oid)
-                              kyselylinkki (first
-                                             (filter
-                                               #(and (= (:hoks-id %1) hoks-id)
-                                                     (= (:tyyppi %1)
-                                                        (:tyyppi data)))
-                                               kyselylinkit))
-                              hoks (db-hoks/select-hoks-by-id hoks-id)]
-                          (if-not (:vastattu kyselylinkki)
+                              (->> (kyselylinkki/get-by-oppija-oid! oppija-oid)
+                                   (filter #(and (= (:hoks-id %1) hoks-id)
+                                                 (= (:tyyppi %1)
+                                                    (:tyyppi data))))
+                                   (map-when kyselylinkki/active?
+                                             kyselylinkki/update-status!))
+                              linkki     (:kyselylinkki (first kyselylinkit))
+                              sahkoposti (:sahkoposti (:hoks request))]
+                          (if (every? kyselylinkki/active? kyselylinkit)
                             (sqs/send-palaute-resend-message
-                              {:kyselylinkki (:kyselylinkki kyselylinkki)
-                               :sahkoposti (:sahkoposti hoks)})
-                            (kyselylinkki/update!
-                              {:kyselylinkki (:kyselylinkki kyselylinkki)
-                               :sahkoposti (:sahkoposti hoks)
-                               :lahetyspvm (LocalDate/parse (str (t/today)))
-                               :lahetystila "lahetetty"}))
+                              {:kyselylinkki linkki
+                               :sahkoposti   sahkoposti})
+                            (do (log/info
+                                  (str "Kysely with kyselylinkki `" linkki
+                                       "` is expired or has already been "
+                                       "answered. Skipping resend."))
+                                (kyselylinkki/update!
+                                  {:kyselylinkki linkki
+                                   :sahkoposti   sahkoposti
+                                   :lahetyspvm (LocalDate/parse (str (t/today)))
+                                   :lahetystila "lahetetty"})))
                           (assoc
-                            (restful/ok {:sahkoposti (:sahkoposti hoks)})
+                            (restful/ok {:sahkoposti sahkoposti})
                             ::audit/operation ::heratepalvelu/resend-palaute)))
 
                       (c-api/GET "/:hoks-id/opiskelijapalaute" request
@@ -582,7 +570,10 @@
                         :path-params [hoks-id :- s/Int]
                         :return [s/Any]
                         (let [kyselylinkit
-                              (heratepalvelu/get-oppija-kyselylinkit oppija-oid)
+                              (->> (kyselylinkki/get-by-oppija-oid! oppija-oid)
+                                   (map-when kyselylinkki/active?
+                                             kyselylinkki/update-status!)
+                                   (filter kyselylinkki/active?))
                               lahetysdata
                               (map
                                 #(dissoc %1 :kyselylinkki :vastattu)

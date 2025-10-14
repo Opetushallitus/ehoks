@@ -9,8 +9,14 @@
 (defn apply-when
   "Apply function `f` to value `v` if predicate `(pred v)` returns `true`.
   Otherwise returns value `v` unchanged. Useful when used in a threading macro."
-  [v pred f]
+  [pred f v]
   (if (pred v) (f v) v))
+
+(defn map-when
+  "Like `map` but applies `f` to values `v` of collection `c` when `(pred v)`
+  returns logical true, otherwise values `v` stay unchanged."
+  [pred f c]
+  (map (fn [v] (apply-when pred f v)) c))
 
 (defn to-underscore-str
   [kw]
