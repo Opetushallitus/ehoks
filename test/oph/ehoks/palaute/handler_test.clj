@@ -48,7 +48,15 @@
                                       :oikeus "CRUD"}]}
                    {:organisaatioOid "1.2.246.562.10.00000000001"
                     :kayttooikeudet [{:palvelu "EHOKS"
-                                      :oikeus "OPHPAAKAYTTAJA"}]}]})
+                                      :oikeus "OPHPAAKAYTTAJA"}]}]
+   :organisation-privileges [{:oid "1.2.246.562.10.00000000001",
+                              :privileges #{:read :update :delete :write},
+                              :roles #{},
+                              :child-organisations []}
+                             {:oid "1.2.246.562.10.00000000001",
+                              :privileges #{:read :update :delete :write},
+                              :roles #{:oph-super-user},
+                              :child-organisations []}]})
 
 (defn mock-validate-ticket
   [_ __]

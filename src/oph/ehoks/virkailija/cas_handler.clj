@@ -23,8 +23,7 @@
                               (u/get-url "ehoks.virkailija-login-return")
                               ticket)]
         (-> (response/see-other (u/get-url "ehoks-virkailija-frontend"))
-            (assoc-in [:session :virkailija-user]
-                      (merge user-details (user/get-auth-info user-details)))
+            (assoc-in [:session :virkailija-user] user-details)
             (assoc-in [:session :ticket] ticket))
         (response/unauthorized {:error "Invalid ticket"})))
 

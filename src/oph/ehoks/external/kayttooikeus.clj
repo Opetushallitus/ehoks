@@ -1,6 +1,7 @@
 (ns oph.ehoks.external.kayttooikeus
   (:require [oph.ehoks.external.cas :as cas]
             [oph.ehoks.external.oph-url :as u]
+            [oph.ehoks.user :as user]
             [clojure.tools.logging :as log]))
 
 (defn- filter-non-ehoks-privileges
@@ -41,5 +42,6 @@
   ([service ticket]
     (let [validation-data (cas/validate-ticket service ticket)]
       (if (:success? validation-data)
-        (username->user-details! (:user validation-data))
+        (let [user-details (username->user-details! (:user validation-data))]
+          (merge user-details (user/get-auth-info user-details)))
         (log/warnf "Service ticket validation failed: %s" validation-data)))))
