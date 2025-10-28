@@ -19,7 +19,7 @@
     (c-api/GET "/" []
       :summary "Virkailijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
-      (if-let [user-details (kayttooikeus/service-ticket->user-details
+      (if-let [user-details (kayttooikeus/service-ticket->user-details!
                               (u/get-url "ehoks.virkailija-login-return")
                               ticket)]
         (-> (response/see-other (u/get-url "ehoks-virkailija-frontend"))

@@ -21,12 +21,7 @@
               #(not-empty (:kayttooikeudet %))
               (map filter-non-ehoks-privileges orgs)))))
 
-(defn- fetch-user-privileges
-  "Get user privileges from CAS endpoint"
-  [{:as data}]
-  (cas/with-service-ticket data))
-
-(defn get-user-details
+(defn username->user-details!
   "Get user details of given username"
   [^String username]
   (-> {:method :get
@@ -34,17 +29,17 @@
        :service (u/get-url "kayttooikeus-service-url")
        :url (u/get-url "kayttooikeus-service.kayttaja")
        :options {:as :json, :query-params {"username" username}}}
-      (fetch-user-privileges)
+      (cas/with-service-ticket)
       (get-in [:body 0])
       (remove-orgs-without-privileges)))
 
-(defn service-ticket->user-details
+(defn service-ticket->user-details!
   "Get username of CAS ticket at given service"
-  ([ticket] (service-ticket->user-details
+  ([ticket] (service-ticket->user-details!
               (u/get-url "ehoks-virkailija-backend-url")
               ticket))
   ([service ticket]
     (let [validation-data (cas/validate-ticket service ticket)]
       (if (:success? validation-data)
-        (get-user-details (:user validation-data))
+        (username->user-details! (:user validation-data))
         (log/warnf "Service ticket validation failed: %s" validation-data)))))
