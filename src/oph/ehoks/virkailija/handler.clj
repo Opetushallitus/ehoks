@@ -158,9 +158,7 @@
   "Get HOKS by ID, if user has sufficient permissions"
   [hoks-id request]
   (let [hoks (db-hoks/select-hoks-by-id hoks-id)
-        virkailija-user (get-in
-                          request
-                          [:session :virkailija-user])]
+        virkailija-user (get-in request [:session :virkailija-user])]
     (if (user/has-read-privileges-to-oppija? virkailija-user (:oppija-oid hoks))
       (assoc (restful/ok (hoks/get-by-id hoks-id))
              ::audit/target (audit/hoks-target-data hoks))
@@ -210,26 +208,6 @@
                           "Tunnus ei ole poistettavissa"))
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
-
-(defn check-suoritus-type?
-  "Check that suoritus is either ammatillinen tutkinto or ammatillinen
-  osittainen tutkinto"
-  [suoritus]
-  (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
-      (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
-
-(defn- get-vahvistus-pvm
-  "Extract vahvistuspäivämäärä from opiskeluoikeus"
-  [opiskeluoikeus]
-  (if-let [vahvistus-pvm
-           (reduce
-             (fn [_ suoritus]
-               (when (check-suoritus-type? suoritus)
-                 (reduced (get-in suoritus [:vahvistus :päivä]))))
-             nil (:suoritukset opiskeluoikeus))]
-    vahvistus-pvm
-    (log/warn "Opiskeluoikeudessa" (:oid opiskeluoikeus)
-              "ei vahvistus päivämäärää")))
 
 (defn- paginate
   "Paginate the query `result` using `page-size` and `page-offset`"
@@ -421,7 +399,7 @@
                                      {:osaamisen-saavuttamisen-pvm ospvm
                                       :vahvistus-pvm
                                       (some-> (koski/get-opiskeluoikeus! oo-id)
-                                              get-vahvistus-pvm)})
+                                              opiskeluoikeus/vahvistus-pvm)})
                                    data)]
                   (response/ok {:last-id last-id
                                 :paattokysely-total-count (count hoks-infos)
