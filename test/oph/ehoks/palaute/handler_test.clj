@@ -71,7 +71,7 @@
                        palaute-app)
               body (test-utils/parse-body (:body resp))]
           (is (= (:status resp) 401))
-          (is (= (:error body) "Ticket is missing"))))
+          (is (= (:error body) "Cas service ticket header is missing"))))
 
       (testing (str "POST /tyoelamapalaute/vastaajatunnukset "
                     "without caller-id returns 401")
