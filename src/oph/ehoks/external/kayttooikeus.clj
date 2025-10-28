@@ -29,28 +29,22 @@
 (defn get-user-details
   "Get user details of given username"
   [^String username]
-  (remove-orgs-without-privileges
-    (first
-      (:body
-        (fetch-user-privileges
-          {:method :get
-           :authenticate? true
-           :service (u/get-url "kayttooikeus-service-url")
-           :url (u/get-url "kayttooikeus-service.kayttaja")
-           :options {:as :json
-                     :query-params {"username" username}}})))))
+  (-> {:method :get
+       :authenticate? true
+       :service (u/get-url "kayttooikeus-service-url")
+       :url (u/get-url "kayttooikeus-service.kayttaja")
+       :options {:as :json, :query-params {"username" username}}}
+      (fetch-user-privileges)
+      (get-in [:body 0])
+      (remove-orgs-without-privileges)))
 
-(defn get-service-ticket-user
+(defn service-ticket->user-details
   "Get username of CAS ticket at given service"
-  [ticket service]
-  (let [validation-data (cas/validate-ticket service ticket)]
-    (if (:success? validation-data)
-      (get-user-details (:user validation-data))
-      (do
-        (log/warnf "Service ticket validation failed: %s" validation-data)
-        nil))))
-
-(defn get-ticket-user
-  "Get user of CAS ticket in eHOKS service"
-  [ticket]
-  (get-service-ticket-user ticket (u/get-url "ehoks-virkailija-backend-url")))
+  ([ticket] (service-ticket->user-details
+              (u/get-url "ehoks-virkailija-backend-url")
+              ticket))
+  ([service ticket]
+    (let [validation-data (cas/validate-ticket service ticket)]
+      (if (:success? validation-data)
+        (get-user-details (:user validation-data))
+        (log/warnf "Service ticket validation failed: %s" validation-data)))))

@@ -60,7 +60,7 @@
     ([request respond raise]
       (if-let [result (header-error-if-any request)]
         (respond (unauthorized result))
-        (if-let [ticket-user (kayttooikeus/get-ticket-user
+        (if-let [ticket-user (kayttooikeus/service-ticket->user-details
                                (get-in request [:headers "ticket"]))]
           (handler
             (assoc
@@ -76,7 +76,7 @@
     ([request]
       (if-let [result (header-error-if-any request)]
         (unauthorized result)
-        (if-let [ticket-user (kayttooikeus/get-ticket-user
+        (if-let [ticket-user (kayttooikeus/service-ticket->user-details
                                (get-in request [:headers "ticket"]))]
           (handler (assoc
                      request
