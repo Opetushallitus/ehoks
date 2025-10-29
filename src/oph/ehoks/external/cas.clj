@@ -112,17 +112,11 @@
       (:content x))))
 
 (defn find-value
-  "Find value in map"
-  [m init-ks]
-  (loop [c (get m (first init-ks)) ks (rest init-ks)]
-    (if (empty? ks)
-      c
-      (let [k (first ks)]
-        (recur
-          (if (map? c)
-            (get c k)
-            (some #(get % k) c))
-          (rest ks))))))
+  "Recursively fetch the given keypath in map (similar to get-in), but for
+  lists, fetch the first element that has the key we're looking for next"
+  [data keypath]
+  (reduce (fn [m key] (or (get m key) (some #(get % key) m)))
+          data keypath))
 
 (defn- convert-response-data
   "Extracts user and/or error info from response data"
