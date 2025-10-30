@@ -3,7 +3,6 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
             [oph.ehoks.db.db-operations.oppija :as op]
-            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.external.koski :as k]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
@@ -654,11 +653,9 @@
   [hoks-id]
   (let [hoks (select-hoks-by-id hoks-id)
         oppija (op/select-oppija-by-oid (:oppija-oid hoks))
-        oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
-        organisaatio (org/get-existing-organisaatio! (:oppilaitos-oid oo))]
+        oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))]
     {:nimi (:nimi oppija)
      :hoksId (:id hoks)
-     :oppilaitosNimi (get-in organisaatio [:nimi] {:fi "" :sv ""})
      :tutkinnonNimi (get-in oo [:tutkinto-nimi] {:fi "" :sv ""})
      :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
      :oppilaitosOid (:oppilaitos-oid oo)}))
@@ -745,6 +742,8 @@
                         conn))
       (set (map :hankkimistapa-id jaksot)))))
 
+;; TODO: nää ei oikeasti kuuluis db-operations-nimiavaruuteen vaan johonkin
+;; ylempään logiikkakerrokseen.
 (defn old-opiskeluoikeus?
   "Onko hoksin opiskeluoikeus päättynyt yli kolme kuukautta sitten?"
   [hoks]

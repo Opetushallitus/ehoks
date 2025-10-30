@@ -1,9 +1,8 @@
 (ns oph.ehoks.middleware
   (:require [medley.core :refer [assoc-some]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.kayttooikeus :as kayttooikeus]
+            [oph.ehoks.external.cas :as cas]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.user :as user]
             [ring.util.http-response :refer [header unauthorized]]))
 
 (defn- authenticated?
@@ -43,30 +42,26 @@
     ([request]
       (cache-control-no-cache-response (handler request)))))
 
-(defn validate-headers
+(defn header-error-if-any
   "Require headers with caller id and service ticket"
   [request]
   (cond
-    (nil? (get-in request [:headers "caller-id"]))
+    (not (get-in request [:headers "caller-id"]))
     {:error "Caller-Id header is missing"}
-    (nil? (get-in request [:headers "ticket"]))
-    {:error "Ticket is missing"}))
+    (not (get-in request [:headers "ticket"]))
+    {:error "Cas service ticket header is missing"}))
 
-; TODO: Split and reuse code
 (defn wrap-user-details
   "Wrap with user details (service ticket user)"
   [handler]
   (fn
     ([request respond raise]
-      (if-let [result (validate-headers request)]
+      (if-let [result (header-error-if-any request)]
         (respond (unauthorized result))
-        (if-let [ticket-user (kayttooikeus/get-ticket-user
-                               (get-in request [:headers "ticket"]))]
+        (if-let [user-details (cas/service-ticket->user-details!
+                                (get-in request [:headers "ticket"]))]
           (handler
-            (assoc
-              request
-              :service-ticket-user
-              (merge ticket-user (user/get-auth-info ticket-user)))
+            (assoc request :service-ticket-user user-details)
             respond
             raise)
           (respond
@@ -74,15 +69,11 @@
               {:error
                "User not found for given ticket. Ticket may be expired."})))))
     ([request]
-      (if-let [result (validate-headers request)]
+      (if-let [result (header-error-if-any request)]
         (unauthorized result)
-        (if-let [ticket-user (kayttooikeus/get-ticket-user
-                               (get-in request [:headers "ticket"]))]
-          (handler (assoc
-                     request
-                     :service-ticket-user
-                     (merge ticket-user (user/get-auth-info ticket-user))))
-
+        (if-let [user-details (cas/service-ticket->user-details!
+                                (get-in request [:headers "ticket"]))]
+          (handler (assoc request :service-ticket-user user-details))
           (unauthorized
             {:error
              "User not found for given ticket. Ticket may be expired."}))))))

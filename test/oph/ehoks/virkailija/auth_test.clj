@@ -29,6 +29,13 @@
           "<cas:authenticationSuccess>"
           "<cas:user>ehoksvirkailija</cas:user>"
           "<cas:attributes>"
+          "<cas:roles>"
+          "ROLE_APP_EHOKS_CRUD_1.2.246.562.10.12944436166"
+          "</cas:roles>"
+          "<cas:kayttajaTyyppi>VIRKAILIJA</cas:kayttajaTyyppi>"
+          "<cas:oidHenkilo>"
+          "1.2.246.562.24.11474338834"
+          "</cas:oidHenkilo>"
           "<cas:longTermAuthenticationRequestTokenUsed>false"
           "</cas:longTermAuthenticationRequestTokenUsed>"
           "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
@@ -134,8 +141,7 @@
                    [{:oid "1.2.246.562.10.12944436166"
                      :privileges
                      ["read" "update" "delete" "write"]
-                     :roles []
-                     :child-organisations []}]}}))))))
+                     :roles []}]}}))))))
 
 (t/deftest delete-session-test
   (t/testing "Delete virkailija session"

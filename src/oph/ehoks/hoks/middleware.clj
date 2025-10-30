@@ -92,9 +92,8 @@
   (let [privilege (rest-method->privilege-type (:request-method request))]
     (->> (:service-ticket-user request)
          :organisation-privileges
-         (find-first #(= (:oid %) "1.2.246.562.10.00000000001"))
-         :privileges
-         privilege ; keyword, e.g., :read
+         (some #(and (= (:oid %) "1.2.246.562.10.00000000001")
+                     (contains? (:privileges %) privilege)))
          some?)))
 
 (defn wrap-require-oph-privileges

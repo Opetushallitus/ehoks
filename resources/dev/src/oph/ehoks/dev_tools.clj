@@ -66,8 +66,7 @@
 (s/defschema OrganisationPrivilege
              {:oid s/Str
               :roles [s/Str]
-              :privileges [s/Str]
-              :child-organisations [s/Str]})
+              :privileges [s/Str]})
 
 (s/defschema Oppija
              {:oid s/Str
