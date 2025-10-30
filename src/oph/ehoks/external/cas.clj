@@ -173,17 +173,16 @@
 (defn validate-ticket
   "Validate service ticket"
   [service ticket]
-  (let [validate-endpoint (u/get-url "cas.validate-service")
-        response (c/with-api-headers
-                   {:method :get
-                    :service validate-endpoint
-                    :url validate-endpoint
-                    :options
-                    {:query-params
-                     {:service (get-cas-url service)
-                      :ticket ticket}}})]
-    (let [xml-data (xml/parse-str (:body response))]
-      (convert-response-data xml-data))))
+  (let [validate-endpoint (u/get-url "cas.validate-service")]
+    (-> {:method :get
+         :service validate-endpoint
+         :url validate-endpoint
+         :options {:query-params {:service (get-cas-url service)
+                                  :ticket ticket}}}
+        (c/with-api-headers)
+        :body
+        (xml/parse-str)
+        (convert-response-data))))
 
 (defn- call-cas-oppija-ticket-validation
   "Do CAS oppija ticket valiation"
