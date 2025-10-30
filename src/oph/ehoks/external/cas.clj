@@ -122,13 +122,15 @@
   "Extracts user and/or error info from response data"
   [data]
   (let [m (xml->map data)
-        success (some?
-                  (find-value m [:serviceResponse :authenticationSuccess]))]
-    {:success? success
-     :error (when-not success
-              (first (find-value m [:serviceResponse :authenticationFailure])))
-     :user (first
-             (find-value m [:serviceResponse :authenticationSuccess :user]))}))
+        response (find-value m [:serviceResponse :authenticationSuccess])]
+    {:success? (some? response)
+     :error (first (find-value m [:serviceResponse :authenticationFailure]))
+     :user (first (find-value response [:user]))
+     :username (first (find-value response [:user]))
+     :kayttajaTyyppi (first (find-value response
+                                        [:attributes :kayttajaTyyppi]))
+     :oidHenkilo (first (find-value response [:attributes :oidHenkilo]))
+     :roles (keep (comp first :roles) (find-value response [:attributes]))}))
 
 (defn- using-valtuudet?
   "Check whether user is using valtuudet"

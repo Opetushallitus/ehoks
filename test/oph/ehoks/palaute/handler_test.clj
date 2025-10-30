@@ -61,7 +61,13 @@
 (defn mock-validate-ticket
   [_ __]
   {:success? true
-   :user {:username "ehoks-test"}})
+   :error nil
+   :user "ehoks-test"
+   :oidHenkilo "1.2.246.562.24.11474338834"
+   :username "ehoks-test"
+   :kayttajaTyyppi "PALVELU"
+   :roles ["ROLE_APP_EHOKS_CRUD_1.2.246.562.10.00000000001"
+           "ROLE_APP_EHOKS_OPHPAAKAYTTAJA_1.2.246.562.10.00000000001"]})
 
 (deftest test-tyoelamapalaute
   (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
