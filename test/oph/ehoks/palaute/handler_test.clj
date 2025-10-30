@@ -51,12 +51,10 @@
                                       :oikeus "OPHPAAKAYTTAJA"}]}]
    :organisation-privileges [{:oid "1.2.246.562.10.00000000001",
                               :privileges #{:read :update :delete :write},
-                              :roles #{},
-                              :child-organisations []}
+                              :roles #{}}
                              {:oid "1.2.246.562.10.00000000001",
                               :privileges #{:read :update :delete :write},
-                              :roles #{:oph-super-user},
-                              :child-organisations []}]})
+                              :roles #{:oph-super-user}}]})
 
 (defn mock-validate-ticket
   [_ __]

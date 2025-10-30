@@ -141,8 +141,7 @@
                    [{:oid "1.2.246.562.10.12944436166"
                      :privileges
                      ["read" "update" "delete" "write"]
-                     :roles []
-                     :child-organisations []}]}}))))))
+                     :roles []}]}}))))))
 
 (t/deftest delete-session-test
   (t/testing "Delete virkailija session"
