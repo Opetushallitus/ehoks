@@ -106,7 +106,7 @@
   (hash-map
     (:tag x)
     (map
-      #(if (= (type %) clojure.data.xml.Element)
+      #(if (instance? clojure.data.xml.Element %)
          (xml->map %)
          %)
       (:content x))))
@@ -173,10 +173,11 @@
 (defn validate-ticket
   "Validate service ticket"
   [service ticket]
-  (let [response (c/with-api-headers
+  (let [validate-endpoint (u/get-url "cas.validate-service")
+        response (c/with-api-headers
                    {:method :get
-                    :service (u/get-url "cas.validate-service")
-                    :url (u/get-url "cas.validate-service")
+                    :service validate-endpoint
+                    :url validate-endpoint
                     :options
                     {:query-params
                      {:service (get-cas-url service)
