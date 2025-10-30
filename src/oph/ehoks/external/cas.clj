@@ -209,3 +209,41 @@
   (let [response (call-cas-oppija-ticket-validation ticket domain)]
     (let [xml-data (xml/parse-str (:body response))]
       (convert-oppija-cas-response-data xml-data))))
+
+(def role-name->privileges
+  "Resolves OPH role name to set of eHOKS privileges"
+  {"CRUD"           #{:read :write :update :delete}
+   "OPHPAAKAYTTAJA" #{:read :write :update :delete}
+   "READ"           #{:read}
+   "HOKS_DELETE"    #{:hoks_delete}})
+
+(def ehoks-role-re #"ROLE_APP_EHOKS_(\w+)_(1\.2\.246\.562\.10\.\d+)")
+
+(defn roles->org-privileges
+  "Convert CAS roles to the format used by eHOKS"
+  [roles]
+  (keep (fn [role]
+          (when-let [[match role-name org-oid] (re-matches ehoks-role-re role)]
+            {:oid org-oid
+             :privileges (or (role-name->privileges role-name) #{})
+             :roles (if (= role-name "OPHPAAKAYTTAJA") #{:oph-super-user} #{})}))
+        roles))
+
+(defn validation-data->user-details
+  "Convert validate-ticket results to the format earlier returned by
+  kayttooikeuspalvelu and get-auth-info"
+  [validation-data]
+  (assoc validation-data
+         :organisation-privileges
+         (roles->org-privileges (:roles validation-data))))
+
+(defn service-ticket->user-details!
+  "Get username of CAS ticket at given service"
+  ([ticket] (service-ticket->user-details!
+              (u/get-url "ehoks-virkailija-backend-url")
+              ticket))
+  ([service ticket]
+    (let [validation-data (validate-ticket service ticket)]
+      (if (:success? validation-data)
+        (validation-data->user-details validation-data)
+        (log/warnf "Service ticket validation failed: %s" validation-data)))))

@@ -69,7 +69,7 @@
 
 (deftest test-tyoelamapalaute
   (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
-  (with-redefs [oph.ehoks.external.kayttooikeus/service-ticket->user-details!
+  (with-redefs [oph.ehoks.external.cas/service-ticket->user-details!
                 mock-get-ticket-user
                 oph.ehoks.external.cas/validate-ticket
                 mock-validate-ticket]
