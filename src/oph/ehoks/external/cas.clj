@@ -226,7 +226,8 @@
           (when-let [[match role-name org-oid] (re-matches ehoks-role-re role)]
             {:oid org-oid
              :privileges (or (role-name->privileges role-name) #{})
-             :roles (if (= role-name "OPHPAAKAYTTAJA") #{:oph-super-user} #{})}))
+             :roles (if (= role-name "OPHPAAKAYTTAJA")
+                      #{:oph-super-user} #{})}))
         roles))
 
 (defn validation-data->user-details
