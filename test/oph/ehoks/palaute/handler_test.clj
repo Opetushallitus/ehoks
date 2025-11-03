@@ -48,16 +48,28 @@
                                       :oikeus "CRUD"}]}
                    {:organisaatioOid "1.2.246.562.10.00000000001"
                     :kayttooikeudet [{:palvelu "EHOKS"
-                                      :oikeus "OPHPAAKAYTTAJA"}]}]})
+                                      :oikeus "OPHPAAKAYTTAJA"}]}]
+   :organisation-privileges [{:oid "1.2.246.562.10.00000000001",
+                              :privileges #{:read :update :delete :write},
+                              :roles #{}}
+                             {:oid "1.2.246.562.10.00000000001",
+                              :privileges #{:read :update :delete :write},
+                              :roles #{:oph-super-user}}]})
 
 (defn mock-validate-ticket
   [_ __]
   {:success? true
-   :user {:username "ehoks-test"}})
+   :error nil
+   :user "ehoks-test"
+   :oidHenkilo "1.2.246.562.24.11474338834"
+   :username "ehoks-test"
+   :kayttajaTyyppi "PALVELU"
+   :roles ["ROLE_APP_EHOKS_CRUD_1.2.246.562.10.00000000001"
+           "ROLE_APP_EHOKS_OPHPAAKAYTTAJA_1.2.246.562.10.00000000001"]})
 
 (deftest test-tyoelamapalaute
   (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
-  (with-redefs [oph.ehoks.external.kayttooikeus/get-ticket-user
+  (with-redefs [oph.ehoks.external.cas/service-ticket->user-details!
                 mock-get-ticket-user
                 oph.ehoks.external.cas/validate-ticket
                 mock-validate-ticket]
@@ -71,7 +83,7 @@
                        palaute-app)
               body (test-utils/parse-body (:body resp))]
           (is (= (:status resp) 401))
-          (is (= (:error body) "Ticket is missing"))))
+          (is (= (:error body) "Cas service ticket header is missing"))))
 
       (testing (str "POST /tyoelamapalaute/vastaajatunnukset "
                     "without caller-id returns 401")

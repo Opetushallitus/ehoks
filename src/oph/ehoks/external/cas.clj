@@ -106,35 +106,31 @@
   (hash-map
     (:tag x)
     (map
-      #(if (= (type %) clojure.data.xml.Element)
+      #(if (instance? clojure.data.xml.Element %)
          (xml->map %)
          %)
       (:content x))))
 
 (defn find-value
-  "Find value in map"
-  [m init-ks]
-  (loop [c (get m (first init-ks)) ks (rest init-ks)]
-    (if (empty? ks)
-      c
-      (let [k (first ks)]
-        (recur
-          (if (map? c)
-            (get c k)
-            (some #(get % k) c))
-          (rest ks))))))
+  "Recursively fetch the given keypath in map (similar to get-in), but for
+  lists, fetch the first element that has the key we're looking for next"
+  [data keypath]
+  (reduce (fn [m key] (or (get m key) (some #(get % key) m)))
+          data keypath))
 
 (defn- convert-response-data
   "Extracts user and/or error info from response data"
   [data]
   (let [m (xml->map data)
-        success (some?
-                  (find-value m [:serviceResponse :authenticationSuccess]))]
-    {:success? success
-     :error (when-not success
-              (first (find-value m [:serviceResponse :authenticationFailure])))
-     :user (first
-             (find-value m [:serviceResponse :authenticationSuccess :user]))}))
+        response (find-value m [:serviceResponse :authenticationSuccess])]
+    {:success? (some? response)
+     :error (first (find-value m [:serviceResponse :authenticationFailure]))
+     :user (first (find-value response [:user]))
+     :username (first (find-value response [:user]))
+     :kayttajaTyyppi (first (find-value response
+                                        [:attributes :kayttajaTyyppi]))
+     :oidHenkilo (first (find-value response [:attributes :oidHenkilo]))
+     :roles (keep (comp first :roles) (find-value response [:attributes]))}))
 
 (defn- using-valtuudet?
   "Check whether user is using valtuudet"
@@ -179,16 +175,16 @@
 (defn validate-ticket
   "Validate service ticket"
   [service ticket]
-  (let [response (c/with-api-headers
-                   {:method :get
-                    :service (u/get-url "cas.validate-service")
-                    :url (u/get-url "cas.validate-service")
-                    :options
-                    {:query-params
-                     {:service (get-cas-url service)
-                      :ticket ticket}}})]
-    (let [xml-data (xml/parse-str (:body response))]
-      (convert-response-data xml-data))))
+  (let [validate-endpoint (u/get-url "cas.validate-service")]
+    (-> {:method :get
+         :service validate-endpoint
+         :url validate-endpoint
+         :options {:query-params {:service (get-cas-url service)
+                                  :ticket ticket}}}
+        (c/with-api-headers)
+        :body
+        (xml/parse-str)
+        (convert-response-data))))
 
 (defn- call-cas-oppija-ticket-validation
   "Do CAS oppija ticket valiation"
@@ -213,3 +209,42 @@
   (let [response (call-cas-oppija-ticket-validation ticket domain)]
     (let [xml-data (xml/parse-str (:body response))]
       (convert-oppija-cas-response-data xml-data))))
+
+(def role-name->privileges
+  "Resolves OPH role name to set of eHOKS privileges"
+  {"CRUD"           #{:read :write :update :delete}
+   "OPHPAAKAYTTAJA" #{:read :write :update :delete}
+   "READ"           #{:read}
+   "HOKS_DELETE"    #{:hoks_delete}})
+
+(def ehoks-role-re #"ROLE_APP_EHOKS_(\w+)_(1\.2\.246\.562\.10\.\d+)")
+
+(defn roles->org-privileges
+  "Convert CAS roles to the format used by eHOKS"
+  [roles]
+  (keep (fn [role]
+          (when-let [[match role-name org-oid] (re-matches ehoks-role-re role)]
+            {:oid org-oid
+             :privileges (or (role-name->privileges role-name) #{})
+             :roles (if (= role-name "OPHPAAKAYTTAJA")
+                      #{:oph-super-user} #{})}))
+        roles))
+
+(defn validation-data->user-details
+  "Convert validate-ticket results to the format earlier returned by
+  kayttooikeuspalvelu and get-auth-info"
+  [validation-data]
+  (assoc validation-data
+         :organisation-privileges
+         (roles->org-privileges (:roles validation-data))))
+
+(defn service-ticket->user-details!
+  "Get username of CAS ticket at given service"
+  ([ticket] (service-ticket->user-details!
+              (u/get-url "ehoks-virkailija-backend-url")
+              ticket))
+  ([service ticket]
+    (let [validation-data (validate-ticket service ticket)]
+      (if (:success? validation-data)
+        (validation-data->user-details validation-data)
+        (log/warnf "Service ticket validation failed: %s" validation-data)))))

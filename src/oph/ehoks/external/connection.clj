@@ -3,14 +3,9 @@
             [oph.ehoks.external.http-client :as client])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
-(defn- get-client-fn
-  "Get appropriate REST function for given keyword."
-  [method]
-  (cond
-    (= method :delete) client/delete
-    (= method :get)    client/get
-    (= method :post)   client/post
-    :else              (throw (ex-info "Unsupported method" {:method method}))))
+(def get-client-fn
+  (some-fn {:delete client/delete :get client/get :post client/post}
+           #(throw (ex-info "Unsupported method" {:method %}))))
 
 (defn with-api-headers
   "Perform request with API headers (OPH Caller ID) and error handling with

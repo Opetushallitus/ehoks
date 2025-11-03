@@ -29,6 +29,12 @@
                  "  xmlns:cas='http://www.yale.edu/tp/cas'>"
                  "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
                  "<cas:attributes>"
+                 "<cas:roles>ROLE_APP_EHOKS_CRUD_1.2.246.562.10.12944436166"
+                 "</cas:roles>"
+                 "<cas:kayttajaTyyppi>VIRKAILIJA</cas:kayttajaTyyppi>"
+                 "<cas:oidHenkilo>"
+                 "1.2.246.562.24.11474338834"
+                 "</cas:oidHenkilo>"
                  "<cas:longTermAuthenticationRequestTokenUsed>false"
                  "</cas:longTermAuthenticationRequestTokenUsed>"
                  "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
@@ -94,16 +100,26 @@
       (cond (.endsWith url "/serviceValidate")
             {:status 200
              :body
-             (str "<cas:serviceResponse"
-                  "  xmlns:cas='http://www.yale.edu/tp/cas'>"
-                  "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
-                  "<cas:attributes>"
-                  "<cas:longTermAuthenticationRequestTokenUsed>false"
-                  "</cas:longTermAuthenticationRequestTokenUsed>"
-                  "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-                  "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-                  "</cas:authenticationDate></cas:attributes>"
-                  "</cas:authenticationSuccess></cas:serviceResponse>")}
+             (format
+               (str "<cas:serviceResponse"
+                    "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                    "<cas:authenticationSuccess>"
+                    "<cas:user>ehoks-test</cas:user>"
+                    "<cas:attributes>"
+                    "<cas:roles>"
+                    "ROLE_APP_EHOKS_CRUD_%s"
+                    "</cas:roles>"
+                    "<cas:kayttajaTyyppi>PALVELU</cas:kayttajaTyyppi>"
+                    "<cas:oidHenkilo>"
+                    "1.2.246.562.24.11474338834"
+                    "</cas:oidHenkilo>"
+                    "<cas:longTermAuthenticationRequestTokenUsed>false"
+                    "</cas:longTermAuthenticationRequestTokenUsed>"
+                    "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                    "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                    "</cas:authenticationDate></cas:attributes>"
+                    "</cas:authenticationSuccess></cas:serviceResponse>")
+               organisaatio-oid)}
             (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
             {:status 200
              :body [{:oidHenkilo "1.2.246.562.24.11474338834"
@@ -154,16 +170,23 @@
         (cond (.endsWith url "/serviceValidate")
               {:status 200
                :body
-               (str "<cas:serviceResponse"
-                    "  xmlns:cas='http://www.yale.edu/tp/cas'>"
-                    "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
-                    "<cas:attributes>"
-                    "<cas:longTermAuthenticationRequestTokenUsed>false"
-                    "</cas:longTermAuthenticationRequestTokenUsed>"
-                    "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-                    "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-                    "</cas:authenticationDate></cas:attributes>"
-                    "</cas:authenticationSuccess></cas:serviceResponse>")}
+               (format
+                 (str "<cas:serviceResponse"
+                      "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                      "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+                      "<cas:attributes>"
+                      "<cas:roles>ROLE_APP_EHOKS_CRUD_%s</cas:roles>"
+                      "<cas:kayttajaTyyppi>PALVELU</cas:kayttajaTyyppi>"
+                      "<cas:oidHenkilo>"
+                      "1.2.246.562.24.11474338834"
+                      "</cas:oidHenkilo>"
+                      "<cas:longTermAuthenticationRequestTokenUsed>false"
+                      "</cas:longTermAuthenticationRequestTokenUsed>"
+                      "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                      "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                      "</cas:authenticationDate></cas:attributes>"
+                      "</cas:authenticationSuccess></cas:serviceResponse>")
+                 (or oppilaitos-oid "1.2.246.562.10.12944436166"))}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
               {:status 200

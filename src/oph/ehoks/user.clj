@@ -2,66 +2,8 @@
   (:require [clojure.string :as string]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.oppijaindex :as oi]))
-
-(def privilege-types #{:read :write :update :delete})
-
-(defn resolve-privilege
-  "Resolves OPH privilege to keyword sets"
-  [privilege]
-  (when (= (:palvelu privilege) "EHOKS")
-    (case (:oikeus privilege)
-      "CRUD"           privilege-types
-      "OPHPAAKAYTTAJA" privilege-types
-      "READ"           #{:read}
-      "HOKS_DELETE"    #{:hoks_delete}
-      #{})))
-
-(defn get-service-privileges
-  "Resolves service OPH privileges"
-  [service-privileges]
-  (reduce
-    (fn [c n] (into c (resolve-privilege n)))
-    #{}
-    service-privileges))
-
-(defn resolve-role
-  "Detects role (currently only OPHPAAKAYTTAJA) in ehoks service"
-  [service-role]
-  (when (= (:palvelu service-role) "EHOKS")
-    (case (:oikeus service-role)
-      "OPHPAAKAYTTAJA" :oph-super-user
-      nil)))
-
-(defn get-service-roles
-  "Resolves user roles"
-  [service-privileges]
-  (reduce
-    (fn [c n]
-      (if-let [r (resolve-role n)]
-        (conj c r)
-        c))
-    #{}
-    service-privileges))
-
-(defn resolve-privileges
-  "Resolves organisation privileges"
-  [organisation]
-  {:oid                 (:organisaatioOid organisation)
-   :privileges          (get-service-privileges (:kayttooikeudet organisation))
-   :roles               (get-service-roles (:kayttooikeudet organisation))
-   :child-organisations (if (= (:organisaatioOid organisation)
-                               "1.2.246.562.10.00000000001")
-                          (oi/get-oppilaitos-oids-cached)
-                          (oi/get-oppilaitos-oids-by-koulutustoimija-oid
-                            (:organisaatioOid organisation)))})
-
-(defn get-auth-info
-  "Get ticket user authentication info"
-  [ticket-user]
-  (when (some? ticket-user)
-    {:organisation-privileges
-     (map resolve-privileges (:organisaatiot ticket-user))}))
+            [oph.ehoks.oppijaindex :as oi]
+            [clojure.tools.logging :as log]))
 
 (defn oph-super-user?
   "Is user OPH ehoks super user"

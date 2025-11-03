@@ -563,6 +563,13 @@
                      "  xmlns:cas='http://www.yale.edu/tp/cas'>"
                      "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
                      "<cas:attributes>"
+                     "<cas:roles>"
+                     "ROLE_APP_EHOKS_CRUD_1.2.246.562.10.12944436166"
+                     "</cas:roles>"
+                     "<cas:kayttajaTyyppi>VIRKAILIJA</cas:kayttajaTyyppi>"
+                     "<cas:oidHenkilo>"
+                     "1.2.246.562.24.11474338834"
+                     "</cas:oidHenkilo>"
                      "<cas:longTermAuthenticationRequestTokenUsed>false"
                      "</cas:longTermAuthenticationRequestTokenUsed>"
                      "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
@@ -1107,47 +1114,6 @@
                    (update-in [:ensikertainen-hyvaksyminen]
                               #(LocalDate/parse %)))
                invalid-hoks))))))
-
-(deftest test-handles-unauthorized
-  (testing "Responds with unauthorized when not able to get ST for käyttöoikeus"
-    (client/set-post!
-      (fn [^String url _]
-        (cond
-          (.endsWith url "/v1/tickets")
-          {:status 201
-           :headers {"location" "http://localhost/TGT-1234"}}
-          (= url "http://localhost/TGT-1234")
-          (throw
-            (ex-info
-              "Test HTTP Exception"
-              {:status 404
-               :body
-               "TGT-1234 could not be found or is considered invalid"})))))
-    (client/set-get!
-      (fn [^String url options]
-        (cond
-          (.endsWith url "/serviceValidate")
-          {:status 200
-           :body
-           (str "<cas:serviceResponse"
-                "  xmlns:cas='http://www.yale.edu/tp/cas'>"
-                "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
-                "<cas:attributes>"
-                "<cas:longTermAuthenticationRequestTokenUsed>false"
-                "</cas:longTermAuthenticationRequestTokenUsed>"
-                "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-                "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-                "</cas:authenticationDate></cas:attributes>"
-                "</cas:authenticationSuccess></cas:serviceResponse>")})))
-    (let [app (hoks-utils/create-app nil)
-          response (app (-> (mock/request
-                              :get
-                              (str hoks-utils/base-url "/1"))
-                            (mock/header "Caller-Id" "test")
-                            (mock/header "ticket" "ST-testitiketti")))]
-      (is (= (:status response) 401))
-      (is (= (test-utils/parse-body (:body response))
-             {:reason "Unable to check access rights"})))))
 
 (deftest test-bypasses-oht-date-checks-when-eronnut
   (testing "Bypasses OHT date check when opiskeluoikeus tila is eronnut"

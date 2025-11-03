@@ -8,6 +8,7 @@
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.palaute.opiskelija :as op]
@@ -210,7 +211,10 @@
       :return (restful/response virkailija-schema/DeleteConfirmInfo)
       (assoc
         (if-let [info (db-hoks/select-hoks-delete-confirm-info hoks-id)]
-          (restful/ok info)
+          (restful/ok (assoc info :oppilaitosNimi
+                             (-> (:oppilaitosOid info)
+                                 (org/get-existing-organisaatio!)
+                                 (get-in [:nimi] {:fi "" :sv ""}))))
           (response/not-found {:error "No HOKS or opiskeluoikeus found
                                       with given hoks-id"}))
         ::audit/target {:hoks-id hoks-id}))
