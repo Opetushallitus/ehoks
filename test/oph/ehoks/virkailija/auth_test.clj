@@ -124,6 +124,7 @@
                   "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
         (t/is (= (:status response) 401))))))
 
+;; TODO: tähän testi moniorganisaatiokäyttäjälle ja OPH-ylikäyttäjälle
 (t/deftest get-session-test
   (t/testing "Get virkailija session"
     (with-db
@@ -141,7 +142,8 @@
                    [{:oid "1.2.246.562.10.12944436166"
                      :privileges
                      ["read" "update" "delete" "write"]
-                     :roles []}]}}))))))
+                     :roles []
+                     :child-organisations []}]}}))))))
 
 (t/deftest delete-session-test
   (t/testing "Delete virkailija session"
