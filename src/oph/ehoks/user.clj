@@ -8,8 +8,9 @@
 (defn oph-super-user?
   "Is user OPH ehoks super user"
   [ticket-user]
-  (some #(contains? (:roles %) :oph-super-user)
-        (:organisation-privileges ticket-user)))
+  (some?
+    (some #(contains? (:roles %) :oph-super-user)
+          (:organisation-privileges ticket-user))))
 
 (defn organisation-privileges
   "Returns `ticket-user` privileges in `organisation`. If `user` has no
