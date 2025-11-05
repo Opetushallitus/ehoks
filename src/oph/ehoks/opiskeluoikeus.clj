@@ -1,5 +1,6 @@
 (ns oph.ehoks.opiskeluoikeus
   (:require [medley.core :refer [find-first greatest-by]]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.config :refer [config]])
   (:import [java.time LocalDate]))
 
@@ -44,6 +45,26 @@
   "Is s1 lexicographically less than or equal to s2?"
   [s1 s2]
   (<= (compare s1 s2) 0))
+
+(defn vahvistus-pvm
+  "Extract vahvistuspäivämäärä from opiskeluoikeus"
+  [opiskeluoikeus]
+  (some #(and (suoritus/ammatillinen? %) (get-in % [:vahvistus :päivä]))
+        (:suoritukset opiskeluoikeus)))
+
+(defn tutkinto-nimi
+  "Extract tutkinnon nimi from opiskeluoikeus"
+  [opiskeluoikeus]
+  (->> (:suoritukset opiskeluoikeus)
+       (find-first suoritus/ammatillinen?)
+       (suoritus/tutkinto-nimi)))
+
+(defn osaamisala-nimi
+  "Extract osaamisalan nimi from opiskeluoikeus"
+  [opiskeluoikeus]
+  (->> (:suoritukset opiskeluoikeus)
+       (find-first suoritus/ammatillinen?)
+       (suoritus/osaamisala-nimi)))
 
 (defn get-opiskeluoikeusjakso-for-date
   "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
