@@ -171,9 +171,9 @@
       {:yksiloiva_tunniste (:jakson-yksiloiva-tunniste existing-palaute)
        :alkupvm vastaamisajan-alkupvm
        :hankkimistapa_id (:hankkimistapa-id existing-palaute)
-       :hankkimistapa_tyyppi (utils/koodiuri->koodi
+       :hankkimistapa_tyyppi (utils/koodi-uri->koodi
                                (:osaamisen-hankkimistapa-koodi-uri jakso))
-       :oppisopimuksen_perusta (utils/koodiuri->koodi
+       :oppisopimuksen_perusta (utils/koodi-uri->koodi
                                  (:oppisopimuksen-perusta-koodi-uri jakso))
        :hoks_id (:hoks-id existing-palaute)
        :jakso_alkupvm (:alku jakso)
