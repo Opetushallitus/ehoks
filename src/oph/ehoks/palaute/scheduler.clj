@@ -9,7 +9,7 @@
 
 (defn daily-actions!
   "Run all palaute checks that need to be run on a daily basis."
-  [opts]
+  [_]
   (log/info "Commencing palaute daily actions.")
   (try
     true  ;; nothing at the moment
@@ -20,7 +20,7 @@
 
 (defn hourly-actions!
   "Run all palaute checks that are to be run every hour."
-  [opts]
+  [_]
   (log/info "Commencing palaute hourly actions.")
   (try
     (log/info "Initialising palautteet for next batch of uninitialised HOKSes.")
@@ -29,10 +29,6 @@
                    #(palaute/reinit-palautteet-for-uninitiated-hokses! 300))]
       (log/info "reinit-palautteet-for-uninitiated-hokses!: ended with result"
                 result))
-    (log/info "Handling palautteet that have reached their heratepvm.")
-    (vt/handle-palautteet-waiting-for-heratepvm!
-      ["aloittaneet" "valmistuneet" "osia_suorittaneet"
-       "tyopaikkajakson_suorittaneet"])
     (catch Exception e
       (log/error e "Unhandled exception in hourly-actions!.")))
   (log/info "Done palaute hourly actions.")
@@ -46,10 +42,23 @@
       (Instant/from)))
 
 (def schedules
-  [{:action daily-actions!
-    :start (time->instant 6 0 0) :period (Period/ofDays 1)}
-   {:action hourly-actions!
-    :start (time->instant 1 0 0) :period (Duration/ofHours 1)}])
+  [{:start (time->instant 6 0 0) :period (Period/ofDays 1)
+    :action daily-actions!}
+
+   {:start (time->instant 1 0 0) :period (Duration/ofHours 1)
+    :action hourly-actions!}
+
+   {:start (time->instant 1 0 0) :period (Duration/ofMinutes 5)
+    :action (fn [_]
+              (try
+                (log/info (str "Handling palautteet that have reached "
+                               "their heratepvm."))
+                (vt/handle-palautteet-waiting-for-heratepvm!
+                  ["aloittaneet" "valmistuneet" "osia_suorittaneet"
+                   "tyopaikkajakson_suorittaneet"])
+                (catch Exception e
+                  (log/error e (str "Unhandled exception in scheduled "
+                                    "handling of palautteet")))))}])
 
 (defn run-scheduler!
   "Run a given action periodically starting at start-time and repeating
