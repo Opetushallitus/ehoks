@@ -235,6 +235,15 @@
                        (mock/request
                          :get
                          (str base-url "/virkailija/oppijat")
+                         {:oppilaitos-oid "1.2.246.562.10.12000000005"
+                          :nimi "foo\",ba'r"}))]
+        (t/is (= (:status response) 200))
+        (t/is (= {:meta {:total-count 0} :data []}
+                 (test-utils/parse-body (:body response)))))
+      (let [response (with-test-virkailija
+                       (mock/request
+                         :get
+                         (str base-url "/virkailija/oppijat")
                          {:oppilaitos-oid "1.2.246.562.10.12000000005"}))]
         (t/is (= (:status response) 200))))))
 
