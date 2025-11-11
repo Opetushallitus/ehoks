@@ -4,7 +4,8 @@
             [clojure.set :refer [difference]]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]])
-  (:import (org.postgresql.util PGobject)))
+  (:import (org.postgresql.util PGobject)
+           (java.sql PreparedStatement ParameterMetaData)))
 
 (extend-protocol jdbc/ISQLValue
   java.time.LocalDate
@@ -18,6 +19,17 @@
     (doto (PGobject.)
       (.setType "json")
       (.setValue (json/write-str value)))))
+
+(extend-protocol jdbc/ISQLParameter
+  clojure.lang.IPersistentVector
+  (set-parameter [v ^PreparedStatement s ^long i]
+    (let [conn (.getConnection s)
+          meta (.getParameterMetaData s)
+          type-name (.getParameterTypeName meta i)]
+      (if-let [elem-type (when type-name
+                           (second (re-find #"^_(.*)" type-name)))]
+        (.setObject s i (.createArrayOf conn elem-type (to-array v)))
+        (.setObject s i v)))))
 
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Date
