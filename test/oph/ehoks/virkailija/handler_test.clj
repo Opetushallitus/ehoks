@@ -1666,6 +1666,27 @@
                           {:osa_aikaisuustieto nil}
                           [])
 
+      (t/testing "with invalid tutkinto data"
+        (let [report-response
+              (with-test-virkailija
+                (mock/request
+                  :get
+                  (str base-url
+                       "/virkailija/tep-jakso-raportti"
+                       "?tutkinto=tsippad&start=2019-01-01&end=2023-12-31"
+                       "&pagesize=10&pageindex=0"
+                       "&oppilaitos=1.2.246.562.10.12000000013"))
+                {:name "Testivirkailija"
+                 :kayttajaTyyppi "VIRKAILIJA"
+                 :organisation-privileges
+                 [{:oid "1.2.246.562.10.12000000013"
+                   :privileges #{:write :read :update :delete}}]})
+              body (-> report-response
+                       :body
+                       test-utils/parse-body)]
+          (t/is (= (:status report-response) 400))
+          (t/is (= (:error body) "`tutkinto` must be a JSON object."))))
+
       (t/testing "with oppilaitos user"
         (let [report-response
               (with-test-virkailija
