@@ -35,7 +35,7 @@
                          [com.google.guava/guava "32.0.0-jre"]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.13.0"]
-                         [ring/ring-jetty-adapter "1.13.0" :exclusions [org.slf4j/slf4j-api]]
+                         [ring/ring-jetty-adapter "1.15.3" :exclusions [org.slf4j/slf4j-api]]
                          [ring/ring-servlet "1.13.0"]
 
                          ;; http client

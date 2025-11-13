@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>f6e52f1451dc622ecb33628cc37984083b97be92</tag>
+    <tag>b64f50554a78de44a65e55a7417d335bb8f02477</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -174,7 +174,7 @@
       <dependency>
         <groupId>ring</groupId>
         <artifactId>ring-jetty-adapter</artifactId>
-        <version>1.13.0</version>
+        <version>1.15.3</version>
         <exclusions>
           <exclusion>
             <artifactId>slf4j-api</artifactId>
