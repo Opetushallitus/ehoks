@@ -46,6 +46,15 @@
                          [org.apache.httpcomponents/httpcore "4.4.16"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.16"]
                          [org.apache.httpcomponents/httpmime "4.5.14"]
+                         [io.netty/netty-codec-http "4.1.124.Final"]
+                         [io.netty/netty-codec-http2 "4.1.124.Final"]
+                         [io.netty/netty-codec "4.1.124.Final"]
+                         [io.netty/netty-resolver "4.1.124.Final"]
+                         [io.netty/netty-handler "4.1.124.Final"]
+                         [io.netty/netty-transport-classes-epoll "4.1.124.Final"]
+                         [io.netty/netty-transport "4.1.124.Final"]
+                         [io.netty/netty-buffer "4.1.124.Final"]
+                         [io.netty/netty-common "4.1.124.Final"]
                          [cheshire "5.13.0"]
 
                          ;; logging
