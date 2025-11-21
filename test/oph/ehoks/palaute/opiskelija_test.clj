@@ -285,7 +285,7 @@
                    :koulutustoimija                "1.2.246.562.10.346830761110"
                    :suorituskieli                  "fi"
                    :toimipiste-oid                 "1.2.246.562.10.12312312312"
-                   :tutkintotunnus                 351407
+                   :tutkintotunnus                 "351407"
                    :tutkintonimike                 "(\"12345\",\"23456\")"
                    :hankintakoulutuksen-toteuttaja "1.2.246.562.10.346830761110"
                    :voimassa-alkupvm               (LocalDate/parse
@@ -509,7 +509,7 @@
           (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
           (is (= "https://arvovastaus.csc.fi/v/foo1" (:kyselylinkki ddb-item)))
           (is (not (empty? (:request-id ddb-item))))
-          (is (= 351407 (:tutkintotunnus ddb-item)))))
+          (is (= "351407" (str (:tutkintotunnus ddb-item))))))
       (testing "unsuccessful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
