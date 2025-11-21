@@ -404,7 +404,7 @@
      :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)
      :heratepvm                      heratepvm
      :suorituskieli                  "fi"
-     :tutkintotunnus                 351407
+     :tutkintotunnus                 "351407"
      :tutkintonimike                 "(\"12345\",\"23456\")"
      :voimassa-alkupvm               voimassa-alkupvm
      :voimassa-loppupvm              (palaute/vastaamisajan-loppupvm
