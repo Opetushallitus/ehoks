@@ -34,6 +34,66 @@
 
 (def sqs-msg (atom nil))
 
+(deftest test-transform-tutkinnon-osa-for-arvo
+  (testing "Basic transformations"
+    (are [input expected]
+         (= (#'op/transform-tutkinnon-osa-for-arvo input) expected)
+      {:type                    :ammatillinen
+       :tutkinnon-osa-koodi-uri "tutkinnonosa_123"
+       :osaamisen-hankkimistavat
+       [{:osaamisen-hankkimistapa-koodi-uri
+         "osaamisenhankkimistapa_koulutussopimus"}
+        {:osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+         :oppisopimuksen-perusta-koodi-uri  "oppisopimuksenperusta_02"}
+        {:osaamisen-hankkimistapa-koodi-uri
+         "osaamisenhankkimistapa_koulutussopimus"}]}
+      {:osaamisen_hankkimistavat  ["koulutussopimus" "oppisopimus"]
+       :oppisopimuksen_perustat   ["02"]
+       :tutkinnon_osa             "123"
+       :paikallinen_tutkinnon_osa false}
+
+      {:type                    :yhteisen-osa-alue
+       :tutkinnon-osa-koodi-uri "tutkinnonosa_789"
+       :osaamisen-hankkimistavat
+       [{:osaamisen-hankkimistapa-koodi-uri
+         "osaamisenhankkimistapa_koulutussopimus"}]}
+      {:osaamisen_hankkimistavat  ["koulutussopimus"]
+       :oppisopimuksen_perustat   []
+       :tutkinnon_osa             "789"
+       :paikallinen_tutkinnon_osa false}
+
+      {:type                     :ammatillinen
+       :tutkinnon-osa-koodi-uri  "tutkinnonosa_456"
+       :osaamisen-hankkimistavat []}
+      {:osaamisen_hankkimistavat  []
+       :oppisopimuksen_perustat   []
+       :tutkinnon_osa             "456"
+       :paikallinen_tutkinnon_osa false}
+
+      {:type                    :yhteisen-osa-alue
+       :tutkinnon-osa-koodi-uri "tutkinnonosa_789"
+       :osaamisen-hankkimistavat
+       [{:osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+         :oppisopimuksen-perusta-koodi-uri  "oppisopimuksenperusta_01"}]}
+      {:tutkinnon_osa             "789"
+       :osaamisen_hankkimistavat  ["oppisopimus"]
+       :oppisopimuksen_perustat   ["01"]
+       :paikallinen_tutkinnon_osa false}))
+
+  (testing "Adds paikallinen fields for :paikallinen type"
+    (is (= (#'op/transform-tutkinnon-osa-for-arvo
+             {:type                     :paikallinen
+              :osaamisen-hankkimistavat [{:osaamisen-hankkimistapa-koodi-uri
+                                          "osaamisenhankkimistapa_oppisopimus"
+                                          :oppisopimuksen-perusta-koodi-uri
+                                          "oppisopimuksenperusta_02"}]
+              :nimi                     "Paikallinen osa"})
+           {:osaamisen_hankkimistavat       ["oppisopimus"]
+            :oppisopimuksen_perustat        ["02"]
+            :tutkinnon_osa                  nil
+            :paikallinen_tutkinnon_osa      true
+            :paikallinen_tutkinnon_osa_nimi "Paikallinen osa"}))))
+
 (defn test-not-initiated
   ([ctx reason]
     (test-not-initiated nil ctx reason))
@@ -350,7 +410,7 @@
 (defn create-arvo-kyselylinkki!
   [palaute]
   (-> palaute
-      (vt/build-ctx)
+      (vt/build-ctx!)
       (op/build-kyselylinkki-request-body)
       (arvo/create-kyselytunnus!)))
 

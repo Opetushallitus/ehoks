@@ -1,4 +1,6 @@
 (ns oph.ehoks.hoks-test
+  (:require [clojure.test :refer [are deftest is testing]]
+            [oph.ehoks.hoks :as hoks])
   (:import [java.time LocalDate]))
 
 (def hoks-1
@@ -176,3 +178,45 @@
    :osaamisen-saavuttamisen-pvm (LocalDate/of 2024 11 05)
    :sahkoposti                  "testi.testaaja@testidomain.testi"
    :puhelinnumero               "0123456789"})
+
+(deftest test-tutkinnon-osat
+  (testing "Returns all tutkinnon osat from all sections."
+    (is (= (hoks/tutkinnon-osat
+             {:hankittavat-ammat-tutkinnon-osat
+              [{:id 1 :tutkinnon-osa-koodi-uri "tutkinnonosat_123456"}
+               {:id 2 :tutkinnon-osa-koodi-uri "tutkinnonosat_234567"}]
+              :hankittavat-paikalliset-tutkinnon-osat [{:id 3}]
+              :hankittavat-yhteiset-tutkinnon-osat
+              [{:tutkinnon-osa-koodi-uri "tutkinnonosat_345678"
+                :osa-alueet              [{:id 4} {:id 5}]}]})
+           [{:id 1
+             :tutkinnon-osa-koodi-uri "tutkinnonosat_123456"
+             :type :ammatillinen}
+            {:id 2
+             :tutkinnon-osa-koodi-uri "tutkinnonosat_234567"
+             :type :ammatillinen}
+            {:id 3 :type :paikallinen}
+            {:id 4
+             :tutkinnon-osa-koodi-uri "tutkinnonosat_345678"
+             :type :yhteisen-osa-alue}
+            {:id 5
+             :tutkinnon-osa-koodi-uri "tutkinnonosat_345678"
+             :type :yhteisen-osa-alue}])))
+
+  (testing "Handles missing or empty keys"
+    (let [hoks {}]
+      (is (= (hoks/tutkinnon-osat hoks) '())))
+
+    (let [hoks {:hankittavat-ammat-tutkinnon-osat []
+                :hankittavat-paikalliset-tutkinnon-osat []
+                :hankittavat-yhteiset-tutkinnon-osat []}]
+      (is (= (hoks/tutkinnon-osat hoks) '()))))
+
+  (testing
+   "Handles missing osa-alueet in `:hankittavat-yhteiset-tutkinnon-osat`"
+    (let [hoks {:hankittavat-yhteiset-tutkinnon-osat [{:id 1}]}]
+      (are [hytot] (= (hoks/tutkinnon-osat
+                        {:hankittavat-yhteiset-tutkinnon-osat hytot}) [])
+        [{:id 1}]
+        [{:id 1 :osa-alueet nil}]
+        [{:id 1 :osa-alueet []}]))))
