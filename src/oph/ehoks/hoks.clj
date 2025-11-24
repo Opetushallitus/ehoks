@@ -337,6 +337,48 @@
                       {:type               ::disallowed-update
                        :opiskeluoikeus-oid opiskeluoikeus-oid})))))
 
+(defn tutkinnon-osat
+  "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
+  sections, with :type stored as metadata:
+   - :hankittavat-ammat-tutkinnon-osat => metadata {:type :ammatillinen}
+   - :hankittavat-paikalliset-tutkinnon-osat => metadata {:type :paikallinen}
+   - :hankittavat-yhteiset-tutkinnon-osat (collecting all :osa-alueet from
+     each entry) => metadata {:type :yhteisen-osa-alue}
+  Additionally, assocs :tutkinnon-osa-koodi-uri from yhteinen tutkinnon osa to
+  each osa-alue.
+
+  Example:
+   (tutkinnon-osat
+     {:hankittavat-ammat-tutkinnon-osat
+      [{:id 1 :tutkinnon-osa-koodi-uri \"tutkinnonosat_123456\"}]
+      :hankittavat-paikalliset-tutkinnon-osat [{:id 2}]
+      :hankittavat-yhteiset-tutkinnon-osat
+      [{:tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
+        :osa-alueet [{:id 3} {:id 4}]}]})
+   ;; => ({:id 1
+   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_123456\"
+   ;;      :type :ammatillinen}
+   ;;     {:id 2 :type :paikallinen}
+   ;;     {:id 3
+   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
+   ;;      :type :yhteisen-osa-alue}
+   ;;     {:id 4
+   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
+   ;;      :type :yhteisen-osa-alue})
+  "
+  [hoks]
+  (concat
+    (map #(assoc % :type :ammatillinen)
+         (:hankittavat-ammat-tutkinnon-osat hoks))
+    (map #(assoc % :type :paikallinen)
+         (:hankittavat-paikalliset-tutkinnon-osat hoks))
+    (map #(assoc % :type :yhteisen-osa-alue)
+         (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
+                   (map
+                     #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
+                     osa-alueet))
+                 (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+
 (defn get-with-hankittavat-koulutuksen-osat!
   [hoks-id]
   (assoc (db-hoks/select-hoks-by-id hoks-id)

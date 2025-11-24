@@ -49,7 +49,7 @@
             herate (first (palaute/get-by-hoks-id-and-kyselytyypit!
                             db/spec {:hoks-id (:id saved-hoks)
                                      :kyselytyypit ["aloittaneet"]}))
-            ctx (vt/build-ctx herate)
+            ctx (vt/build-ctx! herate)
             amis-herate
             (opiskelija/build-amisherate-record-for-heratepalvelu ctx)]
         (is (= (:sahkoposti (:hoks ctx)) "irma.isomerkki@esimerkki.com"))
