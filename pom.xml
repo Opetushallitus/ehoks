@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>f6e52f1451dc622ecb33628cc37984083b97be92</tag>
+    <tag>94037a08fb1450a8ee8dfe02f7913494d001e6d0</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -174,7 +174,7 @@
       <dependency>
         <groupId>ring</groupId>
         <artifactId>ring-jetty-adapter</artifactId>
-        <version>1.13.0</version>
+        <version>1.15.3</version>
         <exclusions>
           <exclusion>
             <artifactId>slf4j-api</artifactId>
@@ -221,6 +221,51 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
         <version>4.5.14</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http2</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-handler</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-epoll</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>4.1.124.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-common</artifactId>
+        <version>4.1.124.Final</version>
       </dependency>
       <dependency>
         <groupId>cheshire</groupId>
