@@ -25,9 +25,9 @@
 (defn- nimi-matcher
   "create an SQL array of SQL ILIKE patterns from a search value for name"
   [name-search]
-  (when name-search
-    (str "{" (cs/join "," (map field-matcher
-                               (cs/split name-search #"[\s_%,]+"))) "}")))
+  (->> (cs/split name-search #"[\s_%,]+")
+       (mapv field-matcher)
+       (when name-search)))
 
 (defn search!
   "Search oppijat with given params"
