@@ -371,6 +371,21 @@
                     :jakso test-jakso}
                    :ohjaajakysely)
                  [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
+
+      (testing "initiate for osittainen and useasta tutkinnosta"
+        (are [suoritustyyppi]
+             (= (tep/initial-palaute-state-and-reason
+                  {:hoks hoks-test/hoks-1
+                   :opiskeluoikeus
+                   (assoc-in
+                     oo-test/opiskeluoikeus-1
+                     [:suoritukset 0 :tyyppi :koodiarvo] suoritustyyppi)
+                   :jakso test-jakso}
+                  :ohjaajakysely)
+                [:odottaa-kasittelya :loppu :hoks-tallennettu])
+          "ammatillinentutkintoosittainen"
+          "ammatillinentutkintoosittainenuseastatutkinnosta"))
+
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  {:hoks           hoks-test/hoks-1

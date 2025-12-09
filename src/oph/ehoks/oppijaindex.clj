@@ -153,26 +153,6 @@
           (db/select-oppilaitos-oids-by-koulutustoimija-oid
             koulutustoimija-oid)))
 
-(defn get-tutkinto-nimi
-  "Extract tutkinto nimi from opiskeluoikeus"
-  [opiskeluoikeus]
-  (get-in
-    opiskeluoikeus
-    [:suoritukset 0 :koulutusmoduuli :tunniste :nimi]
-    {:fi "" :sv ""}))
-
-(defn get-osaamisala-nimi
-  "Extract osaamisala nimi from opiskeluoikeus"
-  [opiskeluoikeus]
-  (or
-    (get-in
-      opiskeluoikeus
-      [:suoritukset 0 :osaamisala 0 :nimi])
-    (get-in
-      opiskeluoikeus
-      [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
-    {:fi "" :sv ""}))
-
 (defn- opiskeluoikeus-to-sql
   "Convert opiskeluoikeus to an object format that can be saved to the database"
   [opiskeluoikeus oppija-oid]
@@ -183,8 +163,8 @@
    :alkamispaiva (some-> opiskeluoikeus :alkamispäivä LocalDate/parse)
    :arvioitu_paattymispaiva
    (some-> opiskeluoikeus :arvioituPäättymispäivä LocalDate/parse)
-   :tutkinto_nimi (get-tutkinto-nimi opiskeluoikeus)
-   :osaamisala_nimi (get-osaamisala-nimi opiskeluoikeus)})
+   :tutkinto_nimi (opiskeluoikeus/tutkinto-nimi opiskeluoikeus)
+   :osaamisala_nimi (opiskeluoikeus/osaamisala-nimi opiskeluoikeus)})
 
 (defn- get-opiskeluoikeus-info
   "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
@@ -196,13 +176,6 @@
                        oid)
                {:type               ::invalid-opiskeluoikeus
                 :opiskeluoikeus-oid oid})))
-    (when (> (count (:suoritukset opiskeluoikeus)) 1)
-      (log/warnf
-        "Opiskeluoikeus %s has multiple suoritukset. First is used for tutkinto"
-        oid))
-    (when (> (count (get-in opiskeluoikeus [:suoritukset 0 :osaamisala])) 1)
-      (log/warnf
-        "Opiskeluoikeus %s has multiple osaamisala. First one is used." oid))
     (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)))
 
 (defn- log-opiskeluoikeus-insert-error!
