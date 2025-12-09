@@ -91,8 +91,9 @@
     (if (.isBefore last normal) last normal)))
 
 (def ^:private koski-suoritustyyppi->kyselytyyppi
-  {"ammatillinentutkinto"           "valmistuneet"
-   "ammatillinentutkintoosittainen" "osia_suorittaneet"})
+  {"ammatillinentutkinto" "valmistuneet"
+   "ammatillinentutkintoosittainen" "osia_suorittaneet"
+   "ammatillinentutkintoosittainenuseastatutkinnosta" "osia_suorittaneet"})
 
 (defn kyselytyyppi
   [tyyppi opiskeluoikeus]
