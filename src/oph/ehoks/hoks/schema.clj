@@ -753,6 +753,12 @@
     :types {:any s/Int}
     :description (str "Tutkinnon osan Koodisto-koodi-URIn versio "
                       "ePerusteet-palvelussa (tutkinnonosat)")}
+   :tutkinnon-osan-perusteen-diaarinro
+   {:methods {:any :optional}
+    :types {:any s/Str}
+    :description (str "Perusteen diaarinumero ePerusteet-palvelussa, josta "
+                      "tutkinnonosa on poimittu, muotoa OPH-xxxx-vvvv eli "
+                      "esimerkiksi OPH-3418-2025")}
    :vaatimuksista-tai-tavoitteista-poikkeaminen
    {:methods {:any :optional}
     :types {:any s/Str}
