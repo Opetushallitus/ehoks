@@ -1,6 +1,5 @@
 (ns oph.ehoks.db.db-operations.db-helpers
-  (:require [clj-time.coerce :as c]
-            [clojure.data.json :as json]
+  (:require [clojure.data.json :as json]
             [clojure.java.jdbc :as jdbc]
             [clojure.set :refer [difference]]
             [oph.ehoks.utils :as utils]
@@ -11,7 +10,7 @@
   java.time.LocalDate
   (sql-value [value] (java.sql.Date/valueOf value))
   java.util.Date
-  (sql-value [value] (c/to-sql-time value))
+  (sql-value [value] (java.sql.Timestamp. (.getTime value)))
   java.time.Instant
   (sql-value [value] (java.sql.Timestamp/from value))
   clojure.lang.IPersistentMap
