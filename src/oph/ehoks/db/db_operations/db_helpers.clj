@@ -12,6 +12,8 @@
   (sql-value [value] (java.sql.Date/valueOf value))
   java.util.Date
   (sql-value [value] (c/to-sql-time value))
+  java.time.Instant
+  (sql-value [value] (java.sql.Timestamp/from value))
   clojure.lang.IPersistentMap
   (sql-value [value]
     (doto (PGobject.)
