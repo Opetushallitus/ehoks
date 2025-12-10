@@ -142,8 +142,6 @@
                         ["bikeshed"]
                         ["eastwood"]
                         ["cljfmt" "check"]]
-            "gendoc" ["do"
-                      ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]]
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
