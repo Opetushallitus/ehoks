@@ -4,8 +4,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.cas :as cas])
-  (:import (java.time Instant)
-           (org.joda.time DateTime)))
+  (:import (java.time Instant)))
 
 (defonce cache
   ^:private
@@ -22,8 +21,9 @@
   [response]
   (and (some? (:timestamp response))
        (.isBefore
-         (DateTime. (:timestamp response))
-         (.minusMinutes (DateTime/now) (:ext-cache-lifetime-minutes config)))))
+         ^Instant (:timestamp response)
+         (.minusSeconds (Instant/now)
+                        (* 60 (:ext-cache-lifetime-minutes config))))))
 
 (defn expire-response!
   "Makes response of url expired"
@@ -61,7 +61,7 @@
   [url response]
   (swap! cache assoc url
          (assoc response
-                :timestamp (str (Instant/now))
+                :timestamp (Instant/now)
                 :ehoks-cached true
                 :cached :HIT)))
 
