@@ -1,10 +1,10 @@
 (ns oph.ehoks.logging.access
   (:require [clojure.tools.logging :as log]
             [clojure.string :as cstr]
-            [clj-time.core :as t]
             [oph.ehoks.config :refer [config]]
             [environ.core :refer [env]]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json])
+  (:import (java.time ZonedDateTime ZoneId)))
 
 (def ^:private service-name
   "Global service name"
@@ -33,7 +33,7 @@
 (defn current-fin-time-str
   "Get current time in Helsinki as string"
   []
-  (str (t/to-time-zone (t/now) (t/time-zone-for-id "Europe/Helsinki"))))
+  (str (ZonedDateTime/now (ZoneId/of "Europe/Helsinki"))))
 
 (defn to-access-map
   "Convert request, response, and total time taken to access map"
