@@ -2,9 +2,9 @@
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
-            [clj-time.core :as t]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log])
+  (:import (java.time Instant)))
 
 (defonce grant-ticket
   ^:private
@@ -37,7 +37,7 @@
              (seq url))
       (reset! grant-ticket
               {:url url
-               :expires (t/plus (t/now) (t/hours 2))})
+               :expires (.plusSeconds (Instant/now) 7200)})
       (throw (ex-info "Failed to refresh CAS Service Ticket"
                       {:response response
                        :log-data {:status (:status response)
@@ -62,7 +62,7 @@
   ([data service force-refresh-tgt?]
     (when (or force-refresh-tgt?
               (nil? (:url @grant-ticket))
-              (t/after? (t/now) (:expires @grant-ticket)))
+              (.isAfter (Instant/now) (:expires @grant-ticket)))
       (refresh-grant-ticket!))
     (let [ticket (try
                    (get-service-ticket (:url @grant-ticket) service)

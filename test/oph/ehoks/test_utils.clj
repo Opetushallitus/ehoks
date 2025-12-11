@@ -1,8 +1,6 @@
 (ns oph.ehoks.test-utils
   (:require [cheshire.core :as cheshire]
             [ring.mock.request :as mock]
-            [clj-time.core :as time]
-            [clj-time.coerce :as tc]
             [clojure.test :refer [is]]
             [clojure.data :as d]
             [clojure.java.io :as j]
@@ -421,10 +419,10 @@
 
 (defn wait-for
   [predicate timeout-ms]
-  (let [wait-until (+ (tc/to-long (time/now)) timeout-ms)
+  (let [wait-until (+ (System/currentTimeMillis) timeout-ms)
         result (atom false)]
     (while (and (false? @result)
-                (< (tc/to-long (time/now)) wait-until))
+                (< (System/currentTimeMillis) wait-until))
       (swap! result predicate))
     @result))
 

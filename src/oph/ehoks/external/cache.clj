@@ -1,10 +1,10 @@
 (ns oph.ehoks.external.cache
-  (:require [clj-time.core :as t]
-            [ring.util.codec :as codec]
+  (:require [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.cas :as cas]))
+            [oph.ehoks.external.cas :as cas])
+  (:import (java.time Instant)))
 
 (defonce cache
   ^:private
@@ -20,9 +20,10 @@
   "Checks if response is too old. Max life time is set in config."
   [response]
   (and (some? (:timestamp response))
-       (t/before?
-         (:timestamp response)
-         (t/minus (t/now) (t/minutes (:ext-cache-lifetime-minutes config))))))
+       (.isBefore
+         ^Instant (:timestamp response)
+         (.minusSeconds (Instant/now)
+                        (* 60 (:ext-cache-lifetime-minutes config))))))
 
 (defn expire-response!
   "Makes response of url expired"
@@ -60,7 +61,7 @@
   [url response]
   (swap! cache assoc url
          (assoc response
-                :timestamp (t/now)
+                :timestamp (Instant/now)
                 :ehoks-cached true
                 :cached :HIT)))
 

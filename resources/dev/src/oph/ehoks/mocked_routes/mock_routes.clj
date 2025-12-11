@@ -1,7 +1,6 @@
 (ns oph.ehoks.mocked-routes.mock-routes
   (:require [compojure.core :refer [GET POST defroutes routes]]
             [oph.ehoks.config :refer [config]]
-            [clj-time.core :as time]
             [oph.ehoks.mocked-routes.mock-gen :as mock-gen]
             [oph.ehoks.mocked-routes.mock-koodisto-routes :as koodisto-mocks]
             [oph.ehoks.mocked-routes.mock-arvo-routes :as arvo-mocks]

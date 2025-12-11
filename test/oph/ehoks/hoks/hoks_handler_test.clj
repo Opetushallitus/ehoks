@@ -1,6 +1,5 @@
 (ns oph.ehoks.hoks.hoks-handler-test
-  (:require [clj-time.core :as t]
-            [clojure.test :refer [deftest is testing use-fixtures]]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.queries :as queries]
@@ -621,7 +620,7 @@
               :post
               (str base-url "/1/kyselylinkki"))
         data {:kyselylinkki "https://palaute.fi/abc123"
-              :alkupvm (str (t/today))
+              :alkupvm (str (LocalDate/now))
               :tyyppi "aloittaneet"
               :lahetystila "ei_lahetetty"}]
 
@@ -649,11 +648,11 @@
                :patch
                (str base-url "/kyselylinkki"))
         data-post {:kyselylinkki "https://palaute.fi/abc123"
-                   :alkupvm (str (t/today))
+                   :alkupvm (str (LocalDate/now))
                    :tyyppi "aloittaneet"
                    :lahetystila "ei_lahetetty"}
         data-patch {:kyselylinkki "https://palaute.fi/abc123"
-                    :lahetyspvm (str (t/today))
+                    :lahetyspvm (str (LocalDate/now))
                     :sahkoposti "testi@testi.fi"
                     :lahetystila "viestintapalvelussa"}]
 

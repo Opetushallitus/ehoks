@@ -4,8 +4,8 @@
             [oph.ehoks.external.cas :as c]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
-            [clj-time.core :as t]
-            [clojure.data.xml :as xml]))
+            [clojure.data.xml :as xml])
+  (:import (java.time Instant)))
 
 (defn with-reset-cas [f]
   (f)
@@ -18,15 +18,14 @@
   {"https://some.url/"
    {:status 200
     :body {}
-    :timestamp (t/now)}
+    :timestamp (Instant/now)}
    "https://someother.url/"
    {:status 200
     :body {}
     :timestamp
-    (t/minus
-      (t/now)
-      (t/minutes
-        (inc (:ext-cache-lifetime-minutes config))))}})
+    (.minusSeconds
+      (Instant/now)
+      (* 60 (inc (:ext-cache-lifetime-minutes config))))}})
 
 (deftest test-refresh-grant-ticket
   (testing "Refresh grant ticket successfully"
@@ -74,7 +73,7 @@
     (client/set-post! (fn [_ options] {:body "test-ticket"}))
 
     (reset! c/grant-ticket {:url "http://ticket.url"
-                            :expires (t/plus (t/now) (t/hours 2))})
+                            :expires (.plusSeconds (Instant/now) 7200)})
     (let [data (c/add-cas-ticket {} "http://test-service")]
       (is (= (get-in data [:headers "accept"]) "*/*"))
       (is (= (get-in data [:query-params :ticket]) "test-ticket"))))
@@ -102,7 +101,7 @@
                        :status 404})))
                 {:status 201 :body "test-ticket"})))))
       (reset! c/grant-ticket {:url "http://ticket.url"
-                              :expires (t/plus (t/now) (t/hours 2))})
+                              :expires (.plusSeconds (Instant/now) 7200)})
       (let [data (c/add-cas-ticket {} "http://test-service")]
         (is (= (get-in data [:headers "accept"]) "*/*"))
         (is (= (get-in data [:query-params :ticket]) "test-ticket")))
@@ -126,7 +125,7 @@
                    :body
                    "TGT-nnn could not be found or is considered invalid"}))))))
       (reset! c/grant-ticket {:url "http://ticket.url"
-                              :expires (t/plus (t/now) (t/hours 2))})
+                              :expires (.plusSeconds (Instant/now) 7200)})
       (let [result (try
                      (c/add-cas-ticket {} "http://test-service")
                      nil
@@ -142,7 +141,7 @@
                                           {:status 500
                                            :body "Infernal server error"}))))
       (reset! c/grant-ticket {:url "http://ticket.url"
-                              :expires (t/plus (t/now) (t/hours 2))})
+                              :expires (.plusSeconds (Instant/now) 7200)})
       (let [result (try
                      (c/add-cas-ticket {} "http://test-service")
                      nil
@@ -158,7 +157,7 @@
                                  :status 200}))
     (client/set-post! (fn [_ __] {:body "test-ticket"}))
     (reset! c/grant-ticket {:url "http://ticket.url"
-                            :expires (t/plus (t/now) (t/hours 2))})
+                            :expires (.plusSeconds (Instant/now) 7200)})
     (let [response (c/with-service-ticket
                      {:method :get
                       :service "http://test-service"

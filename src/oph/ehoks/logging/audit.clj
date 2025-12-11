@@ -1,6 +1,5 @@
 (ns oph.ehoks.logging.audit
   (:require [clj-http.client :refer [client-error? server-error?]]
-            [clj-time.local :as l]
             [clojure.data.json :as json]
             [clojure.set :refer [union]]
             [clojure.string :as string]
@@ -10,7 +9,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.logging.access :refer [get-session]])
-  (:import (java.time ZoneOffset)
+  (:import (java.time ZoneOffset ZonedDateTime ZoneId)
            (java.util Date)))
 
 (def enabled? (:audit? config))
@@ -92,7 +91,7 @@
   {"version"          1
    "logSeq"           (swap! logseq inc)
    "applicationType" "backend"
-   "bootTime"        (make-json-serializable (l/local-now))
+   "bootTime"         (str (ZonedDateTime/now (ZoneId/of "Europe/Helsinki")))
    "hostname"         (System/getProperty "HOSTNAME" "")
    "serviceName"     (or (:name env) "both")})
 

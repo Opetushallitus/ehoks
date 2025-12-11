@@ -1,22 +1,21 @@
 (ns oph.ehoks.external.cache-test
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.external.cache :as c]
-            [oph.ehoks.config :refer [config]]
-            [clj-time.core :as t]))
+            [oph.ehoks.config :refer [config]])
+  (:import (java.time Instant)))
 
 (def example-responses
   {"https://some.url/"
    {:status 200
     :body {}
-    :timestamp (t/now)}
+    :timestamp (Instant/now)}
    "https://someother.url/"
    {:status 200
     :body {}
     :timestamp
-    (t/minus
-      (t/now)
-      (t/minutes
-        (inc (:ext-cache-lifetime-minutes config))))}})
+    (.minusSeconds
+      (Instant/now)
+      (* 60 (inc (:ext-cache-lifetime-minutes config))))}})
 
 ; TODO Add test for url with and without params
 
@@ -43,13 +42,12 @@
 (deftest test-expired
   (testing "Expired"
     (is (not (c/expired? {})))
-    (is (not (c/expired? {:timestamp (t/now)})))
+    (is (not (c/expired? {:timestamp (Instant/now)})))
     (is (c/expired?
           {:timestamp
-           (t/minus
-             (t/now)
-             (t/minutes
-               (inc (:ext-cache-lifetime-minutes config))))}))))
+           (.minusSeconds
+             (Instant/now)
+             (* 60 (inc (:ext-cache-lifetime-minutes config))))}))))
 
 (deftest test-get-expire-response
   (testing "Expiring cached response"
