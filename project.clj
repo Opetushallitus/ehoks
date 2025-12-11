@@ -14,7 +14,6 @@
                  [org.postgresql/postgresql]
                  [com.layerware/hugsql]
                  [ring/ring-jetty-adapter]
-                 [clj-time]
                  [jarohen/chime]
                  [org.clojure/core.async]
                  [org.clojure/tools.logging]
@@ -65,8 +64,6 @@
                          [org.apache.logging.log4j/log4j-slf4j-impl "2.24.1"]
 
                          ;; date, time
-                         [joda-time "2.13.0"]
-                         [clj-time "0.15.2"]
                          [jarohen/chime "0.3.3"]
 
                          ;; json

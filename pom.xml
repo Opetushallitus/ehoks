@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>94037a08fb1450a8ee8dfe02f7913494d001e6d0</tag>
+    <tag>b8b8408d8ac97eb2099d65c2c1fe622769921940</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -293,16 +293,6 @@
         <version>2.24.1</version>
       </dependency>
       <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.13.0</version>
-      </dependency>
-      <dependency>
-        <groupId>clj-time</groupId>
-        <artifactId>clj-time</artifactId>
-        <version>0.15.2</version>
-      </dependency>
-      <dependency>
         <groupId>jarohen</groupId>
         <artifactId>chime</artifactId>
         <version>0.3.3</version>
@@ -544,10 +534,6 @@
     <dependency>
       <groupId>ring</groupId>
       <artifactId>ring-jetty-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>clj-time</groupId>
-      <artifactId>clj-time</artifactId>
     </dependency>
     <dependency>
       <groupId>jarohen</groupId>
