@@ -1,6 +1,5 @@
 (ns oph.ehoks.virkailija.handler
-  (:require [clj-time.core :as t]
-            [clojure.set :refer [rename-keys]]
+  (:require [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
             [cheshire.core :as cheshire]
             [compojure.api.core :refer [route-middleware]]
@@ -563,8 +562,8 @@
                                 (kyselylinkki/update!
                                   {:kyselylinkki linkki
                                    :sahkoposti   sahkoposti
-                                   :lahetyspvm (LocalDate/parse (str (t/today)))
-                                   :lahetystila "lahetetty"})))
+                                   :lahetyspvm   (LocalDate/now)
+                                   :lahetystila  "lahetetty"})))
                           (assoc
                             (restful/ok {:sahkoposti sahkoposti})
                             ::audit/operation ::heratepalvelu/resend-palaute)))

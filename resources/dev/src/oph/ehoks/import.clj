@@ -1,10 +1,10 @@
 (ns oph.ehoks.import
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
-            [oph.ehoks.hoks :as hoks]
-            [clj-time.coerce :as coerce]
-            [clj-time.format :as f])
-  (:import java.time.LocalDate))
+            [oph.ehoks.hoks :as hoks])
+  (:import (java.time LocalDate Instant)
+           (java.sql Timestamp)
+           (java.time.format DateTimeParseException)))
 
 (def timestamps
   #{:luotu :hyvaksytty :ensikertainen-hyvaksyminen :paivitetty})
@@ -12,11 +12,15 @@
 (def dates
   #{:alku :loppu :osaamisen-saavuttamisen-pvm :lahetetty-arvioitavaksi})
 
-(defn parse-date [s]
-  (coerce/to-date (f/parse s)))
+(defn parse-date-or-time [d]
+  (try
+    (Instant/parse d)
+    (catch DateTimeParseException _
+      (println "Warning: time " d " not parseable as instant, trying date")
+      (LocalDate/parse d))))
 
 (defn value-reader [k v]
-  (cond (contains? timestamps k) (parse-date v)
+  (cond (contains? timestamps k) (parse-date-or-time v)
         (contains? dates k) (LocalDate/parse v)
         :else v))
 
