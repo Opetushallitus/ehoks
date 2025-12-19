@@ -317,7 +317,7 @@
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))
 
-(defn check
+(defn check-for-create!
   "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
   jotain tarkistuksista."
   [hoks opiskeluoikeus]
