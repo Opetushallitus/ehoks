@@ -3,7 +3,6 @@ oph.ehoks.schema.oid/organisaatio-oid-nodes
 oph.ehoks.palaute.opiskelija/kyselytyypit
 oph.ehoks.common.schema/KoodistoKoodi
 oph.ehoks.oppija.middleware/wrap-hoks-access
-oph.ehoks.hoks-doc/write-doc!
 oph.ehoks.db.migrations/clean!
 oph.ehoks.db.dynamodb/jaksot
 oph.ehoks.db.dynamodb/niput
