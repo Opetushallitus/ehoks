@@ -1,6 +1,6 @@
-# eHOKS
+# eHOKS-palvelu
 
-## Arkkitehtuurista
+## Arkkitehtuuri
 
 eHOKS-backend on jaettu kahteen osaan: virkailija ja oppija. Virkailijan puoli
 käsittää virkailijan käyttöliittymän rajapinnat ja datan tuontiin tarkoitetut
@@ -12,6 +12,17 @@ Tällä hetkellä sovellus jakaa koodipohjan eri osien välillä ja ainoastaan
 rajapintojen polut on jaettu palveluittain.
 
 Frontend ks. [Github Repository](https://github.com/Opetushallitus/ehoks-ui)
+
+### RESTful API
+
+Backend pyrkii seuraamaan
+[RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
+periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
+dataobjektit.
+
+Avaimet seuraavat Clojuren notaatiota.
+
+Hakemistossa [scripts](./scripts) on paljon erilaisia esimerkkejä siitä, miten eHOKSin rajapintoja käytetään ja miten siitä riippuvaisia palveluita.
 
 ## Riippuvuudet
 
@@ -28,17 +39,6 @@ Muut riippuvuudet:
 + Ehkä: `jq` joidenkin skriptien toimintaan
 + Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
 
-### RESTful API
-
-Backend pyrkii seuraamaan
-[RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
-periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
-dataobjektit.
-
-Avaimet seuraavat Clojuren notaatiota.
-
-Hakemistossa [scripts](./scripts) on paljon erilaisia esimerkkejä siitä, miten eHOKSin rajapintoja käytetään ja miten siitä riippuvaisia palveluita.
-
 ## QA
 
 Noudatetaan kehittäjien kesken sovittuja [koodikäytänteitä](doc/code-guidelines.md).
@@ -46,7 +46,9 @@ Noudatetaan kehittäjien kesken sovittuja [koodikäytänteitä](doc/code-guideli
 Repossa on `.editorconfig` jonka avulla voit kertoa editorillesi käytettävät
 tyylit.
 
-### Testien ajaminen
+## Testien ajaminen
+
+Kaiken alla olevan voi tehdä kerralla sanomalla `make test`.
 
 Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
 `make stamps/db-schema`.  DynamoDB-testit tarvitsevat myös lokaalin
@@ -212,19 +214,6 @@ Migraation voi luoda:
 lein genmigration /path/to/migrations "Title of the migration"
 ```
 
-#### Flyway migraatiovirheen korjaaminen
-
-Erityisesti kehitysympäristöissä kuten QA:lla voi tulla tilanne, jossa eri kehityshaaroja asenneltaessa tietokannan migraatiot voivat mennä solmuun. Yleisin virhetilanne on se, että asennettavasta versiosta puuttuu jokin migraatio, joka palvelimella olevasta versiosta löytyy ja tästä syystä asennus epäonnistuu migration checksum mismatch-virheeseen.
-
-Tämän voi korjata seuraavalla tavalla:
-
-1. Yhdistä tietokantaan. [Ohje](https://github.com/Opetushallitus/cloud-base/blob/master/docs/developer-faq.md#kuinka-p%C3%A4%C3%A4sen-tietokantoihin-k%C3%A4siksi). Lisää apua saa Ylläpidon kehittäjiltä.
-2. Hae Flyway schema historia: ```SELECT * FROM flyway_schema_history; ```
-3. Poista kyseisestä taulusta ongelmia aiheuttava(t) rivi(t) eli rivit, joita ei ole mukana haarassa jonka haluaisit asentaa: ```DELETE FROM flyway_schema_history WHERE installed_rank = <numero>;```
-4. Poista kannasta myös ne muutokset, joita kyseisissä migraatioissa olevat SQL-käskyt tekivät. Esim droppaa columnit joita luotiin: ```ALTER TABLE <taulu> DROP COLUMN <nimi>;```
-
-Tämän jälkeen haarasi pitäisi asentua normaalisti.
-
 ### Testit
 
 Ulkoiset API-kutsut voidaan mockata ja dev-profiililla onkin paljon tällaisia
@@ -375,13 +364,13 @@ JVM system propertyssä `config` tai kehityspalvelimen käynnistysparametrina.
 Konfiguraatiotiedostot yhdistetään niin, että oma kustomoitu tiedosto yliajaa
 vain ne arvot, mitkä siinä on määritelty. Konfiguraatio validoidaan ladattaessa.
 
+## CAS
+
 ### CAS-tunnistus
 
 Sovellus käyttää CAS-tunnistautumista ulkoisten rajapintojen kanssa. Lisää
 CAS-tunnukset ja sovelluksen tunniste (ent. client sub system code) ennen
 rajapintojen käyttämistä.
-
-## CAS
 
 ### Rajapinnat
 
@@ -487,3 +476,17 @@ ottaa huomioon työskennellessään eHOKS:n ja
 Kehittäjien vastuulla on seurata Slackin valvontakanavia mahdollisten
 ongelmatilanteiden varalta. Pääasiassa virheet koskettavat Herätepalvelua ja
 usein sen virheet eivät vaadi toimenpiteitä kehittäjiltä.
+
+### Flyway migraatiovirheen korjaaminen
+
+Erityisesti kehitysympäristöissä kuten QA:lla voi tulla tilanne, jossa eri kehityshaaroja asenneltaessa tietokannan migraatiot voivat mennä solmuun. Yleisin virhetilanne on se, että asennettavasta versiosta puuttuu jokin migraatio, joka palvelimella olevasta versiosta löytyy ja tästä syystä asennus epäonnistuu migration checksum mismatch-virheeseen.
+
+Tämän voi korjata seuraavalla tavalla:
+
+1. Yhdistä tietokantaan. [Ohje](https://github.com/Opetushallitus/cloud-base/blob/master/docs/developer-faq.md#kuinka-p%C3%A4%C3%A4sen-tietokantoihin-k%C3%A4siksi). Lisää apua saa Ylläpidon kehittäjiltä.
+2. Hae Flyway schema historia: ```SELECT * FROM flyway_schema_history; ```
+3. Poista kyseisestä taulusta ongelmia aiheuttava(t) rivi(t) eli rivit, joita ei ole mukana haarassa jonka haluaisit asentaa: ```DELETE FROM flyway_schema_history WHERE installed_rank = <numero>;```
+4. Poista kannasta myös ne muutokset, joita kyseisissä migraatioissa olevat SQL-käskyt tekivät. Esim droppaa columnit joita luotiin: ```ALTER TABLE <taulu> DROP COLUMN <nimi>;```
+
+Tämän jälkeen haarasi pitäisi asentua normaalisti.
+
