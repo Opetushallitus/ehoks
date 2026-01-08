@@ -67,6 +67,7 @@
                    :nimi {:fi "Läsnä"}
                    :koodistoUri "koskiopiskeluoikeudentila"
                    :koodistoVersio 1}}]}
+   :oppija-oid "1.2.246.562.24.12312312319"
    :suoritukset
    [{:koulutusmoduuli
      {:tunniste

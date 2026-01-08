@@ -191,6 +191,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
               {:status 200
                :body {:oid "1.2.246.562.15.10000000009"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2010-01-01"
                                :tila {:koodiarvo "lasna"
@@ -209,6 +210,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000017")
               {:status 200
                :body {:oid "1.2.246.562.15.10000000017"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2023-07-03"
@@ -224,6 +226,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.20000000008")
               {:status 200
                :body {:oid "1.2.246.562.15.20000000008"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.47861388602")}
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
@@ -231,6 +234,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.30000000007")
               {:status 200
                :body {:oid "1.2.246.562.15.30000000007"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
                       :suoritukset
@@ -240,6 +244,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.40000000006")
               {:status 200
                :body {:oid "1.2.246.562.15.40000000006"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2023-10-01"
                                :tila {:koodiarvo "lasna"
@@ -256,6 +261,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.50000000005")
               {:status 200
                :body {:oid "1.2.246.562.15.50000000005"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2010-10-01"
                                :tila {:koodiarvo "lasna"
@@ -273,6 +279,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000004")
               {:status 200
                :body {:oid "1.2.246.562.15.60000000004"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2010-12-01"
                                :tila {:koodiarvo "eronnut"
@@ -290,6 +297,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000012")
               {:status 200
                :body {:oid "1.2.246.562.15.60000000012"
+                      :oppija-oid "1.2.246.562.24.12312312319"
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2025-01-01"
                                :tila {:koodiarvo "lasna"

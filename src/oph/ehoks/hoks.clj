@@ -331,6 +331,14 @@
                     :opiskeluoikeus-oid opiskeluoikeus-oid
                     :oppija-oid         oppija-oid})
           throw))
+    (when (not= oppija-oid (:oppija-oid opiskeluoikeus))
+      (throw (ex-info (str "HOKS is for oppija " oppija-oid
+                           " but opiskeluoikeus " opiskeluoikeus-oid
+                           " is for oppija " (:oppija-oid opiskeluoikeus))
+                      {:type ::disallowed-update
+                       :opiskeluoikeus-oid opiskeluoikeus-oid
+                       :hoks-oppija-oid oppija-oid
+                       :oo-oppija-oid (:oppija-oid opiskeluoikeus)})))
     (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)

@@ -170,6 +170,7 @@
 
 (defn mock-get-opiskeluoikeus! [oid]
   {:oid oid
+   :oppija-oid "1.2.246.562.24.12312312319"
    :tila {:opiskeluoikeusjaksot
           [{:alku "2010-01-01"
             :tila {:koodiarvo "lasna"

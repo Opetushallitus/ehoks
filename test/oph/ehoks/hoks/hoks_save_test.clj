@@ -345,7 +345,8 @@
                 :hankittavat-koulutuksen-osat []
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
-(def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
+(def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                    :oppija-oid "1.2.246.562.24.12312312319"})
 
 (deftest hoks-schema-test
   (testing "Example HOKS passes schema checks"

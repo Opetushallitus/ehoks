@@ -30,6 +30,7 @@
   (case oid
     "1.2.246.562.15.10000000009"
     {:oid "1.2.246.562.15.10000000009"
+     :oppija-oid "1.2.246.562.24.12312312319"
      :oppilaitos {:oid "1.2.246.562.10.12944436166"}
      :tyyppi {:koodiarvo "ammatillinenkoulutus"}
      :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]

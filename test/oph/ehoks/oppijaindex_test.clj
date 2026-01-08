@@ -356,6 +356,7 @@
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.11111111110"
                     :alkamispäivä "2023-07-03"
                     :arvioituPäättymispäivä "2025-12-01"
                     :oid "1.2.246.562.15.10000000009")}))]
@@ -390,6 +391,7 @@
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.11111111110"
                     :oid "1.2.246.562.15.10000000009")}))]
       (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
@@ -415,6 +417,7 @@
          {:status 200
           :body (assoc
                   oo-test/opiskeluoikeus-data
+                  :oppija-oid "1.2.246.562.24.11111111110"
                   :alkamispäivä "2023-07-01"
                   :oid "1.2.246.562.15.10000000009")})]
       (t/is (sut/opiskeluoikeus-information-outdated?!
@@ -439,6 +442,7 @@
          {:status 200
           :body (assoc
                   oo-test/opiskeluoikeus-data
+                  :oppija-oid "1.2.246.562.24.11111111110"
                   :alkamispäivä "2023-07-03"
                   :arvioituPäättymispäivä "2025-10-01"
                   :oid "1.2.246.562.15.10000000009")})]
@@ -506,6 +510,7 @@
            {:status 200
             :body   (assoc
                       oo-test/opiskeluoikeus-data
+                      :oppija-oid "1.2.246.562.24.11111111110",
                       :oid "1.2.246.562.15.10000000009")}))]
       (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
@@ -658,6 +663,7 @@
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.11111111110"
                     :oid "1.2.246.562.15.10000000009")}))]
       (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
@@ -732,24 +738,28 @@
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.11111111123"
                     :oid "1.2.246.562.15.40000000006")}
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
                                  "1.2.246.562.15.10000000009")) -1)
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.30738063716"
                     :oid "1.2.246.562.15.10000000009")}
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
                                  "1.2.246.562.15.20000000008")) -1)
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.20043052079"
                     :oid "1.2.246.562.15.20000000008")}
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
                                  "1.2.246.562.15.30000000007")) -1)
            {:status 200
             :body (assoc
                     oo-test/opiskeluoikeus-data
+                    :oppija-oid "1.2.246.562.24.46525423540"
                     :oid "1.2.246.562.15.30000000007")}))]
       (sut/add-oppija! "1.2.246.562.24.30738063716")
       (sut/add-oppija! "1.2.246.562.24.20043052079")

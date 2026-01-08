@@ -35,7 +35,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}
           new-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
-                         :oppija-oid "1.2.246.562.24.12312312322"
+                         :oppija-oid "1.2.246.562.24.12312312319"
                          :ensikertainen-hyvaksyminen "2018-12-15"
                          :osaamisen-hankkimisen-tarve false}]
       (hoks-utils/mock-st-post app base-url hoks-data)

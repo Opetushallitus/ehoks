@@ -83,12 +83,14 @@
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
            {:status 200
             :body {:oid "1.2.246.562.15.10000000009"
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.12000000203")
            {:status 200
             :body {:oid "1.2.246.562.15.12000000203"
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}
                    :päättymispäivä "2018-12-01"
@@ -103,6 +105,7 @@
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.12000000005")
            {:status 200
             :body {:oid "1.2.246.562.15.12000000005"
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :oppilaitos {:oid "1.2.246.562.10.12000000013"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}
                    :päättymispäivä "2019-12-01"
@@ -125,6 +128,7 @@
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.76000000018")
            {:status 200
             :body {:oid "1.2.246.562.15.76000000018"
+                   :oppija-oid "1.2.246.562.24.44000000008"
                    :oppilaitos {:oid "1.2.246.562.10.12000000013"}
                    :tila {:opiskeluoikeusjaksot
                           [{:alku "2023-07-03"
@@ -138,12 +142,14 @@
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.76000000000")
            {:status 200
             :body {:oid "1.2.246.562.15.76000000000"
+                   :oppija-oid "1.2.246.562.24.44000000008"
                    :oppilaitos {:oid "1.2.246.562.10.12000000013"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.contains
              url "/koski/api/opiskeluoikeus/")
            {:status 200
             :body {:oid (last (string/split url #"/"))
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :oppilaitos {:oid "1.2.246.562.10.12000000203"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.endsWith
