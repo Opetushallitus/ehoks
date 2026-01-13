@@ -3,6 +3,7 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as cs]
             [clojure.tools.logging :as log]
+            [medley.core :refer [find-first]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
@@ -186,10 +187,22 @@
    :tutkinto_nimi (get-tutkinto-nimi opiskeluoikeus)
    :osaamisala_nimi (get-osaamisala-nimi opiskeluoikeus)})
 
-(defn- get-opiskeluoikeus-info
-  "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
+(defn get-opiskeluoikeus-for-oppija!
+  "Get opiskeluoikeus for given oid only if it is for oppija of given oid"
+  [oo-oid oppija-oid]
+  (or (find-first #(= oo-oid (:oid %))
+                  (k/get-oppija-opiskeluoikeudet oppija-oid))
+      (throw (ex-info (format "No opiskeluoikeus %s found for oppija %s"
+                              oo-oid oppija-oid)
+                      {:type ::opiskeluoikeus-not-found
+                       :opiskeluoikeus-oid oo-oid
+                       :oppija-oid oppija-oid}))))
+
+(defn get-opiskeluoikeus-info
+  "Get opiskeluoikeus info from Koski, check that it is for the given
+  oppija, and convert to SQL-compatible format"
   [oid oppija-oid]
-  (let [opiskeluoikeus (k/get-existing-opiskeluoikeus! oid)]
+  (let [opiskeluoikeus (get-opiskeluoikeus-for-oppija! oid oppija-oid)]
     (when (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       (throw (ex-info
                (format "Opiskeluoikeus `%s` sisältyy toiseen opiskeluoikeuteen."
@@ -312,7 +325,7 @@
     (insert-new-opiskeluoikeus! oid oppija-oid)))
 
 (defn update-opiskeluoikeus-without-error-forwarding!
-  "Update opsikeluoikeus for oppija without passing errors up the call stack"
+  "Update opiskeluoikeus for oppija without passing errors up the call stack"
   [oid oppija-oid]
   (try
     (db-opiskeluoikeus/update-opiskeluoikeus!
