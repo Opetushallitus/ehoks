@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>b8b8408d8ac97eb2099d65c2c1fe622769921940</tag>
+    <tag>88f3a8f66edf4fb5a37d723a24925755cf47e74a</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -285,7 +285,7 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.25.3</version>
+        <version>2.24.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
