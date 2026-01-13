@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>b8b8408d8ac97eb2099d65c2c1fe622769921940</tag>
+    <tag>711a99f24e69c72e0ad1b3d0e84f7ae04a02360b</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -225,7 +225,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http</artifactId>
-        <version>4.1.129.Final</version>
+        <version>4.1.124.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
