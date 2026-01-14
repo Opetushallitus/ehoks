@@ -415,7 +415,9 @@
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw
+                             k/get-oppija-opiskeluoikeudet
+                             test-utils/mock-get-oppija-opiskeluoikeudet]
                  (hoks/save! hoks-data))
           hoks-from-database (hoks/get-by-id (:id hoks))]
       (is (= hoks-from-database
@@ -430,7 +432,9 @@
 (deftest get-hoks-with-tuva-oo
   (testing "Save and get full HOKS with TUVA opiskeluoikeus oid"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw
+                             k/get-oppija-opiskeluoikeudet
+                             test-utils/mock-get-oppija-opiskeluoikeudet]
                  (hoks/save!
                    (assoc hoks-data
                           :tuva-opiskeluoikeus-oid

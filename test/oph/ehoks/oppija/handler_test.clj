@@ -4,6 +4,7 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
@@ -53,8 +54,9 @@
           oppija-app (common-api/create-app
                        handler/app-routes (test-session-store store))
           virkailja-app (virkailija-utils/create-app nil)
-          post-response (virkailija-utils/create-mock-post-request
-                          "" test-data/hoks-data virkailja-app)
+          post-response
+          (virkailija-utils/create-mock-post-request
+            "" test-data/hoks-data virkailja-app)
           get-response (mock-oppija-get-request store oppija-oid oppija-app)
           body (test-utils/parse-body (:body get-response))]
       (is (= (:status post-response) 200))
@@ -152,6 +154,8 @@
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
                     test-utils/mock-get-opiskeluoikeus-info-raw
+                    koski/get-oppija-opiskeluoikeudet
+                    test-utils/mock-get-oppija-opiskeluoikeudet
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
@@ -193,6 +197,8 @@
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
                     test-utils/mock-get-opiskeluoikeus-info-raw
+                    koski/get-oppija-opiskeluoikeudet
+                    test-utils/mock-get-oppija-opiskeluoikeudet
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
@@ -247,6 +253,8 @@
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
                     test-utils/mock-get-opiskeluoikeus-info-raw
+                    koski/get-oppija-opiskeluoikeudet
+                    test-utils/mock-get-oppija-opiskeluoikeudet
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
@@ -301,6 +309,8 @@
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
                     test-utils/mock-get-opiskeluoikeus-info-raw
+                    koski/get-oppija-opiskeluoikeudet
+                    test-utils/mock-get-oppija-opiskeluoikeudet
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))

@@ -111,6 +111,8 @@
    "Existing shared hato with osaamisenhankkiminen can be retrieved"
     (with-redefs [koski/get-opiskeluoikeus-info-raw
                   test-utils/mock-get-opiskeluoikeus-info-raw
+                  koski/get-oppija-opiskeluoikeudet
+                  test-utils/mock-get-oppija-opiskeluoikeudet
                   organisaatio/get-organisaatio!
                   organisaatio-test/mock-get-organisaatio!]
       (let [_ (v-utils/add-oppija v-utils/dummy-user)
@@ -145,6 +147,8 @@
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
                              test-utils/mock-get-opiskeluoikeus-info-raw
+                             koski/get-oppija-opiskeluoikeudet
+                             test-utils/mock-get-oppija-opiskeluoikeudet
                              organisaatio/get-organisaatio!
                              organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
@@ -177,6 +181,8 @@
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
                              test-utils/mock-get-opiskeluoikeus-info-raw
+                             koski/get-oppija-opiskeluoikeudet
+                             test-utils/mock-get-oppija-opiskeluoikeudet
                              organisaatio/get-organisaatio!
                              organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
@@ -212,6 +218,8 @@
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
                              test-utils/mock-get-opiskeluoikeus-info-raw
+                             koski/get-oppija-opiskeluoikeudet
+                             test-utils/mock-get-oppija-opiskeluoikeudet
                              organisaatio/get-organisaatio!
                              organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
@@ -338,6 +346,8 @@
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
                              test-utils/mock-get-opiskeluoikeus-info-raw
+                             koski/get-oppija-opiskeluoikeudet
+                             test-utils/mock-get-oppija-opiskeluoikeudet
                              organisaatio/get-organisaatio!
                              organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))

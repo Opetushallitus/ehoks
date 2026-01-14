@@ -32,7 +32,9 @@
 
 (deftest test-sync-herate-to-dynamodb
   (with-redefs [koski/get-opiskeluoikeus-info-raw
-                koski-test/mock-get-opiskeluoikeus-raw]
+                koski-test/mock-get-opiskeluoikeus-raw
+                koski/get-oppija-opiskeluoikeudet
+                koski-test/mock-get-oppija-opiskeluoikeudet]
 
     (testing "When HOKS is saved, appropriate aloituspalaute is saved
     into database.  If this palaute is synced into herätepalvelu,
