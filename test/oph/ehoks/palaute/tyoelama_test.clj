@@ -9,6 +9,7 @@
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
@@ -586,6 +587,8 @@
                   hoks-utils/mock-get-organisaatio!
                   koski/get-opiskeluoikeus-info-raw
                   hoks-utils/mock-get-opiskeluoikeus!
+                  koski/get-oppija-opiskeluoikeudet
+                  koski-test/mock-get-oppija-opiskeluoikeudet
                   ;; FIXME: better to have real Arvo fake to test against
                   arvo/create-jaksotunnus! hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]

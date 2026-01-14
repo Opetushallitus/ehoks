@@ -141,6 +141,66 @@
      (do ~@body)
      (client/reset-functions!)))
 
+(defn opiskeluoikeus-10000000009
+  [oppilaitos-oid]
+  {:oid "1.2.246.562.15.10000000009"
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2010-01-01"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :oppilaitos {:oid (or oppilaitos-oid "1.2.246.562.10.12944436166")}
+   :koulutustoimija
+   {:oid "1.2.246.562.10.346830761110"}
+   :suoritukset [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                  :suorituskieli {:koodiarvo "fi"}
+                  :toimipiste {:oid "1.2.246.562.10.12345678903"}}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(defn opiskeluoikeus-60000000004
+  [oppilaitos-oid]
+  {:oid "1.2.246.562.15.60000000004"
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2010-12-01"
+            :tila {:koodiarvo "eronnut"
+                   :nimi {:fi "Eronnut"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :oppilaitos {:oid (or oppilaitos-oid "1.2.246.562.10.12944436166")}
+   :alkamispäivä "2010-10-01"
+   :arvioituPäättymispäivä "2010-12-01"
+   :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(defn opiskeluoikeus-60000000012
+  [oppilaitos-oid]
+  {:oid "1.2.246.562.15.60000000012"
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2025-01-01"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :oppilaitos {:oid (or oppilaitos-oid "1.2.246.562.10.12944436166")}
+   :alkamispäivä "2025-01-01"
+   :arvioituPäättymispäivä "2025-12-01"
+   :suoritukset []
+   :tyyppi {:koodiarvo "lukiokoulutus"}})
+
+(defn opiskeluoikeus-10000000017
+  [oppilaitos-oid]
+  {:oid "1.2.246.562.15.10000000017"
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2023-07-03"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :oppilaitos {:oid (or oppilaitos-oid "1.2.246.562.10.12944436166")}
+   :suoritukset [{:tyyppi {:koodiarvo "telma"}}]})
+
 (defn with-service-ticket
   ([app request oppilaitos-oid]
     (client/set-post!
@@ -154,15 +214,39 @@
            :body "ST-1234-testi"}
           (.endsWith
             url "/koski/api/sure/oids")
-          {:status 200
-           :body [{:henkilö {:oid "1.2.246.562.24.44000000008"}
-                   :opiskeluoikeudet
-                   [{:oid "1.2.246.562.15.76000000000"
-                     :oppilaitos {:oid "1.2.246.562.10.12000000005"
-                                  :nimi {:fi "TestiFi"
-                                         :sv "TestiSv"
-                                         :en "TestiEn"}}
-                     :alkamispäivä "2020-03-12"}]}]})))
+          (let [oppija-oids (set (cheshire/parse-string (:body options)))]
+            {:status 200
+             :body (concat
+                     (when (contains? oppija-oids "1.2.246.562.24.12312312322")
+                       [{:henkilö {:oid "1.2.246.562.24.12312312322"}
+                         :opiskeluoikeudet
+                         [(opiskeluoikeus-10000000009 oppilaitos-oid)]}])
+                     (when (contains? oppija-oids "1.2.246.562.24.12312312319")
+                       [{:henkilö {:oid "1.2.246.562.24.12312312319"}
+                         :opiskeluoikeudet
+                         [(opiskeluoikeus-10000000009 oppilaitos-oid)
+                          (opiskeluoikeus-60000000004 oppilaitos-oid)
+                          (opiskeluoikeus-60000000012 oppilaitos-oid)
+                          {:oid "1.2.246.562.15.20000000008"
+                           :oppilaitos {:oid (or oppilaitos-oid
+                                                 "1.2.246.562.10.47861388602")}
+                           :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
+                          (opiskeluoikeus-10000000017 oppilaitos-oid)
+                          {:oid "1.2.246.562.15.30000000007"
+                           :oppilaitos {:oid (or oppilaitos-oid
+                                                 "1.2.246.562.10.12944436166")}
+                           :suoritukset
+                           [{:tyyppi {:koodiarvo "tuvaperusopetus"}}]
+                           :tyyppi {:koodiarvo "tuva"}}]}])
+                     (when (contains? oppija-oids "1.2.246.562.24.44000000008")
+                       [{:henkilö {:oid "1.2.246.562.24.44000000008"}
+                         :opiskeluoikeudet
+                         [{:oid "1.2.246.562.15.76000000000"
+                           :oppilaitos {:oid "1.2.246.562.10.12000000005"
+                                        :nimi {:fi "TestiFi"
+                                               :sv "TestiSv"
+                                               :en "TestiEn"}}
+                           :alkamispäivä "2020-03-12"}]}]))}))))
     (client/set-get!
       (fn [^String url options]
         (cond (.endsWith url "/serviceValidate")
@@ -188,36 +272,11 @@
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
               {:status 200
-               :body {:oid "1.2.246.562.15.10000000009"
-                      :tila {:opiskeluoikeusjaksot
-                             [{:alku "2010-01-01"
-                               :tila {:koodiarvo "lasna"
-                                      :nimi {:fi "Läsnä"}
-                                      :koodistoUri "koskiopiskeluoikeudentila"
-                                      :koodistoVersio 1}}]}
-                      :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.10.12944436166")}
-                      :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
-                      :suoritukset
-                      [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
-                        :suorituskieli {:koodiarvo "fi"}
-                        :toimipiste {:oid "1.2.246.562.10.12345678903"}}]
-                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+               :body (opiskeluoikeus-10000000009 oppilaitos-oid)}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000017")
               {:status 200
-               :body {:oid "1.2.246.562.15.10000000017"
-                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                      :tila {:opiskeluoikeusjaksot
-                             [{:alku "2023-07-03"
-                               :tila {:koodiarvo "lasna"
-                                      :nimi {:fi "Läsnä"}
-                                      :koodistoUri
-                                      "koskiopiskeluoikeudentila"
-                                      :koodistoVersio 1}}]}
-                      :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.10.12944436166")}
-                      :suoritukset [{:tyyppi {:koodiarvo "telma"}}]}}
+               :body (opiskeluoikeus-10000000017 oppilaitos-oid)}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.20000000008")
               {:status 200
@@ -270,36 +329,11 @@
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000004")
               {:status 200
-               :body {:oid "1.2.246.562.15.60000000004"
-                      :tila {:opiskeluoikeusjaksot
-                             [{:alku "2010-12-01"
-                               :tila {:koodiarvo "eronnut"
-                                      :nimi {:fi "Eronnut"}
-                                      :koodistoUri "koskiopiskeluoikeudentila"
-                                      :koodistoVersio 1}}]}
-                      :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.10.12944436166")}
-                      :alkamispäivä "2010-10-01"
-                      :arvioituPäättymispäivä "2010-12-01"
-                      :suoritukset
-                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
-                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+               :body (opiskeluoikeus-60000000004 oppilaitos-oid)}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000012")
               {:status 200
-               :body {:oid "1.2.246.562.15.60000000012"
-                      :tila {:opiskeluoikeusjaksot
-                             [{:alku "2025-01-01"
-                               :tila {:koodiarvo "lasna"
-                                      :nimi {:fi "Läsnä"}
-                                      :koodistoUri "koskiopiskeluoikeudentila"
-                                      :koodistoVersio 1}}]}
-                      :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.10.12944436166")}
-                      :alkamispäivä "2025-01-01"
-                      :arvioituPäättymispäivä "2025-12-01"
-                      :suoritukset []
-                      :tyyppi {:koodiarvo "lukiokoulutus"}}}
+               :body (opiskeluoikeus-60000000012 oppilaitos-oid)}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
                :body [{:oidHenkilo "1.2.246.562.24.11474338834"
@@ -430,3 +464,7 @@
   [_]
   {:koulutustoimija {:oid "1.2.3.4.5"}
    :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(defn mock-get-oppija-opiskeluoikeudet
+  [_]
+  [(mock-get-opiskeluoikeus-info-raw "1.2.246.562.15.10000000009")])

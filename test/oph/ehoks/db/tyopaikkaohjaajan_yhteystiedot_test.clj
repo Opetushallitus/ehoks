@@ -77,7 +77,9 @@
 
 (deftest delete-tyopaikkaohjaajan-yhteystiedot-test
   (with-redefs [koski/get-opiskeluoikeus-info-raw
-                koski-test/mock-get-opiskeluoikeus-raw]
+                koski-test/mock-get-opiskeluoikeus-raw
+                koski/get-oppija-opiskeluoikeudet
+                koski-test/mock-get-oppija-opiskeluoikeudet]
     (testing "Työpaikkaohjaajan yhteystiedot poistetaan yli kolme kuukautta
               sitten päättyneestä työelämäjaksosta"
       (let [saved-hoks (hoks/save! hoks-data)
