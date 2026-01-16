@@ -3,7 +3,9 @@
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -75,8 +77,10 @@
 (deftest delete-opiskelijan-yhteystiedot-test
   (testing "Opiskelijan yhteystiedot poistetaan yli kolme kuukautta sitten
             päättyneestä hoksista"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
-                  mocked-get-opiskeluoikeus-info-raw]
+    (with-redefs [koski/get-opiskeluoikeus-info-raw
+                  mocked-get-opiskeluoikeus-info-raw
+                  koski/get-oppija-opiskeluoikeudet
+                  koski-test/mock-get-oppija-opiskeluoikeudet]
       (let [saved-hoks (hoks/save! simple-hoks-data)
             another-hoks (hoks/save! recent-hoks-data)
             _ (db-ops/update! :hoksit
@@ -97,8 +101,10 @@
 (deftest delete-opiskelijan-yhteystiedot-by-jakso-test
   (testing "Opiskelijan yhteystiedot poistetaan yli kolme kuukautta sitten
             päättyneen jakson perusteella"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
-                  mocked-get-opiskeluoikeus-info-raw]
+    (with-redefs [koski/get-opiskeluoikeus-info-raw
+                  mocked-get-opiskeluoikeus-info-raw
+                  koski/get-oppija-opiskeluoikeudet
+                  koski-test/mock-get-oppija-opiskeluoikeudet]
       (let [saved-hoks (hoks/save! full-hoks-data)
             _ (db-ops/update! :hoksit
                               {:updated_at (java.time.LocalDate/of 2022 9 1)}
