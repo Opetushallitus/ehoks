@@ -455,8 +455,6 @@
                 koski/get-oppija-opiskeluoikeudet
                 (fn [_]
                   [{:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
-                   {:oid "1.2.246.562.15.55003456345"
                     :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
@@ -526,8 +524,6 @@
                 koski/get-oppija-opiskeluoikeudet
                 (fn [_]
                   [{:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
-                   {:oid "1.2.246.562.15.55003456345"
                     :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
@@ -680,8 +676,6 @@
                 koski/get-oppija-opiskeluoikeudet
                 (fn [_]
                   [{:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
-                   {:oid "1.2.246.562.15.55003456345"
                     :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
