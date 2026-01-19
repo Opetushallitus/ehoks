@@ -87,9 +87,12 @@
     (catch ExceptionInfo e
       (let [http-status      (:status (ex-data e))
             koski-virhekoodi (virhekoodi e)]
-        (when-not (and (= http-status status/not-found)
-                       (= koski-virhekoodi
-                          "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
+        (when-not
+         (and (= http-status status/not-found)
+              (#{"notFound"
+                 "notFound.opiskeluoikeuttaEiLöydy"
+                 "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"}
+                koski-virhekoodi))
           (throw (ex-info (format
                             (str "Error while fetching opiskeluoikeus `%s` "
                                  "from Koski. Got response with HTTP status %d "
