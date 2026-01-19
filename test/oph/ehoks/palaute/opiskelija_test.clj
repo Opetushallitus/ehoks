@@ -12,6 +12,7 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
@@ -253,12 +254,60 @@
           :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
 
 (defn mock-get-opiskeluoikeus-info-raw [oo]
-  (if (= oo "1.2.246.562.15.57401181193")
+  (if (or (= oo "1.2.246.562.15.57401181193") (= oo "null"))
     (throw (ex-info "opiskeluoikeus not found"
                     {:status 404
                      :body (str "[{\"key\": \"notFound.opiskeluoikeuttaEiLöydy"
                                 "TaiEiOikeuksia\"}]")}))
     (assoc oo-test/opiskeluoikeus-1 :oid oo)))
+
+(deftest test-missing-oo-handled-correct
+  (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
+                koski/get-oppija-opiskeluoikeudet
+                (fn [_]
+                  [{:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski/get-opiskeluoikeus-info-raw
+                (fn [oo] (assoc oo-test/opiskeluoikeus-1 :oid oo))
+                ;; don't use cache for hokses this time
+                vt/get-hoks-by-id! hoks/get-by-id
+                onr/get-oppija-raw!
+                mock-get-oppija-raw!
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (let [hoks-data (-> hoks-test/hoks-1
+                        (assoc :opiskeluoikeus-oid "1.2.246.562.15.57401181193")
+                        (dissoc :id))
+          _ (oppijaindex/add-hoks-dependents-in-index! hoks-data)
+          hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+                 {:hoks hoks-data :opiskeluoikeus oo-test/opiskeluoikeus-1})
+          heratteet
+          (palaute/get-palautteet-waiting-for-vastaajatunnus!
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
+                     :hoks-id nil :palaute-id nil})]
+      (testing "HOKS with nonexistent opiskeluoikeus is marked as ei_laheteta"
+        (with-redefs [koski/get-opiskeluoikeus-info-raw
+                      mock-get-opiskeluoikeus-info-raw]
+          (vt/handle-palaute-waiting-for-heratepvm! (first heratteet)))
+        (is (= [["ei_laheteta" "aloittaneet"]
+                ["odottaa_kasittelya" "valmistuneet"]]
+               (->> {:hoks-id (:id hoks)
+                     :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                    (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                    (map (juxt :tila :kyselytyyppi))))))
+      (testing "HOKS with mangled opiskeluoikeus is marked as ei_laheteta"
+        (db-ops/update! :hoksit {:opiskeluoikeus_oid "null"}
+                        ["id = ?" (:id hoks)])
+        (with-redefs [date/now (constantly (LocalDate/of 2024 4 18))
+                      koski/get-opiskeluoikeus-info-raw
+                      mock-get-opiskeluoikeus-info-raw]
+          (vt/handle-palaute-waiting-for-heratepvm! (second heratteet)))
+        (is (= [["ei_laheteta" "aloittaneet"]
+                ["ei_laheteta" "valmistuneet"]]
+               (->> {:hoks-id (:id hoks)
+                     :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                    (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                    (map (juxt :tila :kyselytyyppi)))))))))
 
 (deftest test-existing-palaute!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))]
