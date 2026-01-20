@@ -68,6 +68,15 @@
       :tyyppi {:koodiarvo "ammatillinenkoulutus"}
       :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
       :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}
+     {:oid "1.2.246.562.15.57401181193"
+      :suoritukset     [{:tyyppi          {:koodiarvo "ammatillinentutkinto"}
+                         :suorituskieli   {:koodiarvo "fi"}
+                         :tutkintonimike  [{:koodiarvo "12345"}
+                                           {:koodiarvo "23456"}]
+                         :toimipiste      {:oid "1.2.246.562.10.12312312312"}
+                         :koulutusmoduuli {:tunniste {:koodiarvo 351407}}}]
+      :tyyppi          {:koodiarvo "ammatillinenkoulutus"}
+      :koulutustoimija {:oid "1.2.246.562.10.346830761110"}}
      {:oid "1.2.246.562.15.30000000007"
       :oppilaitos {:oid "1.2.246.562.10.12944436166"}
       :tyyppi {:koodiarvo "tuva"}
