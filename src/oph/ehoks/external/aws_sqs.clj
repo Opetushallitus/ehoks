@@ -41,7 +41,8 @@
 
 (def ^:private herate-queue-url
   "Globaali heräte queue -URL."
-  (get-queue-url (:heratepalvelu-queue config)))
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-queue config)))
 
 (def ^:private delete-tunnus-queue-url
   "Globaali tunnuksen poisto queue -URL."
