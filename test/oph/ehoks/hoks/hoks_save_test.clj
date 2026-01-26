@@ -31,6 +31,7 @@
     :valittu-todentamisen-prosessi-koodi-uri
     "osaamisentodentamisenprosessi_3"
     :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+    :tutkinnon-osan-perusteen-diaarinro "OPH-1234-2025"
     :tarkentavat-tiedot-osaamisen-arvioija
     {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
      :aiemmin-hankitun-osaamisen-arvioijat
@@ -101,6 +102,7 @@
 (def hao-data
   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
     :tutkinnon-osa-koodi-versio 4
+    :tutkinnon-osan-perusteen-diaarinro "OPH-4321-2025"
     :vaatimuksista-tai-tavoitteista-poikkeaminen
     "Ei poikkeamia."
     :osaamisen-osoittaminen
