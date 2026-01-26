@@ -1,5 +1,6 @@
 (ns oph.ehoks.external.koski
   (:require [clojure.data.json :as json]
+            [clojure.string :refer [starts-with?]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.oph-url :as u]
@@ -88,11 +89,14 @@
       (let [http-status      (:status (ex-data e))
             koski-virhekoodi (virhekoodi e)]
         (when-not
-         (and (= http-status status/not-found)
-              (#{"notFound"
-                 "notFound.opiskeluoikeuttaEiLöydy"
-                 "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"}
-                koski-virhekoodi))
+         (or
+           (and (= http-status status/not-found)
+                (#{"notFound"
+                   "notFound.opiskeluoikeuttaEiLöydy"
+                   "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"}
+                  koski-virhekoodi))
+           (and (= http-status status/bad-request)
+                (starts-with? koski-virhekoodi "badRequest.queryParam")))
           (throw (ex-info (format
                             (str "Error while fetching opiskeluoikeus `%s` "
                                  "from Koski. Got response with HTTP status %d "
