@@ -63,6 +63,11 @@
   (case oppija-oid
     "1.2.246.562.24.12312312319"
     [(mock-get-opiskeluoikeus-raw "1.2.246.562.15.10000000009")
+     {:oid "1.2.246.562.15.57401181193"
+      :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+      :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+      :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+      :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}
      {:oid "1.2.246.562.15.20000000008"
       :oppilaitos {:oid "1.2.246.562.10.12944436166"}
       :tyyppi {:koodiarvo "ammatillinenkoulutus"}
