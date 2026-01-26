@@ -4,6 +4,724 @@
   },
   "opiskeluoikeudet": [
     {
+      "oid": "1.2.246.562.15.76811932029",
+      "versionumero": 2,
+      "aikaleima": "2022-09-21T02:26:33.509776",
+      "lähdejärjestelmänId": {
+        "id": "e9b87a2c-cd4b-4c7d-9014-d0659c19c83a",
+        "lähdejärjestelmä": {
+          "koodiarvo": "peppi",
+          "nimi": {
+            "fi": "Peppi"
+          },
+          "koodistoUri": "lahdejarjestelma",
+          "koodistoVersio": 1
+        }
+      },
+      "oppilaitos": {
+        "oid": "1.2.246.562.10.12424158689",
+        "oppilaitosnumero": {
+          "koodiarvo": "01067",
+          "nimi": {
+            "fi": "Keuda",
+            "sv": "Keuda",
+            "en": "Keuda"
+          },
+          "lyhytNimi": {
+            "fi": "Keuda",
+            "sv": "Keuda",
+            "en": "Keuda"
+          },
+          "koodistoUri": "oppilaitosnumero",
+          "koodistoVersio": 1
+        },
+        "nimi": {
+          "fi": "Keudan ammattiopisto"
+        },
+        "kotipaikka": {
+          "koodiarvo": "186",
+          "nimi": {
+            "fi": "Järvenpää",
+            "sv": "Träskända"
+          },
+          "koodistoUri": "kunta",
+          "koodistoVersio": 2
+        }
+      },
+      "koulutustoimija": {
+        "oid": "1.2.246.562.10.12424158689",
+        "nimi": {
+          "fi": "Keski-Uudenmaan koulutuskuntayhtymä",
+          "sv": "Keski-Uudenmaan koulutuskuntayhtymä",
+          "en": "Keski-Uudenmaan koulutuskuntayhtymä"
+        },
+        "yTunnus": "0213834-5",
+        "kotipaikka": {
+          "koodiarvo": "186",
+          "nimi": {
+            "fi": "Järvenpää",
+            "sv": "Träskända"
+          },
+          "koodistoUri": "kunta",
+          "koodistoVersio": 2
+        }
+      },
+      "arvioituPäättymispäivä": "2015-05-31",
+      "ostettu": false,
+      "tila": {
+        "opiskeluoikeusjaksot": [
+          {
+            "alku": "2012-09-01",
+            "tila": {
+              "koodiarvo": "lasna",
+              "nimi": {
+                "fi": "Läsnä",
+                "sv": "Närvarande",
+                "en": "Present"
+              },
+              "koodistoUri": "koskiopiskeluoikeudentila",
+              "koodistoVersio": 1
+            },
+            "opintojenRahoitus": {
+              "koodiarvo": "4",
+              "nimi": {
+                "fi": "Työnantajan kokonaan rahoittama",
+                "sv": "I sin helhet finansierad av arbetsgivaren"
+              },
+              "koodistoUri": "opintojenrahoitus",
+              "koodistoVersio": 1
+            }
+          },
+          {
+            "alku": "2016-05-31",
+            "tila": {
+              "koodiarvo": "valmistunut",
+              "nimi": {
+                "fi": "Valmistunut",
+                "sv": "Utexaminerad",
+                "en": "Graduated"
+              },
+              "koodistoUri": "koskiopiskeluoikeudentila",
+              "koodistoVersio": 1
+            },
+            "opintojenRahoitus": {
+              "koodiarvo": "4",
+              "nimi": {
+                "fi": "Työnantajan kokonaan rahoittama",
+                "sv": "I sin helhet finansierad av arbetsgivaren"
+              },
+              "koodistoUri": "opintojenrahoitus",
+              "koodistoVersio": 1
+            }
+          }
+        ]
+      },
+      "suoritukset": [
+        {
+          "koulutusmoduuli": {
+            "tunniste": {
+              "koodiarvo": "361902",
+              "nimi": {
+                "fi": "Luonto- ja ympäristöalan perustutkinto",
+                "sv": "Grundexamen i natur och miljö",
+                "en": "Vocational qualification in Natural and Environmental Protection"
+              },
+              "lyhytNimi": {
+                "fi": "Luonto- ja ympär.alan perust.",
+                "sv": "Grundexamen i natur och miljö",
+                "en": "Vocational qualification in Natural and Environmental Protection"
+              },
+              "koodistoUri": "koulutus",
+              "koodistoVersio": 12
+            },
+            "perusteenDiaarinumero": "62/011/2014",
+            "perusteenNimi": {
+              "fi": "Luonto- ja ympäristöalan perustutkinto",
+              "sv": "Grundexamen i natur och miljö"
+            },
+            "koulutustyyppi": {
+              "koodiarvo": "1",
+              "nimi": {
+                "fi": "Ammatillinen perustutkinto",
+                "sv": "Yrkesinriktad grundexamen",
+                "en": "Vocational upper secondary qualification"
+              },
+              "lyhytNimi": {
+                "fi": "Ammatillinen perustutkinto",
+                "sv": "Yrkesinriktad grundexamen"
+              },
+              "koodistoUri": "koulutustyyppi",
+              "koodistoVersio": 2
+            }
+          },
+          "suoritustapa": {
+            "koodiarvo": "ops",
+            "nimi": {
+              "fi": "Ammatillinen perustutkinto",
+              "sv": "Läroplansbaserad",
+              "en": "Opetussuunnitelman mukainen"
+            },
+            "lyhytNimi": {
+              "fi": "ops",
+              "sv": "ops",
+              "en": "ops"
+            },
+            "koodistoUri": "ammatillisentutkinnonsuoritustapa",
+            "koodistoVersio": 1
+          },
+          "tutkintonimike": [
+            {
+              "koodiarvo": "10083",
+              "nimi": {
+                "fi": "Ympäristönhoitaja",
+                "sv": "Miljövårdare",
+                "en": "Environmental Operative"
+              },
+              "lyhytNimi": {
+                "fi": "Ympäristönhoitaja",
+                "sv": "Miljövårdare",
+                "en": "Environmental Operative"
+              },
+              "koodistoUri": "tutkintonimikkeet",
+              "koodistoVersio": 2
+            }
+          ],
+          "osaamisala": [
+            {
+              "osaamisala": {
+                "koodiarvo": "1590",
+                "nimi": {
+                  "fi": "Ympäristöalan osaamisala",
+                  "sv": "Kompetensområdet för miljö"
+                },
+                "lyhytNimi": {
+                  "fi": "Ympäristöalan osaamisala",
+                  "sv": "Kompetensområdet för miljö"
+                },
+                "koodistoUri": "osaamisala",
+                "koodistoVersio": 3
+              }
+            }
+          ],
+          "toimipiste": {
+            "oid": "1.2.246.562.10.32506551657",
+            "oppilaitosnumero": {
+              "koodiarvo": "01067",
+              "nimi": {
+                "fi": "Keuda",
+                "sv": "Keuda",
+                "en": "Keuda"
+              },
+              "lyhytNimi": {
+                "fi": "Keuda",
+                "sv": "Keuda",
+                "en": "Keuda"
+              },
+              "koodistoUri": "oppilaitosnumero",
+              "koodistoVersio": 1
+            },
+            "nimi": {
+              "fi": "Keudan ammattiopisto"
+            },
+            "kotipaikka": {
+              "koodiarvo": "186",
+              "nimi": {
+                "fi": "Järvenpää",
+                "sv": "Träskända"
+              },
+              "koodistoUri": "kunta",
+              "koodistoVersio": 2
+            }
+          },
+          "vahvistus": {
+            "päivä": "2016-05-30",
+            "paikkakunta": {
+              "koodiarvo": "091",
+              "nimi": {
+                "fi": "Helsinki",
+                "sv": "Helsingfors"
+              },
+              "koodistoUri": "kunta",
+              "koodistoVersio": 2
+            },
+            "myöntäjäOrganisaatio": {
+              "oid": "1.2.246.562.10.52251087186",
+              "oppilaitosnumero": {
+                "koodiarvo": "10105",
+                "nimi": {
+                  "fi": "Stadin ammatti- ja aikuisopisto",
+                  "sv": "Stadin ammatti- ja aikuisopisto",
+                  "en": "Stadin ammatti- ja aikuisopisto"
+                },
+                "lyhytNimi": {
+                  "fi": "Stadin ammatti- ja aikuisopisto",
+                  "sv": "Stadin ammatti- ja aikuisopisto",
+                  "en": "Stadin ammatti- ja aikuisopisto"
+                },
+                "koodistoUri": "oppilaitosnumero",
+                "koodistoVersio": 1
+              },
+              "nimi": {
+                "fi": "Stadin ammatti- ja aikuisopisto",
+                "sv": "Stadin ammatti- ja aikuisopisto",
+                "en": "Stadin ammatti- ja aikuisopisto"
+              },
+              "kotipaikka": {
+                "koodiarvo": "091",
+                "nimi": {
+                  "fi": "Helsinki",
+                  "sv": "Helsingfors"
+                },
+                "koodistoUri": "kunta",
+                "koodistoVersio": 2
+              }
+            },
+            "myöntäjäHenkilöt": [
+              {
+                "nimi": "Reijo Reksi",
+                "titteli": {
+                  "fi": "rehtori"
+                },
+                "organisaatio": {
+                  "oid": "1.2.246.562.10.52251087186",
+                  "oppilaitosnumero": {
+                    "koodiarvo": "10105",
+                    "nimi": {
+                      "fi": "Stadin ammatti- ja aikuisopisto",
+                      "sv": "Stadin ammatti- ja aikuisopisto",
+                      "en": "Stadin ammatti- ja aikuisopisto"
+                    },
+                    "lyhytNimi": {
+                      "fi": "Stadin ammatti- ja aikuisopisto",
+                      "sv": "Stadin ammatti- ja aikuisopisto",
+                      "en": "Stadin ammatti- ja aikuisopisto"
+                    },
+                    "koodistoUri": "oppilaitosnumero",
+                    "koodistoVersio": 1
+                  },
+                  "nimi": {
+                    "fi": "Stadin ammatti- ja aikuisopisto",
+                    "sv": "Stadin ammatti- ja aikuisopisto",
+                    "en": "Stadin ammatti- ja aikuisopisto"
+                  },
+                  "kotipaikka": {
+                    "koodiarvo": "091",
+                    "nimi": {
+                      "fi": "Helsinki",
+                      "sv": "Helsingfors"
+                    },
+                    "koodistoUri": "kunta",
+                    "koodistoVersio": 2
+                  }
+                }
+              }
+            ]
+          },
+          "suorituskieli": {
+            "koodiarvo": "FI",
+            "nimi": {
+              "fi": "suomi",
+              "sv": "finska",
+              "en": "Finnish"
+            },
+            "lyhytNimi": {
+              "fi": "suomi",
+              "sv": "finska",
+              "en": "Finnish"
+            },
+            "koodistoUri": "kieli",
+            "koodistoVersio": 1
+          },
+          "järjestämismuodot": [
+            {
+              "alku": "2013-09-01",
+              "järjestämismuoto": {
+                "tunniste": {
+                  "koodiarvo": "10",
+                  "nimi": {
+                    "fi": "Koulutuksen järjestäminen oppilaitosmuotoisena",
+                    "sv": "Att ordna utbildningen som när-, distansundervisning eller på en arbetsplats"
+                  },
+                  "koodistoUri": "jarjestamismuoto",
+                  "koodistoVersio": 1
+                }
+              }
+            }
+          ],
+          "työssäoppimisjaksot": [
+            {
+              "alku": "2014-01-01",
+              "loppu": "2014-03-15",
+              "työssäoppimispaikka": {
+                "fi": "Sortti-asema"
+              },
+              "paikkakunta": {
+                "koodiarvo": "179",
+                "nimi": {
+                  "fi": "Jyväskylä",
+                  "sv": "Jyväskylä"
+                },
+                "koodistoUri": "kunta",
+                "koodistoVersio": 2
+              },
+              "maa": {
+                "koodiarvo": "246",
+                "nimi": {
+                  "fi": "Suomi",
+                  "sv": "Finland",
+                  "en": "Finland"
+                },
+                "lyhytNimi": {
+                  "fi": "FI",
+                  "sv": "FI",
+                  "en": "FI"
+                },
+                "koodistoUri": "maatjavaltiot2",
+                "koodistoVersio": 2
+              },
+              "työtehtävät": {
+                "fi": "Toimi harjoittelijana Sortti-asemalla"
+              },
+              "laajuus": {
+                "arvo": 5,
+                "yksikkö": {
+                  "koodiarvo": "6",
+                  "nimi": {
+                    "fi": "osaamispistettä",
+                    "sv": "kompetenspoäng",
+                    "en": "ECVET competence points"
+                  },
+                  "lyhytNimi": {
+                    "fi": "osp",
+                    "sv": "kp",
+                    "en": "competence points"
+                  },
+                  "koodistoUri": "opintojenlaajuusyksikko",
+                  "koodistoVersio": 1
+                }
+              }
+            }
+          ],
+          "osasuoritukset": [],
+          "tyyppi": {
+            "koodiarvo": "ammatillinentutkinto",
+            "nimi": {
+              "fi": "Ammatillinen tutkinto",
+              "sv": "Yrkesinriktad examen",
+              "en": "Vocational education  qualification"
+            },
+            "koodistoUri": "suorituksentyyppi",
+            "koodistoVersio": 1
+          },
+          "ryhmä": "YMP14SN"
+        }
+      ],
+      "tyyppi": {
+        "koodiarvo": "ammatillinenkoulutus",
+        "nimi": {
+          "fi": "Ammatillinen koulutus",
+          "sv": "Yrkesutbildning"
+        },
+        "lyhytNimi": {
+          "fi": "Ammatillinen koulutus"
+        },
+        "koodistoUri": "opiskeluoikeudentyyppi",
+        "koodistoVersio": 1
+      },
+      "alkamispäivä": "2012-09-01",
+      "päättymispäivä": "2016-05-31"
+    },
+    {
+      "oid": "1.2.246.562.15.60063016194",
+      "versionumero": 1,
+      "aikaleima": "2019-07-01T09:46:22.802764",
+      "lähdejärjestelmänId": {},
+      "oppilaitos": {},
+      "koulutustoimija": {},
+      "ostettu": false,
+      "tila": {},
+      "suoritukset": [
+        {
+          "koulutusmoduuli": {
+            "tunniste": {
+              "koodiarvo": "351407",
+              "nimi": {
+                "fi": "Sähkö- ja automaatioalan perustutkinto",
+                "sv": "Grundexamen inom el- och automationsbranschen",
+                "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+              },
+              "lyhytNimi": {
+                "fi": "Sähkö- ja automaatioalan pt",
+                "sv": "Grundexamen inom el- och automationsbranschen",
+                "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+              },
+              "koodistoUri": "koulutus",
+              "koodistoVersio": 11
+            },
+            "perusteenDiaarinumero": "77/011/2014",
+            "perusteenNimi": {
+              "fi": "Sähkö- ja automaatiotekniikan perustutkinto",
+              "sv": "Grundexamen inom el- och automationsteknik"
+            },
+            "koulutustyyppi": {
+              "koodiarvo": "1",
+              "nimi": {
+                "fi": "Ammatillinen perustutkinto",
+                "sv": "Yrkesinriktad grundexamen",
+                "en": "Vocational upper secondary qualification"
+              },
+              "lyhytNimi": {
+                "fi": "Ammatillinen perustutkinto",
+                "sv": "Yrkesinriktad grundexamen"
+              },
+              "koodistoUri": "koulutustyyppi",
+              "koodistoVersio": 2
+            }
+          },
+          "suoritustapa": {},
+          "toimipiste": {},
+          "alkamispäivä": "2016-08-05",
+          "suorituskieli": {},
+          "osasuoritukset": [],
+          "tyyppi": {}
+        }
+      ],
+      "lisätiedot": {
+        "oikeusMaksuttomaanAsuntolapaikkaan": false,
+        "henkilöstökoulutus": false,
+        "koulutusvienti": false
+      },
+      "tyyppi": {
+        "koodiarvo": "ammatillinenkoulutus",
+        "nimi": {
+          "fi": "Ammatillinen koulutus",
+          "sv": "Yrkesutbildning"
+        },
+        "lyhytNimi": {
+          "fi": "Ammatillinen koulutus"
+        },
+        "koodistoUri": "opiskeluoikeudentyyppi",
+        "koodistoVersio": 1
+      },
+      "alkamispäivä": "2016-08-05"
+    }, {
+    "oid": "1.2.246.562.15.13312692646",
+    "versionumero": 1,
+    "aikaleima": "2022-12-07T11:49:57.234985",
+    "oppilaitos": {
+      "oid": "1.2.246.562.10.32506551657",
+      "nimi": {
+        "fi": "Keuda"
+      },
+      "kotipaikka": {
+        "koodiarvo": "005",
+        "nimi": {
+          "fi": "Alajärvi",
+          "sv": "Alajärvi"
+        },
+        "koodistoUri": "kunta",
+        "koodistoVersio": 2
+      }
+    },
+    "koulutustoimija": {
+      "oid": "1.2.246.562.10.55867603791",
+      "nimi": {
+        "fi": " Keski-Uudenmaan koulutuskuntayhtymä"
+      },
+      "yTunnus": "7011260-6",
+      "kotipaikka": {
+        "koodiarvo": "005",
+        "nimi": {
+          "fi": "Alajärvi",
+          "sv": "Alajärvi"
+        },
+        "koodistoUri": "kunta",
+        "koodistoVersio": 2
+      }
+    },
+    "tila": {
+      "opiskeluoikeusjaksot": [
+        {
+          "tila": {
+            "koodiarvo": "lasna",
+            "nimi": {
+              "fi": "Läsnä",
+              "sv": "Närvarande",
+              "en": "Present"
+            },
+            "koodistoUri": "koskiopiskeluoikeudentila",
+            "koodistoVersio": 1
+          },
+          "alku": "2015-12-07",
+          "opintojenRahoitus": {
+            "koodiarvo": "14",
+            "nimi": {
+              "fi": "Jatkuvan oppimisen ja työllisuuden palvelukeskuksen rahoitus",
+              "sv": "Finansiering av Servicecentret för kontinuerligt lärande och sysselsättning",
+              "en": "Jatkuvan oppimisen ja työllisuuden palvelukeskuksen rahoitus"
+            },
+            "koodistoUri": "opintojenrahoitus",
+            "koodistoVersio": 1
+          }
+        },
+        {
+          "tila": {
+            "koodiarvo": "lasna",
+            "nimi": {
+              "fi": "Läsnä",
+              "sv": "Närvarande",
+              "en": "Present"
+            },
+            "koodistoUri": "koskiopiskeluoikeudentila",
+            "koodistoVersio": 1
+          },
+          "alku": "2023-12-07",
+          "opintojenRahoitus": {
+            "koodiarvo": "1",
+            "koodistoUri": "opintojenrahoitus",
+            "koodistoVersio": 1
+          }
+        }
+      ]
+    },
+    "suoritukset": [
+      {
+        "koulutusmoduuli": {
+          "tunniste": {
+            "koodiarvo": "999951",
+            "nimi": {
+              "fi": "Muu kuin säännelty koulutus",
+              "sv": "Muu kuin säännelty koulutus",
+              "en": "Muu kuin säännelty koulutus"
+            },
+            "lyhytNimi": {
+              "fi": "MUKS",
+              "sv": "MUKS",
+              "en": "MUKS"
+            },
+            "koodistoUri": "koulutus",
+            "koodistoVersio": 12
+          },
+          "opintokokonaisuus": {
+            "koodiarvo": "4405",
+            "nimi": {
+              "fi": "10 kaatomaalaustekniikkaa"
+            },
+            "koodistoUri": "opintokokonaisuudet",
+            "koodistoVersio": 1
+          }
+        },
+        "tyyppi": {
+          "koodiarvo": "muukuinsaanneltykoulutus",
+          "nimi": {
+            "fi": "Muu kuin säännelty koulutus",
+            "sv": "Muu kuin säännelty koulutus",
+            "en": "Muu kuin säännelty koulutus"
+          },
+          "koodistoUri": "suorituksentyyppi",
+          "koodistoVersio": 1
+        },
+        "toimipiste": {
+          "oid": "1.2.246.562.10.43682075486",
+          "nimi": {
+            "fi": "Kerava, Keskikatu"
+          },
+          "kotipaikka": {
+            "koodiarvo": "005",
+            "nimi": {
+              "fi": "Alajärvi",
+              "sv": "Alajärvi"
+            },
+            "koodistoUri": "kunta",
+            "koodistoVersio": 2
+          }
+        },
+        "suorituskieli": {
+          "koodiarvo": "FI",
+          "nimi": {
+            "fi": "suomi",
+            "sv": "finska",
+            "en": "Finnish"
+          },
+          "lyhytNimi": {
+            "fi": "suomi",
+            "sv": "finska",
+            "en": "Finnish"
+          },
+          "koodistoUri": "kieli",
+          "koodistoVersio": 1
+        }
+      },
+      {
+        "koulutusmoduuli": {
+          "tunniste": {
+            "koodiarvo": "351407",
+            "nimi": {
+              "fi": "Sähkö- ja automaatioalan perustutkinto",
+              "sv": "Grundexamen inom el- och automationsbranschen",
+              "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+            },
+            "lyhytNimi": {
+              "fi": "Sähkö- ja automaatioalan pt",
+              "sv": "Grundexamen inom el- och automationsbranschen",
+              "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+            },
+            "koodistoUri": "koulutus",
+            "koodistoVersio": 11
+          },
+          "perusteenDiaarinumero": "77/011/2014",
+          "perusteenNimi": {
+            "fi": "Sähkö- ja automaatiotekniikan perustutkinto",
+            "sv": "Grundexamen inom el- och automationsteknik"
+          },
+          "koulutustyyppi": {
+            "koodiarvo": "1",
+            "nimi": {
+              "fi": "Ammatillinen perustutkinto",
+              "sv": "Yrkesinriktad grundexamen",
+              "en": "Vocational upper secondary qualification"
+            },
+            "lyhytNimi": {
+              "fi": "Ammatillinen perustutkinto",
+              "sv": "Yrkesinriktad grundexamen"
+            },
+            "koodistoUri": "koulutustyyppi",
+            "koodistoVersio": 2
+          }
+        },
+        "suoritustapa": {},
+        "toimipiste": {},
+        "alkamispäivä": "2016-08-05",
+        "suorituskieli": {},
+        "osasuoritukset": [],
+        "tyyppi": {
+          "koodiarvo": "ammatillinentutkinto",
+          "nimi": {
+            "fi": "Ammatillinen tutkinto",
+            "sv": "Yrkesinriktad examen",
+            "en": "Vocational education  qualification"
+          },
+          "koodistoUri": "suorituksentyyppi",
+          "koodistoVersio": 1
+        }
+      }
+    ],
+    "tyyppi": {
+      "koodiarvo": "muukuinsaanneltykoulutus",
+      "nimi": {
+        "fi": "Muu kuin säännelty koulutus",
+        "sv": "Muu kuin säännelty koulutus"
+      },
+      "lyhytNimi": {
+        "fi": "MUKS",
+        "sv": "MUKS"
+      },
+      "koodistoUri": "opiskeluoikeudentyyppi",
+      "koodistoVersio": 1
+    },
+    "alkamispäivä": "2015-12-07"
+    },
+    {
       "tila": {
         "opiskeluoikeusjaksot": [
           {
