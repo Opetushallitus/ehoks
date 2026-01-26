@@ -208,7 +208,7 @@
   [{:keys [request hoks opiskeluoikeus] :as ctx} check-privileges]
   (oppijaindex/add-hoks-dependents-in-index! hoks)
   (check-privileges hoks request)
-  (hoks/check hoks opiskeluoikeus)
+  (hoks/check-for-create! hoks opiskeluoikeus)
   (let [hoks (save-hoks-and-initiate-all-palautteet! ctx)]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks))}
         (rest/ok :id (:id hoks))

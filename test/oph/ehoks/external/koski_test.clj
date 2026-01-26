@@ -55,6 +55,27 @@
          (ex-info "Asd")
          (throw))))
 
+(defn mock-get-oppija-opiskeluoikeudet
+  "Mock function that returns a list of opiskeluoikeudet for an oppija-oid.
+  This is used to support the new check in add-opiskeluoikeus! that validates
+  the opiskeluoikeus belongs to the oppija."
+  [oppija-oid]
+  (case oppija-oid
+    "1.2.246.562.24.12312312319"
+    [(mock-get-opiskeluoikeus-raw "1.2.246.562.15.10000000009")
+     {:oid "1.2.246.562.15.20000000008"
+      :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+      :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+      :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+      :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}
+     {:oid "1.2.246.562.15.30000000007"
+      :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+      :tyyppi {:koodiarvo "tuva"}
+      :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+      :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}]
+    ;; default
+    []))
+
 (deftest test-get-opiskeluoikeus!
   (with-redefs [k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-raw]
     (testing "The function returns opiskeluoikeus when found"

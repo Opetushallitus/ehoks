@@ -9,6 +9,7 @@
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
@@ -417,11 +418,7 @@
 (deftest test-create-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 koski/get-oppija-opiskeluoikeudet
-                (fn [_]
-                  [{:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
-                   {:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski-test/mock-get-oppija-opiskeluoikeudet
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
                 onr/get-oppija-raw!
@@ -488,11 +485,7 @@
 (deftest test-create-and-save-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 koski/get-oppija-opiskeluoikeudet
-                (fn [_]
-                  [{:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
-                   {:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski-test/mock-get-oppija-opiskeluoikeudet
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
                 onr/get-oppija-raw!
@@ -642,11 +635,7 @@
 (deftest test-handle-amis-palautteet-on-heratepvm!
   (with-redefs [date/now (constantly (LocalDate/of 2024 12 18))
                 koski/get-oppija-opiskeluoikeudet
-                (fn [_]
-                  [{:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
-                   {:oid "1.2.246.562.15.55003456345"
-                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski-test/mock-get-oppija-opiskeluoikeudet
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
                 onr/get-oppija-raw!
