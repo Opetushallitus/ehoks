@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>1820b38836a643115c7268b7cd9e97a7ace36862</tag>
+    <tag>d7f1f82f28a33642347c455c51a7cc20cf72336e</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -467,7 +467,7 @@
       <dependency>
         <groupId>org.mozilla</groupId>
         <artifactId>rhino</artifactId>
-        <version>1.7.12</version>
+        <version>1.7.14.1</version>
       </dependency>
       <dependency>
         <groupId>org.clojure</groupId>
