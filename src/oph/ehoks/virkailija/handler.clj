@@ -569,15 +569,15 @@
                             ::audit/operation ::heratepalvelu/resend-palaute)))
 
                       (c-api/GET "/:hoks-id/opiskelijapalaute" request
-                        :summary "Palauttaa tietoja oppijan aktiivisista
+                        :summary "Palauttaa tietoja oppijan lähetetyistä
                                   kyselylinkeistä (ilman kyselytunnuksia)"
                         :path-params [hoks-id :- s/Int]
                         :return [s/Any]
                         (let [kyselylinkit
-                              (->> (kyselylinkki/get-by-oppija-oid! oppija-oid)
-                                   (map-when kyselylinkki/active?
-                                             kyselylinkki/update-status!)
-                                   (filter kyselylinkki/active?))
+                              (map-when
+                                kyselylinkki/active?
+                                kyselylinkki/update-status!
+                                (kyselylinkki/get-by-oppija-oid! oppija-oid))
                               lahetysdata
                               (map
                                 #(dissoc %1 :kyselylinkki :vastattu)

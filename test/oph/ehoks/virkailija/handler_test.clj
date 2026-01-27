@@ -1535,7 +1535,17 @@
 (t/deftest test-get-kyselylinkit
   (t/testing "Test getting kyselylinkit"
     (let [alkupvm (LocalDate/now)
-          loppupvm (.plusMonths (LocalDateTime/now) 1)]
+          loppupvm (.plusMonths (LocalDateTime/now) 1)
+          new-loppupvm (.plusMonths (LocalDateTime/now) 2)
+          kyselylinkki-reply
+          {:hoks-id           1
+           :tyyppi            "aloittaneet"
+           :oppija-oid        "1.2.246.562.24.44000000008"
+           :alkupvm           (str alkupvm)
+           :lahetyspvm        (str alkupvm)
+           :sahkoposti        "testi@testi.fi"
+           :lahetystila       "viestintapalvelussa"
+           :voimassa-loppupvm (str (LocalDate/from loppupvm))}]
       (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
                     (fn [_]
                       {:vastattu false
@@ -1607,16 +1617,32 @@
                           :roles {:oph-super-user true}}]})
                 body (test-utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
-            (t/is
-              (= (first (:data body))
-                 {:hoks-id           1
-                  :tyyppi            "aloittaneet"
-                  :oppija-oid        "1.2.246.562.24.44000000008"
-                  :alkupvm           (str alkupvm)
-                  :lahetyspvm        (str alkupvm)
-                  :sahkoposti        "testi@testi.fi"
-                  :lahetystila       "viestintapalvelussa"
-                  :voimassa-loppupvm (str (LocalDate/from loppupvm))}))))))))
+            (t/is (= (first (:data body)) kyselylinkki-reply)))
+          (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
+                        (fn [_]
+                          {:vastattu true
+                           :voimassa-loppupvm (str new-loppupvm "Z")})]
+            (let [resp (with-test-virkailija
+                         (mock/request
+                           :get
+                           (str
+                             base-url
+                             "/virkailija/oppijat/1.2.246.562.24.44000000008"
+                             "/hoksit/1/opiskelijapalaute"))
+                         {:name "Testivirkailija"
+                          :kayttajaTyyppi "VIRKAILIJA"
+                          :organisation-privileges
+                          [{:oid "1.2.246.562.10.12000000013"
+                            :privileges #{:write :read :update :delete}
+                            :oikeus "OPHPAAKAYTTAJA"
+                            :palvelu "EHOKS"
+                            :roles {:oph-super-user true}}]})
+                  body (test-utils/parse-body (:body resp))]
+              (t/is (= 200 (:status resp)))
+              (t/is (= (first (:data body))
+                       (assoc kyselylinkki-reply
+                              :voimassa-loppupvm
+                              (str (LocalDate/from new-loppupvm))))))))))))
 
 (t/deftest test-shallow-delete
   (t/testing "shallow delete works"
