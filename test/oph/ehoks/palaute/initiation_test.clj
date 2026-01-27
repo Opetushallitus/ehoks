@@ -52,7 +52,9 @@
 
 (deftest test-reinit-palautteet-for-uninitiated-hokses!
   (with-redefs [koski/get-opiskeluoikeus-info-raw
-                koski-test/mock-get-opiskeluoikeus-raw]
+                koski-test/mock-get-opiskeluoikeus-raw
+                koski/get-oppija-opiskeluoikeudet
+                koski-test/mock-get-oppija-opiskeluoikeudet]
     (testing (str "Saved HOKS doesn't have palautteet and `palaute-handled-at` "
                   "timestamp.")
       (hoks/save! hoks-test/hoks-1)

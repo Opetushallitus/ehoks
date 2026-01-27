@@ -15,7 +15,9 @@
 (deftest get-kasittelemattomat-heratteet
   (testing "GET /heratepalvelu/kasittelemattomat-heratteet"
     (with-redefs [koski/get-opiskeluoikeus-info-raw
-                  koski-test/mock-get-opiskeluoikeus-raw]
+                  koski-test/mock-get-opiskeluoikeus-raw
+                  koski/get-oppija-opiskeluoikeudet
+                  koski-test/mock-get-oppija-opiskeluoikeudet]
       (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                        :oppija-oid "1.2.246.562.24.12312312319"
                        :osaamisen-hankkimisen-tarve true
