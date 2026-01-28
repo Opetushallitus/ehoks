@@ -1,0 +1,7 @@
+
+ALTER TABLE hankittavat_ammat_tutkinnon_osat
+ADD COLUMN tutkinnon_osan_perusteen_diaarinro TEXT;
+
+ALTER TABLE aiemmin_hankitut_ammat_tutkinnon_osat
+ADD COLUMN tutkinnon_osan_perusteen_diaarinro TEXT;
+
