@@ -303,7 +303,7 @@
 
       (nil? oppilaitos-oid)
       (response/forbidden {:error (str "Oppilaitos-oid not found. Contact eHOKS"
-                                       " support for more " "information.")})
+                                       " support for more information.")})
 
       (not (contains? (user/organisation-privileges
                         (organisaatio/get-existing-organisaatio! oppilaitos-oid)
@@ -648,7 +648,7 @@
                           :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
-                          :return (restful/response {:success s/Int})
+                          :return {:success s/Int}
                           (shallow-delete-hoks-handler! request hoks-id data)))
 
                       (route-middleware
