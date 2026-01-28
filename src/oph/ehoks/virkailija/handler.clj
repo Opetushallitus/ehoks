@@ -589,7 +589,7 @@
                         :summary "Palauttaa tietoja oppijan lähetetyistä
                                   kyselylinkeistä (ilman kyselytunnuksia)"
                         :path-params [hoks-id :- s/Int]
-                        :return [s/Any]
+                        :return (restful/response [s/Any])
                         (let [kyselylinkit
                               (map-when
                                 kyselylinkki/active?
