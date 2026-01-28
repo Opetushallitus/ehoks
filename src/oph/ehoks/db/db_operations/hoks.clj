@@ -740,7 +740,7 @@
                          :vastuullinen_tyopaikka_ohjaaja_puhelinnumero nil}
                         ["id = ?" (:tjk-id jakso)]
                         conn))
-      (set (map :hankkimistapa-id jaksot)))))
+      (mapv :hankkimistapa-id jaksot))))
 
 ;; TODO: nää ei oikeasti kuuluis db-operations-nimiavaruuteen vaan johonkin
 ;; ylempään logiikkakerrokseen.
@@ -776,4 +776,4 @@
                        " hoksiin"))
         (doseq [hoks ei-paattyneet]
           (update-hoks-by-id! (:id hoks) {} conn)))
-      (set (map :id paattyneet)))))
+      (mapv :id paattyneet))))
