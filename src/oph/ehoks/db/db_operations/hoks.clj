@@ -776,4 +776,4 @@
                        " hoksiin"))
         (doseq [hoks ei-paattyneet]
           (update-hoks-by-id! (:id hoks) {} conn)))
-      (set (map :id paattyneet)))))
+      (mapv :id paattyneet))))
