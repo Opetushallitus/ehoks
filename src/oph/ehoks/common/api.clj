@@ -1,5 +1,6 @@
 (ns oph.ehoks.common.api
   (:require [compojure.api.exception :as c-ex]
+            [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.external.cas :as cas]
@@ -45,6 +46,14 @@
       (fn [^ExceptionInfo e _ _] (resp {custom-key (ex-message e)}))
       (fn [^ExceptionInfo e _ _] (resp {:error (ex-message e)})))))
 
+(defn with-endpoint-logging
+  "Tell which endpoint was called when the exception occurred"
+  [handler]
+  (fn [^Exception e data req]
+    (log/error (.getName (.getClass e)) (:type data) "at endpoint"
+               (:request-method req) (:uri req))
+    (handler e data req)))
+
 ;; `bad-request` is currently the most commonly used response we want to return.
 ;; Opiskeluoikeus, oppija, and organisation information are prerequisites for
 ;; many request handlers (e.g., HOKS should always have an existing oppija and
@@ -68,8 +77,9 @@
    ;; server errors in response. We don't need to do audit logging here because
    ;; response validation exception thrown passes through `audit/wrap-logger`
    ;; middleware.
-   ::c-ex/response-validation            (c-ex/with-logging
-                                           c-ex/http-response-handler :error)
+   ::c-ex/response-validation            (with-endpoint-logging
+                                           (c-ex/with-logging
+                                             c-ex/http-response-handler))
 
    ;; We don't need to do audit logging in the handlers below because
    ;; exceptions thrown go through `audit/wrap-logger` middleware.
