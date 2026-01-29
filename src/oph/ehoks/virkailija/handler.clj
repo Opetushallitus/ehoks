@@ -554,7 +554,7 @@
                                   uudelleen lähetykselle"
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
-                        :return (restful/response {:sahkoposti s/Str})
+                        :return (restful/response {:sahkoposti (s/maybe s/Str)})
                         ; NOTE: Kyselylinkit can come from two sources,
                         ; `kyselylinkit` table or `palautteet` table, so there
                         ; can be one or two kyselylinkki for same `:hoks-id` and
