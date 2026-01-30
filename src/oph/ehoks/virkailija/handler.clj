@@ -294,11 +294,6 @@
                                                   opiskeluoikeus-oid)))
         opiskeluoikeus     (koski/get-opiskeluoikeus! opiskeluoikeus-oid)]
     (cond
-      (and (some? opiskeluoikeus) (not (opiskeluoikeus/active? opiskeluoikeus)))
-      (response/forbidden
-        {:error (format "opiskeluoikeus %s is no longer active"
-                        opiskeluoikeus-oid)})
-
       (nil? oppilaitos-oid)
       (response/forbidden {:error (str "Oppilaitos-oid not found. Contact eHOKS"
                                        " support for more information.")})
@@ -308,6 +303,11 @@
                         (get-in request [:session :virkailija-user]))
                       :hoks_delete))
       (response/forbidden {:error "User privileges do not match organisation"})
+
+      (and (some? opiskeluoikeus) (not (opiskeluoikeus/active? opiskeluoikeus)))
+      (response/forbidden
+        {:error (format "opiskeluoikeus %s is no longer active"
+                        opiskeluoikeus-oid)})
 
       :else (do (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
                 (when (nil? opiskeluoikeus)
