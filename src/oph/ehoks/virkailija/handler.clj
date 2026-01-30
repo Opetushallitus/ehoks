@@ -271,19 +271,13 @@
     ::audit/target {:oppilaitos-oid oppilaitos-oid}))
 
 (defn- shallow-delete-hoks-handler!
-  [request hoks-id data]
+  [request hoks-id]
   (let [hoks               (db-hoks/select-hoks-by-id hoks-id)
         opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-        oppilaitos-oid     (or (:oppilaitos-oid data)
-                               (:oppilaitos-oid (oi/get-opiskeluoikeus-by-oid!
-                                                  opiskeluoikeus-oid)))
+        oppilaitos-oid     (:oppilaitos-oid (oi/get-opiskeluoikeus-by-oid!
+                                              opiskeluoikeus-oid))
         opiskeluoikeus     (koski/get-opiskeluoikeus! opiskeluoikeus-oid)]
     (cond
-      (and (some? opiskeluoikeus) (not (opiskeluoikeus/active? opiskeluoikeus)))
-      (response/forbidden
-        {:error (format "opiskeluoikeus %s is no longer active"
-                        opiskeluoikeus-oid)})
-
       (nil? oppilaitos-oid)
       (response/forbidden {:error (str "Oppilaitos-oid not found. Contact eHOKS"
                                        " support for more information.")})
@@ -293,6 +287,11 @@
                         (get-in request [:session :virkailija-user]))
                       :hoks_delete))
       (response/forbidden {:error "User privileges do not match organisation"})
+
+      (and (some? opiskeluoikeus) (not (opiskeluoikeus/active? opiskeluoikeus)))
+      (response/forbidden
+        {:error (format "opiskeluoikeus %s is no longer active"
+                        opiskeluoikeus-oid)})
 
       :else (do (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
                 (when (nil? opiskeluoikeus)
@@ -628,11 +627,13 @@
                         :path-params [hoks-id :- s/Int]
 
                         (c-api/PATCH "/shallow-delete" request
-                          :summary "Asettaa HOKSin
-                              poistetuksi(shallow delete) id:n perusteella."
+                          :summary (str "Asettaa HOKSin poistetuksi "
+                                        "(shallow delete) id:n perusteella. "
+                                        "Vanhaa oppilaitos-oid-parametria "
+                                        "ei enää käytetä.")
                           :body [data hoks-schema/shallow-delete-hoks]
                           :return {:success s/Int}
-                          (shallow-delete-hoks-handler! request hoks-id data)))
+                          (shallow-delete-hoks-handler! request hoks-id)))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
