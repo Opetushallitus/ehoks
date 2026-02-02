@@ -101,4 +101,4 @@
                {:nimi "Opo Ohjaaja"
                 :sahkoposti "opo.ohjaaja@esimerkki.com"
                 :puhelinnumero "0402222222"}))
-        (is (= affected-jakso-ids #{1}))))))
+        (is (= affected-jakso-ids [1]))))))

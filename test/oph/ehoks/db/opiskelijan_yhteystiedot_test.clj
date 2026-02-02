@@ -96,7 +96,7 @@
         (is (nil? (:sahkoposti hoks)))
         (is (= (:puhelinnumero second-hoks) "0401234568"))
         (is (= (:sahkoposti second-hoks) "matti.esimerkki@esimerkki.com"))
-        (is (= affected-hoks-ids #{(:id hoks)}))))))
+        (is (= affected-hoks-ids [(:id hoks)]))))))
 
 (deftest delete-opiskelijan-yhteystiedot-by-jakso-test
   (testing "Opiskelijan yhteystiedot poistetaan yli kolme kuukautta sitten
@@ -113,4 +113,4 @@
             hoks (hoks/get-by-id (:id saved-hoks))]
         (is (nil? (:puhelinnumero hoks)))
         (is (nil? (:sahkoposti hoks)))
-        (is (= affected-hoks-ids #{(:id hoks)}))))))
+        (is (= affected-hoks-ids [(:id hoks)]))))))

@@ -7,6 +7,7 @@
   "Organisaatio-oikeuden schema."
   {:oid s/Str
    :privileges #{s/Keyword}
+   :child-organisations [s/Str]
    :roles #{s/Keyword}})
 
 (s/defschema
