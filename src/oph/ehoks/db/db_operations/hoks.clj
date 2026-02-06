@@ -677,7 +677,7 @@
   [hoks-id]
   (db-ops/update!
     :hoksit {:deleted_at nil :updated_at (java.util.Date.)}
-    [(str "id = ? AND deleted_at IS NOT NULL") hoks-id]
+    ["id = ? AND deleted_at IS NOT NULL" hoks-id]
     (db-ops/get-db-connection)))
 
 (defn delete-opiskeluoikeus-by-oid

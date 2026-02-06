@@ -51,8 +51,7 @@
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
   [{:keys [opiskeluoikeus existing-palaute jakso request-id
-           suoritus koulutustoimija toimipiste niputuspvm]
-    :as ctx}]
+           suoritus koulutustoimija toimipiste niputuspvm]}]
   (let [tjk (:tyopaikalla-jarjestettava-koulutus jakso)
         t-nimi (:tyopaikan-nimi tjk)]
     {:koulutustoimija_oid       koulutustoimija

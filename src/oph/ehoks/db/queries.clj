@@ -42,6 +42,7 @@
 (defmacro defq
   "Automatically create SQL query symbol. If filename is not given query will
    be created of symbol name."
+  {:clj-kondo/lint-as 'clojure.core/def}
   [query-name & filename]
   `(def ~query-name (if (nil? (first (quote ~filename)))
                       (generate-select-by (parse-sql (str (quote ~query-name))))
@@ -49,13 +50,13 @@
 
 (defq select-count-all-hoks "hoksit/select_count_all_hoksit.sql")
 (defq select-hoksit "hoksit/select.sql")
-(defq select-hoksit-by-oppija-oid)
-(defq select-hoksit-by-id)
+(defq select-hoksit-by-oppija-oid nil)
+(defq select-hoksit-by-id nil)
 (defq select-hoksit-by-id-paged "hoksit/select_hoksit_by_id_paged.sql")
 (defq select-hoksit-by-opiskeluoikeus-oid-deleted-at-included
       "hoksit/select_hoksit_by_opiskeluoikeus_oid_deleted_at_included.sql")
-(defq select-hoksit-by-eid)
-(defq select-hoksit-by-opiskeluoikeus-oid)
+(defq select-hoksit-by-eid nil)
+(defq select-hoksit-by-opiskeluoikeus-oid nil)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-hoksit-created-between "hoksit/select_hoksit_created_between.sql")
 (defq select-non-tuva-hoksit-started-between
@@ -89,7 +90,7 @@
       "opiskeluoikeudet/select_count_by_koulutustoimija.sql")
 (defq select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
       "hoksit/select_keskeytymisajanjaksot_by_osaamisen_hankkimistapa_id.sql")
-(defq select-todennettu-arviointi-lisatiedot-by-id)
+(defq select-todennettu-arviointi-lisatiedot-by-id nil)
 (def select-arvioijat-by-todennettu-arviointi-id
   (generate-select-join
     {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
@@ -97,9 +98,9 @@
      :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
-(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
-(defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
-(defq select-hankittavat-koulutuksen-osat-by-hoks-id)
+(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id nil)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id nil)
+(defq select-hankittavat-koulutuksen-osat-by-hoks-id nil)
 (defq select-oppilaitos-oids
       "oppijat/select_oppilaitos_oids.sql")
 (defq select-oppilaitos-oids-by-koulutustoimija-oid
@@ -114,9 +115,9 @@
       "shared_modules/select_by_module_id.sql")
 (defq select-oppija-opiskeluoikeus-for-shared-link
       "shared_modules/select-oppija-opiskeluoikeus-for-shared-link.sql")
-(defq select-hankittavat-paikalliset-tutkinnon-osat-by-module-id)
-(defq select-hankittavat-ammat-tutkinnon-osat-by-module-id)
-(defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id)
+(defq select-hankittavat-paikalliset-tutkinnon-osat-by-module-id nil)
+(defq select-hankittavat-ammat-tutkinnon-osat-by-module-id nil)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id nil)
 (defq select-kyselylinkki
       "hoksit/select_kyselylinkki.sql")
 (defq select-kyselylinkit-by-oppija-oid

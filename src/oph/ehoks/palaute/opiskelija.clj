@@ -71,7 +71,7 @@
 (defn existing-palaute!
   "Returns an existing palaute if one already exists for `kysely-type` and
   for rahoituskausi corresponding to herate date."
-  [{:keys [tx hoks koulutustoimija] :as ctx} kysely-type]
+  [{:keys [tx hoks koulutustoimija]} kysely-type]
   (let [rahoituskausi (palaute/rahoituskausi
                         (get hoks (herate-date-basis kysely-type)))
         kyselytyypit  (case kysely-type
@@ -141,7 +141,7 @@
 
 (defn enrich-ctx!
   "Add information needed by opiskelijapalaute initiation into context."
-  [{:keys [hoks opiskeluoikeus tx] :as ctx} kysely-type]
+  [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type]
   (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
         heratepvm (get hoks (herate-date-basis kysely-type))
         toimija-oppija (str koulutustoimija "/" (:oppija-oid hoks))
@@ -164,7 +164,7 @@
   appropriate DynamoDB table of Herätepalvelu if no check is preventing
   the sending. Returns the initial state of kysely if it was created,
   `nil` otherwise."
-  [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type]
+  [{:keys [hoks] :as ctx} kysely-type]
   (jdbc/with-db-transaction
     [tx db/spec {:isolation :serializable}]
     (let [ctx (enrich-ctx! (assoc ctx :tx tx) kysely-type)
@@ -254,7 +254,7 @@
 (defn build-kyselylinkki-request-body
   "For the given palaute, create Arvo request for creating its kyselylinkki."
   [{:keys [existing-palaute hoks opiskeluoikeus suoritus request-id
-           koulutustoimija toimipiste hk-toteuttaja] :as ctx}]
+           koulutustoimija toimipiste hk-toteuttaja]}]
   (let [heratepvm (:heratepvm existing-palaute)
         alkupvm (greatest heratepvm (date/now))]
     {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
@@ -277,9 +277,8 @@
 
 (defn build-amisherate-record-for-heratepalvelu
   "Turns the information context into AMISherate in heratepalvelu format."
-  [{:keys [existing-palaute hoks koulutustoimija suoritus
-           opiskeluoikeus toimipiste hk-toteuttaja arvo-response
-           request-id] :as ctx}]
+  [{:keys [existing-palaute hoks koulutustoimija suoritus opiskeluoikeus
+           toimipiste hk-toteuttaja arvo-response request-id]}]
   (let [heratepvm (:heratepvm existing-palaute)
         oppija-oid (:oppija-oid hoks)
         rahoituskausi (palaute/rahoituskausi heratepvm)

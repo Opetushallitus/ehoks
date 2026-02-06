@@ -206,9 +206,9 @@
 (defn validate-oppija-ticket
   "Validate oppija cas service ticket"
   [ticket, domain]
-  (let [response (call-cas-oppija-ticket-validation ticket domain)]
-    (let [xml-data (xml/parse-str (:body response))]
-      (convert-oppija-cas-response-data xml-data))))
+  (let [response (call-cas-oppija-ticket-validation ticket domain)
+        xml-data (xml/parse-str (:body response))]
+    (convert-oppija-cas-response-data xml-data)))
 
 (def role-name->privileges
   "Resolves OPH role name to set of eHOKS privileges"
@@ -223,7 +223,7 @@
   "Convert CAS roles to the format used by eHOKS"
   [roles]
   (keep (fn [role]
-          (when-let [[match role-name org-oid] (re-matches ehoks-role-re role)]
+          (when-let [[_ role-name org-oid] (re-matches ehoks-role-re role)]
             {:oid org-oid
              :privileges (or (role-name->privileges role-name) #{})
              :roles (if (= role-name "OPHPAAKAYTTAJA")

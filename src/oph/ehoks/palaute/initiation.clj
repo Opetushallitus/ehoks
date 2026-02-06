@@ -1,14 +1,12 @@
 (ns oph.ehoks.palaute.initiation
-  (:require [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.tyoelama :as tep]
-            [oph.ehoks.utils.date :as date]))
+            [oph.ehoks.palaute.tyoelama :as tep]))
 
 (defn initiate-all-palautteet!
   "Initialise all palautteet (opiskelija & tyoelama) that should be."

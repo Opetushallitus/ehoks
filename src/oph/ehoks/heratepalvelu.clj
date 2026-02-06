@@ -75,7 +75,7 @@
     (log/warn "sync-tpo-nippu!: configured to not do anything")
     (try
       (if (ddb/get-item! :nippu nippu)
-        (log/infof "Nippu already exists:" nippu)
+        (log/info "Nippu already exists:" nippu)
         (sync-tpo-nippu!* nippu))
       (catch Exception e
         (throw (ex-info (str "Failed to sync TPO-nippu to Herätepalvelu: "

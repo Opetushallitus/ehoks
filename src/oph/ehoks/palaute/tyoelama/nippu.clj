@@ -3,7 +3,7 @@
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]))
 
 (defn build-tpo-nippu-for-heratepalvelu
-  [{:keys [jakso suoritus koulutustoimija niputuspvm] :as ctx}]
+  [{:keys [jakso suoritus koulutustoimija niputuspvm]}]
   {:pre [(:tyopaikalla-jarjestettava-koulutus jakso)]}
   (let [tutkinto           (suoritus/tutkintotunnus suoritus)
         tjk                (:tyopaikalla-jarjestettava-koulutus jakso)

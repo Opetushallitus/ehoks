@@ -69,7 +69,7 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [jakso existing-palaute] :as ctx} kysely-type]
+  [{:keys [jakso existing-palaute] :as ctx} _]
   (cond
     (not (palaute/nil-or-unhandled? existing-palaute))
     [nil :yksiloiva-tunniste :jo-lahetetty]

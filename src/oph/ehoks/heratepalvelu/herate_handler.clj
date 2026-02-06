@@ -8,7 +8,6 @@
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
-            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema.oid :as oid-schema]

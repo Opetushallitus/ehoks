@@ -7,19 +7,16 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.external.cache :as c]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema.oid :as oid-schema]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.schema :as virkailija-schema]
             [ring.util.http-response :as response]
-            [schema.core :as s])
-  (:import (java.time LocalDate)))
+            [schema.core :as s]))
 
 (def routes
   "System handlerin reitit"

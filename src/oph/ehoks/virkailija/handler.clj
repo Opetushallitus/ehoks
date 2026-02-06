@@ -98,9 +98,7 @@
                                   :virkailija-user
                                   :oidHenkilo])
                  (:oppija-oid hoks))
-      (response/forbidden!
-        {:error
-         (str "User has unsufficient privileges")}))))
+      (response/forbidden! {:error "User has unsufficient privileges"}))))
 
 (defn- any-hoks-has-active-opiskeluoikeus?
   "Check if any of the HOKSes has an active opiskeluoikeus"
