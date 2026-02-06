@@ -81,11 +81,10 @@ Staattiset linterit ajetaan:
 lein checkall
 ```
 
-tämä ajaa Kibit, Bikeshed, Eastwood ja cljfmt kerralla. Jokainen työkalu on
+tämä ajaa Bikeshed, Eastwood ja cljfmt kerralla. Jokainen työkalu on
 ajettavissa myös erikseen:
 
 ``` shell
-lein kibit
 lein bikeshed
 lein eastwood
 lein cljfmt check
