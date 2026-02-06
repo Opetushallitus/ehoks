@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>b8b8408d8ac97eb2099d65c2c1fe622769921940</tag>
+    <tag>64f9de0907e6090f70336fa7c355acbf97146e87</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -470,6 +470,17 @@
         <version>1.7.12</version>
       </dependency>
       <dependency>
+        <groupId>clj-kondo</groupId>
+        <artifactId>clj-kondo</artifactId>
+        <version>2026.01.19</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.clojure</groupId>
         <artifactId>tools.reader</artifactId>
         <version>1.5.0</version>
@@ -601,6 +612,11 @@
     <dependency>
       <groupId>camel-snake-kebab</groupId>
       <artifactId>camel-snake-kebab</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>clj-kondo</groupId>
+      <artifactId>clj-kondo</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

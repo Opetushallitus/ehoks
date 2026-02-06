@@ -104,6 +104,7 @@
                                                                 org.clojure/java.classpath]]
                          [camel-snake-kebab "0.4.3"]
                          [org.mozilla/rhino "1.7.12"]
+                         [clj-kondo "2026.01.19" :exclusions [org.ow2.asm/asm]]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.5.0"]
@@ -139,6 +140,7 @@
                         ["bikeshed"]
                         ["eastwood"]
                         ["cljfmt" "check"]]
+            "clj-kondo" ["run" "-m" "clj-kondo.main"]
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
@@ -148,7 +150,8 @@
   :eastwood {}
   :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
                     :dependencies [[ring/ring-mock]
-                                   [ring/ring-devel]]
+                                   [ring/ring-devel]
+                                   [clj-kondo]]
                     :env {:config "oph-configuration/test.edn"
                           :aws-region "eu-west-1"
                           :aws-endpoint-url "http://localhost:18000"}}
