@@ -1,8 +1,5 @@
 (ns oph.ehoks.user-test
   (:require [clojure.test :as t :refer [deftest is testing]]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.user :as user]
             [oph.ehoks.test-utils :as test-utils :refer [eq]]))
 

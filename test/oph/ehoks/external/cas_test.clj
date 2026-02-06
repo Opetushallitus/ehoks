@@ -1,6 +1,5 @@
 (ns oph.ehoks.external.cas-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [clojure.string :as s]
             [oph.ehoks.external.cas :as c]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
@@ -32,15 +31,14 @@
 
   (testing "Refresh grant ticket unsuccessfully (404)"
     (reset! c/grant-ticket {:url nil :expires nil})
-    (client/set-post! (fn [_ options]
+    (client/set-post! (fn [_ __]
                         (throw (ex-info "HTTP Exception" {:status 404}))))
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           #"HTTP Exception"
                           (c/refresh-grant-ticket!))))
   (testing "Refresh grant ticket unsuccessfully (missing location header)"
     (reset! c/grant-ticket {:url nil :expires nil})
-    (client/set-post! (fn [_ options]
-                        {:status 201}))
+    (client/set-post! (fn [_ __] {:status 201}))
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           #"Failed to refresh CAS Service Ticket"
                           (c/refresh-grant-ticket!)))))
@@ -57,7 +55,7 @@
 
 (deftest test-add-cas-ticket
   (testing "Add service ticket successfully"
-    (client/set-post! (fn [_ options] {:body "test-ticket"}))
+    (client/set-post! (fn [_ __] {:body "test-ticket"}))
 
     (reset! c/grant-ticket {:url "http://ticket.url"
                             :expires (.plusSeconds (Instant/now) 7200)})

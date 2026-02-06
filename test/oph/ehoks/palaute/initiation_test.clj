@@ -19,7 +19,7 @@
 (deftest test-missing-opiskeluoikeus-reinit-palautteet-for-uninitiated-hokses!
   (hoks/save! hoks-test/hoks-1)
   (testing "palaute reinitiation succeeds with missing opiskeluoikeus"
-    (with-redefs [koski/get-opiskeluoikeus! (fn [oid] nil)
+    (with-redefs [koski/get-opiskeluoikeus! (fn [_] nil)
                   date/now (constantly (LocalDate/of 2021 7 1))]
       (init/reinit-palautteet-for-uninitiated-hokses! 2)
       (is (= (->> {:hoks-id (:id hoks-test/hoks-1)

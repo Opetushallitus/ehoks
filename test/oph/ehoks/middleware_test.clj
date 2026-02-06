@@ -18,8 +18,7 @@
         (fn [e]
           (async/go (async/>! c {:exception e})))))
     (let [result (async/<!! c)]
-      (when-let [e (:exception result)]
-        (throw (:exception result)))
+      (when-let [e (:exception result)] (throw e))
       result)))
 
 (defn- get-cookie [app]

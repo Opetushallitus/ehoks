@@ -816,7 +816,7 @@
       ["1.2.246.562.10.22222222220"
        (fn [_ ^String url __]
          (cond
-           (> (.indexOf url (str "slaves")) -1)
+           (> (.indexOf url "slaves") -1)
            onr-slaves-data
            (> (.indexOf url (str "oppijanumerorekisteri-service"
                                  "/henkilo"

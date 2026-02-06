@@ -1,8 +1,8 @@
 (ns oph.ehoks.palaute.handler-test
-  (:require [clojure.string :as string]
-            [clojure.test :refer [use-fixtures deftest testing is]]
+  (:require [clojure.test :refer [use-fixtures deftest testing is]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
+            [oph.ehoks.external.cas]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]

@@ -1,5 +1,6 @@
 (ns oph.ehoks.palaute.tyoelama-test
   (:require [clojure.set :as s]
+            [clojure.data]
             [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
             [medley.core :refer [find-first remove-vals]]
@@ -421,7 +422,7 @@
                        (->> (remove-vals nil?)))
               expected (build-expected-herate test-jakso hoks-test/hoks-1)]
           (is (= real expected)
-              ["diff: " (clojure.data/diff real expected)]))
+              (str "diff: " (clojure.data/diff real expected))))
         (let [tapahtumat (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                            db/spec
                            {:hoks-id      (:id hoks-test/hoks-1)
@@ -523,7 +524,7 @@
                        (->> (remove-vals nil?)))
               expected (build-expected-herate jakso hoks-test/hoks-1)]
           (is (= real expected)
-              ["diff: " (clojure.data/diff real expected)]))))))
+              (str "diff: " (clojure.data/diff real expected))))))))
 
 (defn clear-ddb-jakso-table! []
   (doseq [jakso (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})]
@@ -614,7 +615,7 @@
                (set (map :tunnus ddb-jaksot))))
         (doseq [jakso ddb-jaksot]
           (is (every? some? (map #(get jakso %) required-jakso-keys))
-              (map #(vector % (get jakso %)) required-jakso-keys))
+              (str (map #(vector % (get jakso %)) required-jakso-keys)))
           (is (empty? (s/difference
                         (set (keys jakso))
                         (set (concat required-jakso-keys
@@ -705,11 +706,10 @@
                       "No call to Arvo should be made.")
           (with-redefs
            [koski/get-opiskeluoikeus-info-raw
-            (fn [oid]
-              (throw (ex-info
-                       "Koski error"
-                       {:status 500
-                        :type   ::koski/opiskeluoikeus-fetching-error})))]
+            (fn [_] (throw (ex-info
+                             "Koski error"
+                             {:status 500
+                              :type ::koski/opiskeluoikeus-fetching-error})))]
             (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
           (check-current-state-is-same-as-initial-state))

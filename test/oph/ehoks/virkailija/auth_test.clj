@@ -14,7 +14,7 @@
 (defn create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
 
-(defn ticket-response [^String url options]
+(defn ticket-response [^String url _]
   (if (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
     {:status 200
      :body [{:oidHenkilo "1.2.246.562.24.11474338834"
@@ -46,7 +46,7 @@
           "</cas:authenticationSuccess>"
           "</cas:serviceResponse>")}))
 
-(defn invalid-ticket-response [url options]
+(defn invalid-ticket-response [_ options]
   {:status 200
    :body
    (format
@@ -58,7 +58,7 @@
        "</cas:serviceResponse>\n")
      (get-in options [:query-params :ticket]))})
 
-(defn create-ticket-response [url _]
+(defn create-ticket-response [_ __]
   {:status 201
    :headers {"location" "http://test.ticket/1234"}})
 

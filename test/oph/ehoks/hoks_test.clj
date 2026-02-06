@@ -211,9 +211,8 @@
 
   (testing
    "Handles missing osa-alueet in `:hankittavat-yhteiset-tutkinnon-osat`"
-    (let [hoks {:hankittavat-yhteiset-tutkinnon-osat [{:id 1}]}]
-      (are [hytot] (= (hoks/tutkinnon-osat
-                        {:hankittavat-yhteiset-tutkinnon-osat hytot}) [])
-        [{:id 1}]
-        [{:id 1 :osa-alueet nil}]
-        [{:id 1 :osa-alueet []}]))))
+    (are [hytot] (= (hoks/tutkinnon-osat
+                      {:hankittavat-yhteiset-tutkinnon-osat hytot}) [])
+      [{:id 1}]
+      [{:id 1 :osa-alueet nil}]
+      [{:id 1 :osa-alueet []}])))

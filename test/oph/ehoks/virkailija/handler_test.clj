@@ -6,6 +6,9 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.postgresql.common]
+            [oph.ehoks.external.arvo]
+            [oph.ehoks.external.aws-sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
@@ -70,7 +73,7 @@
 (defn with-test-virkailija
   ([request virkailija]
     (client/with-mock-responses
-      [(fn [^String url options]
+      [(fn [^String url _]
          (cond
            (.contains
              url "/rest/organisaatio/v4/")
@@ -181,7 +184,7 @@
            {:status 200
             :body {:oidHenkilo "1.2.246.562.24.12000000014"
                    :duplicate true}}))
-       (fn [^String url options]
+       (fn [^String url _]
          (cond
            (.endsWith url "/v1/tickets")
            {:status 201
@@ -562,7 +565,7 @@
   (t/testing "Virkailija has oppija access"
     (test-utils/with-db
       (client/with-mock-responses
-        [(fn [^String url options]
+        [(fn [^String url _]
            (cond
              (.contains
                url "/rest/organisaatio/v4/")
@@ -846,7 +849,7 @@
                                 :yksiloiva-tunniste])))
           (t/is (get-in body [:data :manuaalisyotto])))))))
 
-(defn mocked-get-opiskeluoikeus-info-raw [oid]
+(defn mocked-get-opiskeluoikeus-info-raw [_]
   (throw
     (ex-info
       "Opiskeluoikeus fetch failed"

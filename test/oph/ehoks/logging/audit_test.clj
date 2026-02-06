@@ -78,8 +78,8 @@
   (testing "Value is removed when new value is `nil`"
     (are [old] (get (first (#'a/changes old nil)) "oldValue")
       1 "a" true {:a 1} [0 1]))
-  (testing (str "Value is replaced when the old and the new value are unequal
-                but both are not maps or vectors.")
+  (testing (str "Value is replaced when the old and the new value are unequal"
+                "but both are not maps or vectors.")
     (are [old new] (as-> (#'a/changes old new) c
                      (first c)
                      (and (= (get c "oldValue") old)

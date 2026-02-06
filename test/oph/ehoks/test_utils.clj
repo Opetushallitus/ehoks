@@ -18,7 +18,7 @@
 (defn authenticate
   ([app oppija-oid]
     (client/with-mock-responses
-      [(fn [^String url options]
+      [(fn [^String url _]
          (cond
            (.endsWith url "/serviceValidate")
            {:status 200
@@ -46,7 +46,7 @@
                    :etunimet "Aarto Maurits"
                    :kutsumanimi "Aarto"
                    :sukunimi "Väisänen-perftest"}}))
-       (fn [^String url options]
+       (fn [^String url _]
          (cond
            (.endsWith url "/v1/tickets")
            {:status 201
@@ -248,7 +248,7 @@
                                                :en "TestiEn"}}
                            :alkamispäivä "2020-03-12"}]}]))}))))
     (client/set-get!
-      (fn [^String url options]
+      (fn [^String url _]
         (cond (.endsWith url "/serviceValidate")
               {:status 200
                :body

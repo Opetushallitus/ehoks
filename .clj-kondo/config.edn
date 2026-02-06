@@ -1,10 +1,12 @@
 {:linters
  {:unresolved-var
   {:exclude [oph.ehoks.palaute
+             oph.ehoks.palaute.tapahtuma
              ring.util.http-response
              com.rpl.specter]}
   :unresolved-symbol
-  {:exclude [(compojure.api.sweet/context
+  {:exclude [(oph.ehoks.hoks.hoks-test-utils/with-hoks-and-app [hoks app])
+             (compojure.api.sweet/context
                [caller-id ticket oid hoks-id oppija-oid])
              (compojure.api.sweet/GET)
              (compojure.api.sweet/PUT)

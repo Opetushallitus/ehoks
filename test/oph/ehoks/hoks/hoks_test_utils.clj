@@ -5,8 +5,6 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.utils.date :as date]
             [oph.ehoks.test-utils :as test-utils :refer [eq]])

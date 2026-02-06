@@ -5,7 +5,6 @@
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.koski-test :as koski-test]
-            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.palaute :as palaute]

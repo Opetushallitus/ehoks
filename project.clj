@@ -140,7 +140,7 @@
               :html? false}
   :aliases {"checkall" ["with-profile" "+test" "do"
                         ["bikeshed"]
-                        ["clj-kondo" "--lint" "src/"]
+                        ["clj-kondo" "--lint" "src/" "test/"]
                         ["cljfmt" "check"]]
             "clj-kondo" ["run" "-m" "clj-kondo.main"]
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
