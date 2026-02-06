@@ -116,7 +116,6 @@
                          [io.aviso/pretty "1.4.4"]
                          [instaparse "1.5.0"]]
   :plugins [[lein-cljfmt "0.6.6" :exclusions [org.clojure/tools.cli]]
-            [jonase/eastwood "1.4.2"]
             [lein-bikeshed "0.5.2"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.7.0"]
@@ -141,7 +140,7 @@
               :html? false}
   :aliases {"checkall" ["with-profile" "+test" "do"
                         ["bikeshed"]
-                        ["eastwood"]
+                        ["clj-kondo" "--lint" "src/"]
                         ["cljfmt" "check"]]
             "clj-kondo" ["run" "-m" "clj-kondo.main"]
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
@@ -150,7 +149,6 @@
             "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]
             "carve" ["run" "-m" "carve.main"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :eastwood {}
   :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
                     :dependencies [[ring/ring-mock]
                                    [ring/ring-devel]
