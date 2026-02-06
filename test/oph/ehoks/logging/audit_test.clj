@@ -2,8 +2,7 @@
   (:require [clojure.data.json :as json]
             [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [matches with-log]]
-            [oph.ehoks.hoks.hoks-parts.parts-test-data
-             :refer [ahato-data multiple-ahato-values-patched]]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :refer [ahato-data]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.logging.audit :as a]
             [oph.ehoks.test-utils :as test-utils]))

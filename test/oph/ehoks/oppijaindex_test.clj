@@ -181,24 +181,6 @@
           :kutsumanimi "Tero"
           :sukunimi "Testaaja-Paivitetty"}})
 
-(def tila-data
-  {:opiskeluoikeusjaksot
-   [{:alku "2018-01-01"
-     :tila {:koodiarvo "eronnut"
-            :nimi {:fi "Eronnut"}
-            :koodistoUri "koskiopiskeluoikeudentila"
-            :koodistoVersio 1}}
-    {:alku "2019-01-01"
-     :tila {:koodiarvo "lasna"
-            :nimi {:fi "Läsnä"}
-            :koodistoUri "koskiopiskeluoikeudentila"
-            :koodistoVersio 1}}
-    {:alku "2020-01-01"
-     :tila {:koodiarvo "lasna"
-            :nimi {:fi "Läsnä"}
-            :koodistoUri "koskiopiskeluoikeudentila"
-            :koodistoVersio 1}}]})
-
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111110"

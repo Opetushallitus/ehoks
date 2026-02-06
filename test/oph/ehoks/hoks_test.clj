@@ -156,9 +156,6 @@
           :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                   "Vuoronvaihdon tarkistukset"]}}]}]}]})
 
-(def hoks-2
-  (dissoc hoks-1 :osaamisen-hankkimisen-tarve :osaamisen-saavuttamisen-pvm))
-
 (def hoks-3
   {:id                          12346
    :oppija-oid                  "1.2.246.562.24.12312312319"

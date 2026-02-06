@@ -4,7 +4,7 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.user :as user]
-            [oph.ehoks.test-utils :as test-utils :refer [eq with-db]]))
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]))
 
 (t/use-fixtures :once test-utils/migrate-database)
 

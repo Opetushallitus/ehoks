@@ -379,12 +379,6 @@
                      osa-alueet))
                  (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
 
-(defn get-with-hankittavat-koulutuksen-osat!
-  [hoks-id]
-  (assoc (db-hoks/select-hoks-by-id hoks-id)
-         :hankittavat-koulutuksen-osat
-         (ha/get-hankittavat-koulutuksen-osat hoks-id)))
-
 (defn- ensure-yksiloiva-tunniste-in-ohts
   "If the given data structure has an :osaamisen-hankkimistavat key,
   adds an :yksiloiva-tunniste to all its children where it's missing."

@@ -14,19 +14,6 @@
 
 (use-fixtures :each with-reset-cas)
 
-(def example-responses
-  {"https://some.url/"
-   {:status 200
-    :body {}
-    :timestamp (Instant/now)}
-   "https://someother.url/"
-   {:status 200
-    :body {}
-    :timestamp
-    (.minusSeconds
-      (Instant/now)
-      (* 60 (inc (:ext-cache-lifetime-minutes config))))}})
-
 (deftest test-refresh-grant-ticket
   (testing "Refresh grant ticket successfully"
     (reset! c/grant-ticket {:url nil :expires nil})

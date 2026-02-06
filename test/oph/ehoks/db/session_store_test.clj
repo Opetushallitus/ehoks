@@ -1,6 +1,5 @@
 (ns oph.ehoks.db.session-store-test
-  (:require [ring.middleware.session.store :refer [SessionStore]]
-            [oph.ehoks.db.session-store :as sut]
+  (:require [oph.ehoks.db.session-store :as sut]
             [clojure.test :as t]
             [oph.ehoks.test-utils :as test-utils]))
 

@@ -4,7 +4,7 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.test-utils :as test-utils :refer [parse-body with-db]]
+            [oph.ehoks.test-utils :as test-utils :refer [with-db]]
             [ring.mock.request :as mock]
             [oph.ehoks.db.session-store :as store]))
 
