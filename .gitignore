@@ -6,6 +6,8 @@
 /.nrepl-port
 /.eastwood
 /checkouts
+/.clj-kondo/.cache
+/.clj-kondo/inline-configs
 /classes
 /lib
 /myenv
