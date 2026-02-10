@@ -5,7 +5,7 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]])
   (:import (org.postgresql.util PGobject)
-           (java.sql PreparedStatement ParameterMetaData)))
+           (java.sql PreparedStatement)))
 
 (extend-protocol jdbc/ISQLValue
   java.time.LocalDate
