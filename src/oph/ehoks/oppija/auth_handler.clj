@@ -53,9 +53,9 @@
 (defn- respond-with-failed-authentication
   "Send unauthorized response when authentication has failed"
   [cas-ticket-validation-result]
-  (do (log/warnf "Ticket validation failed: %s"
-                 (:error cas-ticket-validation-result))
-      (response/unauthorized {:error "Invalid ticket"})))
+  (log/warnf "Ticket validation failed: %s"
+             (:error cas-ticket-validation-result))
+  (response/unauthorized {:error "Invalid ticket"}))
 
 (def routes
   "Oppija auth handler routes"

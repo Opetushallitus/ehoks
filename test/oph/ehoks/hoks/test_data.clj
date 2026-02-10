@@ -112,25 +112,6 @@
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
 
-(def hoks-data-without-osa-aikaisuus
-  {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
-   :oppija-oid "1.2.246.562.24.12312312319"
-   :ensikertainen-hyvaksyminen "2018-12-15"
-   :osaamisen-hankkimisen-tarve false
-   :osaamisen-saavuttamisen-pvm "2020-10-22"
-   :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
-   :versio 4
-   :sahkoposti "testi@gmail.com"
-   :opiskeluvalmiuksia-tukevat-opinnot [parts-test-data/oto-data]
-   :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data-wo-osa-aikaisuus]
-   :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
-   :hankittavat-yhteiset-tutkinnon-osat
-   [parts-test-data/hyto-data-wo-osa-aikaisuus]
-   :hankittavat-koulutuksen-osat []
-   :aiemmin-hankitut-ammat-tutkinnon-osat [parts-test-data/ahato-data]
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
-
 (def new-hoks-with-valid-osa-aikaisuus
   {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
    :oppija-oid "1.2.246.562.24.12312312319"
@@ -297,14 +278,3 @@
          :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
                                          {:nimi "Organisaation name"}}]
          :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toka"]}]}]}]})
-
-(def hoks-with-updated-hankittavat-koulutuksen-osat
-  {:id 1
-   :ensikertainen-hyvaksyminen "2018-12-15"
-   :osaamisen-hankkimisen-tarve false
-   :hankittavat-koulutuksen-osat
-   [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"
-     :koulutuksen-osa-koodi-versio 1
-     :alku "2022-09-01"
-     :loppu "2022-09-21"
-     :laajuus 10.4}]})

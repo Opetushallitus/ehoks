@@ -76,8 +76,8 @@
                       {:opiskeluoikeus-oid "1.2.246.562.15.23456789017"})))
           (is (logged? 'oph.ehoks.palaute
                        :warn #"Enemmän kuin yksi linkitetty")))))
-    (testing (str "The function retuns hankintakolutus when there is exactly one
-                  opiskeluoikeus linked to given HOKS.")
+    (testing (str "The function retuns hankintakolutus when there is "
+                  "exactly one opiskeluoikeus linked to given HOKS.")
       (is (= (palaute/hankintakoulutuksen-toteuttaja!
                {:opiskeluoikeus-oid "1.2.246.562.15.34567890123"})
              "1.2.246.562.10.34567890123")))))

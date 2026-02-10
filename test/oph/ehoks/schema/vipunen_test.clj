@@ -1,5 +1,5 @@
 (ns oph.ehoks.schema.vipunen-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing]]
             [schema.utils :as s-utils]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.hoks.schema :refer [vipunen-hoks-coercer]]

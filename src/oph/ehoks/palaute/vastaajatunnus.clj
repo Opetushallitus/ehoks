@@ -62,7 +62,7 @@
         tunnus-cleanup-handler
         (if (:jakson-yksiloiva-tunniste existing-palaute)
           arvo/delete-jaksotunnus arvo/delete-kyselytunnus)]
-    (log/infof ex "Handling exception in tunnus handling")
+    (log/info ex "Handling exception in tunnus handling")
     (when (and tunnus (not (.startsWith ^String tunnus "<dummy-")))
       (try
         (log/infof "Trying to delete vastaajatunnus `%s` from Arvo" tunnus)
@@ -176,7 +176,7 @@
 (defn create-and-save-tunnus!
   "Create and save vastaajatunnus for given palaute context."
   [{:keys [existing-palaute] :as ctx}
-   {:keys [arvo-builder arvo-caller] :as handlers}]
+   {:keys [arvo-builder arvo-caller]}]
   (log/info "Calling arvo for palaute" (:id existing-palaute)
             "of type" (:kyselytyyppi existing-palaute)
             "of HOKS" (:hoks-id existing-palaute))
@@ -200,8 +200,7 @@
 (defn sync-to-heratepalvelu!
   "Replicate information about just formed vastaajatunnus to heratepalvelu."
   [{:keys [existing-palaute arvo-tunnus] :as ctx}
-   {:keys [heratepalvelu-builder heratepalvelu-caller extra-handlers]
-    :as handlers}]
+   {:keys [heratepalvelu-builder heratepalvelu-caller extra-handlers]}]
   (log/info "Replicating palaute" (:id existing-palaute) "to herätepalvelu")
   (try
     (heratepalvelu-caller (heratepalvelu-builder ctx))

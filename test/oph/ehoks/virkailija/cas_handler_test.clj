@@ -4,7 +4,7 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.test-utils :as test-utils :refer [parse-body with-db]]
+            [oph.ehoks.test-utils :as test-utils :refer [with-db]]
             [ring.mock.request :as mock]
             [oph.ehoks.db.session-store :as store]))
 
@@ -15,7 +15,7 @@
 (defn- create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
 
-(defn- ticket-response [^String url options]
+(defn- ticket-response [^String url _]
   (if (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
     {:status 200
      :body [{:oidHenkilo "1.2.246.562.24.11474338834"
@@ -47,7 +47,7 @@
           "</cas:authenticationSuccess>"
           "</cas:serviceResponse>")}))
 
-(defn- create-ticket-response [url _]
+(defn- create-ticket-response [_ __]
   {:status 201
    :headers {"location" "http://test.ticket/1234"}})
 

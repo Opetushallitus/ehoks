@@ -108,24 +108,22 @@
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                      :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
-                     :osaamisen-hankkimisen-tarve false}]
-      (let [response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (test-utils/parse-body (:body response))]
-        (is (= (:status response) 200))
-        (eq body
-            {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
-        (let [hoks
-              (-> (get-in body [:data :uri])
-                  hoks-utils/get-authenticated :data)]
-          (is (= (count (:eid hoks)) 36))
-          (eq
-            hoks
+                     :osaamisen-hankkimisen-tarve false}
+          response (hoks-utils/mock-st-post
+                     (hoks-utils/create-app nil) base-url hoks-data)
+          body (test-utils/parse-body (:body response))]
+      (is (= (:status response) 200))
+      (eq body
+          {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
+      (let [hoks
+            (-> (get-in body [:data :uri])
+                hoks-utils/get-authenticated :data)]
+        (is (= (count (:eid hoks)) 36))
+        (eq hoks
             (assoc (add-empty-hoks-values hoks-data)
                    :id 1
                    :eid (:eid hoks)
-                   :manuaalisyotto false)))))))
+                   :manuaalisyotto false))))))
 
 (deftest creating-tuva-hoks-does-not-trigger-heratepalvelu
   (testing "Creating TUVA hoks does not trigger heratepalvelu"
@@ -161,8 +159,7 @@
   (testing "Create new hoks with valid osa-aikaisuustieto"
     (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
           response  (hoks-utils/mock-st-post
-                      (hoks-utils/create-app nil) base-url hoks-data)
-          body      (test-utils/parse-body (:body response))]
+                      (hoks-utils/create-app nil) base-url hoks-data)]
       (is (= (:status response) 200)))))
 
 (deftest create-new-hoks-without-osa-aikaisuus
@@ -550,7 +547,7 @@
 (deftest non-service-user-test
   (testing "Deny access from non-service user"
     (client/with-mock-responses
-      [(fn [^String url options]
+      [(fn [^String url _]
          (cond (.endsWith
                  url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
                {:status 200
@@ -584,7 +581,7 @@
                         [{:organisaatioOid "1.2.246.562.10.12944436166"
                           :kayttooikeudet [{:palvelu "EHOKS"
                                             :oikeus "CRUD"}]}]}]}))
-       (fn [^String url options]
+       (fn [^String url _]
          (cond
            (.endsWith url "/v1/tickets")
            {:status 201
@@ -614,8 +611,7 @@
                    :osaamisen-hankkimisen-tarve true
                    :ensikertainen-hyvaksyminen "2018-12-15"}
         app (hoks-utils/create-app nil)
-        hoks-resp (hoks-utils/mock-st-post
-                    app base-url hoks-data)
+        _ (hoks-utils/mock-st-post app base-url hoks-data)
         req (mock/request
               :post
               (str base-url "/1/kyselylinkki"))
@@ -639,8 +635,7 @@
                    :osaamisen-hankkimisen-tarve true
                    :ensikertainen-hyvaksyminen "2018-12-15"}
         app (hoks-utils/create-app nil)
-        hoks-resp (hoks-utils/mock-st-post
-                    app base-url hoks-data)
+        _ (hoks-utils/mock-st-post app base-url hoks-data)
         req1 (mock/request
                :post
                (str base-url "/1/kyselylinkki"))

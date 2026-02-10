@@ -2,8 +2,7 @@
   (:require [clojure.string :as string]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.oppijaindex :as oi]
-            [clojure.tools.logging :as log]))
+            [oph.ehoks.oppijaindex :as oi]))
 
 (defn oph-super-user?
   "Is user OPH ehoks super user"

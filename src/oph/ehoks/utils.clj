@@ -67,7 +67,7 @@
 (defn remove-nils
   "Return same map, but without keys pointing to nil values"
   [m]
-  (into {} (filter (fn [[k v]] (some? v)) m)))
+  (into {} (filter (fn [[_ v]] (some? v)) m)))
 
 (defn get-in-and-propagate-fields
   "Hakee tietorakenteesta tietyn (listamuotoisen) kentän ja lisää

@@ -140,7 +140,7 @@
 (defn convert-sql
   "Handle removals and replacements in maps."
   [m {removals :removals replaces :replaces
-      :or {removals [] replaces {}}, :as operations}]
+      :or {removals [] replaces {}}}]
   (as-> m x
     (reduce
       (fn [c [kss kst]]

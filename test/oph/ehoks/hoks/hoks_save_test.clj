@@ -391,10 +391,8 @@
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
-    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          ppto-col
-          (ha/save-hankittavat-paikalliset-tutkinnon-osat!
-            (:id hoks) hpto-data)]
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
+      (ha/save-hankittavat-paikalliset-tutkinnon-osat! (:id hoks) hpto-data)
       (eq (test-utils/dissoc-module-ids
             (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
           (test-utils/dissoc-module-ids hpto-data)))))
@@ -467,8 +465,8 @@
 (deftest empty-values-test
   (testing "DB handling of empty values"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          ahato (db-ah/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
-                  {:hoks-id (:id hoks)})
+          _ (db-ah/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
+              {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
       (eq (test-utils/dissoc-module-ids
@@ -706,7 +704,7 @@
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus! (fn [oid] oo-test/opiskeluoikeus-1)
+                    k/get-opiskeluoikeus! (fn [_] oo-test/opiskeluoikeus-1)
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]

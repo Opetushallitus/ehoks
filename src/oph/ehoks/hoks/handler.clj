@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.handler
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
+            [clojure.set]
             [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
             [oph.ehoks.db :as db]

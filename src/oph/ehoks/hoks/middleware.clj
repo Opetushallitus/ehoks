@@ -1,6 +1,5 @@
 (ns oph.ehoks.hoks.middleware
   (:require [clojure.tools.logging :as log]
-            [medley.core :refer [find-first]]
             [oph.ehoks.user :as user]
             [ring.util.http-response :as response]))
 

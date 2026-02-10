@@ -72,6 +72,13 @@ tags::
 	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' \
 		--exclude='myenv' .
 
+stamps/setup-clj-kondo:
+	mkdir -p .clj-kondo
+	lein clj-kondo --lint "$$(lein classpath)" --dependencies \
+		--copy-configs --skip-lint
+	lein clj-kondo --lint "$$(lein classpath)" --dependencies --parallel
+	touch $@
+
 pom.xml::
 	lein pom
 	sed -i -e '1s/^/<!-- Snyk uses pom.xml for analysis. -->\n/' \

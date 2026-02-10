@@ -1,6 +1,5 @@
 (ns oph.ehoks.virkailija.virkailija-test-utils
-  (:require [clojure.test :refer :all]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]
+  (:require [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 

@@ -1,5 +1,5 @@
 (ns oph.ehoks.opiskeluoikeus.suoritus-test
-  (:require [clojure.test :refer [are deftest is testing use-fixtures]]
+  (:require [clojure.test :refer [deftest is testing]]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus])
   (:import (java.time LocalDate)))
 

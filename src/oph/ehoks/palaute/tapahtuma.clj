@@ -3,6 +3,7 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.utils :as utils]))
 
+(declare insert!)
 (hugsql/def-db-fns "oph/ehoks/db/sql/palautetapahtuma.sql")
 
 (defn build
@@ -12,7 +13,7 @@
   ([ctx state reason lisatiedot]
     (build ctx state reason lisatiedot nil))
 
-  ([{:keys [tapahtumatyyppi existing-palaute request-id] :as ctx}
+  ([{:keys [tapahtumatyyppi existing-palaute request-id]}
     state reason lisatiedot palaute]
     {:pre [(some? tapahtumatyyppi) (some? state)]}
     {:palaute-id      (or (:id palaute) (:id existing-palaute))

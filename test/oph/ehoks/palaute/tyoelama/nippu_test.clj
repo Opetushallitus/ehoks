@@ -1,5 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama.nippu-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest]]
             [oph.ehoks.test-utils :as util]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu])
   (:import [java.time LocalDate]))
