@@ -249,7 +249,7 @@
   (let [user       (get-in request [:session :virkailija-user])
         oppilaitos (organisaatio/get-organisaatio! oppilaitos-oid)]
     (try (cheshire/parse-string tutkinto)
-         (catch com.fasterxml.jackson.core.JsonParseException e
+         (catch com.fasterxml.jackson.core.JsonParseException _
            (response/bad-request!
              {:error "`tutkinto` must be a JSON object."})))
     (assoc
