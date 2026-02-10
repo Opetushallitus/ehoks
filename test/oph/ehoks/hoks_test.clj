@@ -156,9 +156,6 @@
           :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                   "Vuoronvaihdon tarkistukset"]}}]}]}]})
 
-(def hoks-2
-  (dissoc hoks-1 :osaamisen-hankkimisen-tarve :osaamisen-saavuttamisen-pvm))
-
 (def hoks-3
   {:id                          12346
    :oppija-oid                  "1.2.246.562.24.12312312319"
@@ -214,9 +211,8 @@
 
   (testing
    "Handles missing osa-alueet in `:hankittavat-yhteiset-tutkinnon-osat`"
-    (let [hoks {:hankittavat-yhteiset-tutkinnon-osat [{:id 1}]}]
-      (are [hytot] (= (hoks/tutkinnon-osat
-                        {:hankittavat-yhteiset-tutkinnon-osat hytot}) [])
-        [{:id 1}]
-        [{:id 1 :osa-alueet nil}]
-        [{:id 1 :osa-alueet []}]))))
+    (are [hytot] (= (hoks/tutkinnon-osat
+                      {:hankittavat-yhteiset-tutkinnon-osat hytot}) [])
+      [{:id 1}]
+      [{:id 1 :osa-alueet nil}]
+      [{:id 1 :osa-alueet []}])))

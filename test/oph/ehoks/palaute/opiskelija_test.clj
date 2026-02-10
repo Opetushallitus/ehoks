@@ -479,7 +479,7 @@
                (map (juxt :tila :kyselytyyppi) heratteet))))
       (testing "Arvo call for amispalaute is done"
         (client/set-post!
-          (fn [^String url options]
+          (fn [^String url _]
             (when (.endsWith url "/api/vastauslinkki/v1")
               {:status 200
                :body {:tunnus "foo"
@@ -612,7 +612,7 @@
           (is (= "351407" (str (:tutkintotunnus ddb-item))))))
       (testing "unsuccessful Arvo call for amispalaute"
         (client/set-post!
-          (fn [^String url options]
+          (fn [^String url _]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (throw
                 (ex-info "bad request" {:status 400 :body arvo-error-body})))))
@@ -640,7 +640,7 @@
         (client/reset-functions!))
       (testing "non-recoverable error in Arvo call"
         (client/set-post!
-          (fn [^String url options]
+          (fn [^String url _]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (throw
                 (ex-info "not found"
@@ -687,7 +687,7 @@
             {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "handle-amis-palautteet-on-heratepvm!"
         (client/set-post!
-          (fn [^String url options]
+          (fn [^String url _]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (swap! vastauslinkki-counter inc)
               {:status 200

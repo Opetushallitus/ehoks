@@ -2,8 +2,7 @@
   (:require [clojure.data.json :as json]
             [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [matches with-log]]
-            [oph.ehoks.hoks.hoks-parts.parts-test-data
-             :refer [ahato-data multiple-ahato-values-patched]]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :refer [ahato-data]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.logging.audit :as a]
             [oph.ehoks.test-utils :as test-utils]))
@@ -79,8 +78,8 @@
   (testing "Value is removed when new value is `nil`"
     (are [old] (get (first (#'a/changes old nil)) "oldValue")
       1 "a" true {:a 1} [0 1]))
-  (testing (str "Value is replaced when the old and the new value are unequal
-                but both are not maps or vectors.")
+  (testing (str "Value is replaced when the old and the new value are unequal"
+                "but both are not maps or vectors.")
     (are [old new] (as-> (#'a/changes old new) c
                      (first c)
                      (and (= (get c "oldValue") old)

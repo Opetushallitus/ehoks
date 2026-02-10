@@ -4,6 +4,7 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as c]
             [clojure.java.io :as io]
+            [clojure.string]
             [cheshire.core :as cheshire]
             [com.rpl.specter :as spc :refer [ALL]]))
 

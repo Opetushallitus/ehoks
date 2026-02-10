@@ -4,7 +4,6 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
@@ -58,7 +57,7 @@
           (virkailija-utils/create-mock-post-request
             "" test-data/hoks-data virkailja-app)
           get-response (mock-oppija-get-request store oppija-oid oppija-app)
-          body (test-utils/parse-body (:body get-response))]
+          body (parse-body (:body get-response))]
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
       (-> test-data/hoks-data
@@ -92,7 +91,7 @@
                 :get (str
                        "/ehoks-oppija-backend/api/v1/oppija"
                        "/external/organisaatio/1.2.246.562.10.12345678911")))
-            body (test-utils/parse-body (:body response))]
+            body (parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -165,7 +164,7 @@
                              :oppija-oid oppija-oid
                              :hoks-id 1})
       (client/set-get!
-        (fn [^String url options]
+        (fn [^String url _]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -183,7 +182,7 @@
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (test-utils/parse-body (:body response))]
+            body (parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -213,7 +212,7 @@
                              :oppija-oid (:oppija-oid hoks-data)
                              :hoks-id 1})
       (client/set-get!
-        (fn [^String url options]
+        (fn [^String url _]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -239,7 +238,7 @@
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (test-utils/parse-body (:body response))]
+            body (parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -269,7 +268,7 @@
                              :oppija-oid (:oppija-oid hoks-data)
                              :hoks-id 1})
       (client/set-get!
-        (fn [^String url options]
+        (fn [^String url _]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -295,7 +294,7 @@
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (test-utils/parse-body (:body response))]
+            body (parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -320,7 +319,7 @@
                              :oppija-oid oppija-oid
                              :hoks-id 1})
       (client/set-get!
-        (fn [^String url options]
+        (fn [^String url _]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -338,7 +337,7 @@
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (test-utils/parse-body (:body response))]
+            body (parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)

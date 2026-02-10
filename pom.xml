@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>b8b8408d8ac97eb2099d65c2c1fe622769921940</tag>
+    <tag>6393ff767067e9411f54be3bd4dfa1d2c6dcf76a</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -429,17 +429,6 @@
         <version>1.1.4</version>
       </dependency>
       <dependency>
-        <groupId>io.github.borkdude</groupId>
-        <artifactId>carve</artifactId>
-        <version>0.3.5</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>transit-clj</artifactId>
-            <groupId>com.cognitect</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>ring</groupId>
         <artifactId>ring-mock</artifactId>
         <version>0.4.0</version>
@@ -468,6 +457,17 @@
         <groupId>org.mozilla</groupId>
         <artifactId>rhino</artifactId>
         <version>1.7.12</version>
+      </dependency>
+      <dependency>
+        <groupId>clj-kondo</groupId>
+        <artifactId>clj-kondo</artifactId>
+        <version>2026.01.19</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.clojure</groupId>
@@ -584,11 +584,6 @@
       <artifactId>core.memoize</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.github.borkdude</groupId>
-      <artifactId>carve</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>ring</groupId>
       <artifactId>ring-mock</artifactId>
       <scope>test</scope>
@@ -601,6 +596,11 @@
     <dependency>
       <groupId>camel-snake-kebab</groupId>
       <artifactId>camel-snake-kebab</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>clj-kondo</groupId>
+      <artifactId>clj-kondo</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

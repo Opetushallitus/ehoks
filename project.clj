@@ -30,11 +30,13 @@
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
-                         [metosin/compojure-api "2.0.0-alpha31" :exclusions [medley com.google.code.findbugs/jsr305]]
+                         [metosin/compojure-api "2.0.0-alpha31"
+                          :exclusions [medley com.google.code.findbugs/jsr305]]
                          [com.google.guava/guava "32.0.0-jre"]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.13.0"]
-                         [ring/ring-jetty-adapter "1.15.3" :exclusions [org.slf4j/slf4j-api]]
+                         [ring/ring-jetty-adapter "1.15.3"
+                          :exclusions [org.slf4j/slf4j-api]]
                          [ring/ring-servlet "1.13.0"]
 
                          ;; http client
@@ -95,24 +97,23 @@
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "1.5.0"]
                          [environ "1.2.0"]
-                         [software.amazon.awssdk/sqs "2.30.36" :exclusions [org.slf4j/slf4j-api]]
+                         [software.amazon.awssdk/sqs "2.30.36"
+                          :exclusions [org.slf4j/slf4j-api]]
                          [com.googlecode.libphonenumber/libphonenumber "8.13.49"]
                          [com.rpl/specter "1.1.4"]
-                         [io.github.borkdude/carve "0.3.5" :exclusions [com.cognitect/transit-clj]]
                          [ring/ring-mock "0.4.0"]
-                         [ring/ring-devel "1.13.0" :exclusions [ring/ring-core
-                                                                org.clojure/java.classpath]]
+                         [ring/ring-devel "1.13.0"
+                          :exclusions [ring/ring-core
+                                       org.clojure/java.classpath]]
                          [camel-snake-kebab "0.4.3"]
                          [org.mozilla/rhino "1.7.12"]
+                         [clj-kondo "2026.01.19" :exclusions [org.ow2.asm/asm]]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.5.0"]
                          [io.aviso/pretty "1.4.4"]
                          [instaparse "1.5.0"]]
   :plugins [[lein-cljfmt "0.6.6" :exclusions [org.clojure/tools.cli]]
-            [lein-kibit "0.1.8" :exclusions [org.clojure/clojure]]
-            [lein-bikeshed "0.5.2"]
-            [jonase/eastwood "1.4.2"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.7.0"]
             [lein-cloverage "1.2.4"]
@@ -135,27 +136,32 @@
   :cloverage {;:fail-threshold 90
               :html? false}
   :aliases {"checkall" ["with-profile" "+test" "do"
-                        ["kibit"]
                         ["bikeshed"]
-                        ["eastwood"]
+                        ["clj-kondo" "--lint" "src/" "test/"]
                         ["cljfmt" "check"]]
+            "clj-kondo" ["run" "-m" "clj-kondo.main"]
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
-            "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]
-            "carve" ["run" "-m" "carve.main"]}
+            "genmigration" ["run" "-m"
+                            "oph.ehoks.migration-tools/lein-genmigration"]
+            "carve" ["with-profile" "+carve" "run" "-m" "carve.main"
+                     "--paths" "src" "test"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :eastwood {}
   :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
                     :dependencies [[ring/ring-mock]
-                                   [ring/ring-devel]]
+                                   [ring/ring-devel]
+                                   [clj-kondo]]
+                    :plugins [[lein-bikeshed "0.5.2"]]
                     :env {:config "oph-configuration/test.edn"
                           :aws-region "eu-west-1"
                           :aws-endpoint-url "http://localhost:18000"}}
-             :schemaspy {:dependencies [[net.sourceforge.schemaspy/schemaspy "5.0.0"]]}
+             :schemaspy {:dependencies [[net.sourceforge.schemaspy/schemaspy
+                                         "5.0.0"]]}
+             :carve {:dependencies [[io.github.borkdude/carve "0.3.5"
+                                     :exclusions [com.cognitect/transit-clj]]]}
              :dev {:main oph.ehoks.dev-server
-                   :dependencies [[io.github.borkdude/carve]
-                                  [ring/ring-mock]
+                   :dependencies [[ring/ring-mock]
                                   [ring/ring-devel]
                                   [camel-snake-kebab]]
                    :env {:config "oph-configuration/dev.edn"}

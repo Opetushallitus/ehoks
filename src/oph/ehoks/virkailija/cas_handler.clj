@@ -3,9 +3,7 @@
             [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.external.cas :as cas]
-            [oph.ehoks.user :as user]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log]
             [clojure.data.xml :as xml]
             [oph.ehoks.db.db-operations.session :as db-session]
             [clojure.string :as cstr]))

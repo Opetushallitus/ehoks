@@ -1,5 +1,5 @@
 (ns oph.ehoks.db.opiskelijan-yhteystiedot-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -70,7 +70,7 @@
    :sahkoposti                  "matti.esimerkki@esimerkki.com"
    :puhelinnumero               "0401234568"})
 
-(defn mocked-get-opiskeluoikeus-info-raw [oid]
+(defn mocked-get-opiskeluoikeus-info-raw [_]
   {:koulutustoimija {:oid "1.2.3.4.5.6"}
    :päättymispäivä "2022-09-01"})
 

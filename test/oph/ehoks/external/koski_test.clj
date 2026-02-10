@@ -39,7 +39,7 @@
     (throw (ex-info
              "Bad request"
              {:status 400
-              :body   (str "[{\"key\": \"badRequest.format.number\"}]")}))
+              :body   "[{\"key\": \"badRequest.format.number\"}]"}))
     "1.2.246.562.15.12345678903" {}
     "1.2.246.562.15.23456789017"
     {:tyyppi {:koodiarvo "ammatillinenkoulutus"}

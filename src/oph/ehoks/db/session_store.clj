@@ -50,8 +50,8 @@
     (db-session/delete-session! session-key)
     nil))
 
-(defn ^DBStore db-store
+(defn db-store
   "Creates simple DB store for session"
-  []
+  ^DBStore []
   (log/info "Database session store enabled")
   (DBStore.))

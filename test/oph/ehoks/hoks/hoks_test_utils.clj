@@ -5,8 +5,6 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.utils.date :as date]
             [oph.ehoks.test-utils :as test-utils :refer [eq]])
@@ -73,12 +71,6 @@
 (defn mock-st-patch [app full-url data]
   (mock-st-request app full-url :patch data))
 
-(defn get-hoks-url [hoks path]
-  (format "%s/%d/%s" base-url (:id hoks) path))
-
-(defn create-mock-hoks-osa-get-request [path app hoks]
-  (mock-st-get app (get-hoks-url hoks (str path "/1"))))
-
 (defn create-mock-post-request
   ([path body app hoks]
     (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
@@ -94,15 +86,6 @@
 (defn create-mock-hoks-patch-request [hoks-id patched-data app]
   (mock-st-patch app (format "%s/%d" base-url hoks-id) patched-data))
 
-(defn create-mock-hato-patch-request [hoks-id hato-id patched-data app]
-  (mock-st-patch
-    app
-    (format "%s/%d/hankittava-ammat-tutkinnon-osa/%d" base-url hoks-id hato-id)
-    patched-data))
-
-(defn create-mock-hoks-osa-patch-request [path app patched-data]
-  (mock-st-patch app (format "%s/1/%s/1" base-url path) patched-data))
-
 (defn assert-partial-put-of-hoks [updated-hoks hoks-part initial-hoks-data]
   (let [app (create-app nil)
         post-response (create-mock-post-request "" initial-hoks-data app)
@@ -114,38 +97,6 @@
     (is (= (:status get-response) 200))
     (eq (test-utils/dissoc-module-ids (hoks-part get-response-data))
         (test-utils/dissoc-module-ids (hoks-part updated-hoks)))))
-
-(defn assert-post-response-is-ok [post-path post-response]
-  (is (= (:status post-response) 200))
-  (eq (test-utils/parse-body (:body post-response))
-      {:meta {:id 1}
-       :data {:uri
-              (format
-                "%1s/1/%2s/1"
-                base-url post-path)}}))
-
-(defn test-post-and-get-of-aiemmin-hankittu-osa [osa-path osa-data]
-  (with-hoks-and-app
-    [hoks app]
-    (let [post-response (create-mock-post-request
-                          osa-path osa-data app hoks)
-          get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
-      (assert-post-response-is-ok osa-path post-response)
-      (is (= (:status get-response) 200))
-      (eq (update
-            (test-utils/parse-body
-              (:body get-response))
-            :data test-utils/dissoc-module-ids)
-          {:meta {} :data (assoc osa-data :id 1)}))))
-
-(defn compare-tarkentavat-tiedot-naytto-values
-  [updated original selector-function]
-  (let [ttn-after-update
-        (selector-function (:tarkentavat-tiedot-naytto updated))
-        ttn-patch-values
-        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
-               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq (test-utils/dissoc-module-ids ttn-after-update) ttn-patch-values)))
 
 (defn create-hoks-in-the-past! [& [transform]]
   (with-redefs [date/now #(LocalDate/of 2023 8 1)]

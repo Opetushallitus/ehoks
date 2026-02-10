@@ -33,6 +33,6 @@
                    :end (.plusDays (LocalDate/now) 1)
                    :limit 10})
             res (test-utils/with-service-ticket
-                  app req "1.2.246.562.10.00000000001")]
-        (let [body (test-utils/parse-body (:body res))]
-          (is (= 1 (:data body))))))))
+                  app req "1.2.246.562.10.00000000001")
+            body (test-utils/parse-body (:body res))]
+        (is (= 1 (:data body)))))))

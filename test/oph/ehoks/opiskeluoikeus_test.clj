@@ -1,5 +1,6 @@
 (ns oph.ehoks.opiskeluoikeus-test
   (:require [clojure.test :refer [are deftest is testing]]
+            [oph.ehoks.config]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]))
 
 (def opiskeluoikeus-1

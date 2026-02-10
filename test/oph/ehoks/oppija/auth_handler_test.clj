@@ -3,6 +3,7 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.session-store :as db-session-store]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.external.cas]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.test-utils :refer [authenticate parse-body]]
@@ -26,7 +27,7 @@
                      (common-api/create-app handler/app-routes nil))]
       (is (= (:status response) 303)))))
 
-(defn ticket-validation-mock-response [ticket domain]
+(defn ticket-validation-mock-response [_ __]
   {:status 200
    :body
    (str "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">"
@@ -144,7 +145,7 @@
         (is (= (:status logout-with-no-session) 404))
         (is (= (:status logoit-with-session) 200))))))
 
-(defn ticket-validation-fail-mock-response [ticket domain]
+(defn ticket-validation-fail-mock-response [_ __]
   {:status 200
    :body
    (str

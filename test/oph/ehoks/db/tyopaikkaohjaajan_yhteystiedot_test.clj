@@ -1,5 +1,5 @@
-(ns oph.ehoks.db.tyopaikkaohjaajan_yhteystiedot_test
-  (:require [clojure.test :refer :all]
+(ns oph.ehoks.db.tyopaikkaohjaajan-yhteystiedot-test
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.koski-test :as koski-test]

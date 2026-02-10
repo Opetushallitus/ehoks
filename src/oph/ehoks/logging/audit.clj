@@ -80,7 +80,7 @@
     (map? obj) (zipmap (keys obj) (map make-json-serializable (vals obj)))
     (coll? obj) (map make-json-serializable obj)
     (instance? Date obj) (-> (.toInstant ^Date obj)
-                             (.atZone (ZoneOffset/UTC))
+                             (.atZone ZoneOffset/UTC)
                              (str))
     :else (str obj)))
 

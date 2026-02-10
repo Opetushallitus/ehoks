@@ -15,6 +15,7 @@
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
 
+(declare update! insert!)
 (hugsql/def-db-fns "oph/ehoks/db/sql/palaute.sql")
 
 (defn unhandled?
@@ -112,7 +113,7 @@
 
   NOTE: This doesn't build a complete palaute that should be inserted to DB but
   only part of it."
-  [{:keys [hoks opiskeluoikeus koulutustoimija existing-palaute] :as ctx} tila]
+  [{:keys [hoks opiskeluoikeus koulutustoimija existing-palaute]} tila]
   {:pre [(some? tila) (nil-or-unhandled? existing-palaute)]}
   (let [suoritus (find-first suoritus/ammatillinen?
                              (:suoritukset opiskeluoikeus))]
@@ -181,8 +182,7 @@
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
   collected because it's not part of kohderyhmä; otherwise returns nil."
-  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate
-           existing-palaute] :as ctx}
+  [{:keys [hoks opiskeluoikeus jakso existing-ddb-herate]}
    herate-date-field]
   (let [herate-date (get (or jakso hoks) herate-date-field)]
     (cond

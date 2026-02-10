@@ -27,7 +27,7 @@
                (throw e))))))
 
 (defn is-tuva-opiskeluoikeus?
-  [koulutuksenosa]
+  [_]
   (opiskeluoikeus/tuva? (get-current-opiskeluoikeus)))
 
 (def TutkinnonOsaKoodiUri

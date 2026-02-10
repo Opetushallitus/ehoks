@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.http-client :as client])
-  (:import [com.fasterxml.jackson.core JsonParseException]))
+            [oph.ehoks.external.http-client :as client]))
 
 (def get-client-fn
   (some-fn {:delete client/delete :get client/get :post client/post}
