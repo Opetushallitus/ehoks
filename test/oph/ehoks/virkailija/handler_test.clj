@@ -1689,7 +1689,50 @@
                                    nil)
               delete-body (test-utils/parse-body (:body delete-response))]
           (t/is (= (:status delete-response) 200))
-          (t/is (= (:success delete-body) hoks-id)))))))
+          (t/is (= (:success delete-body) hoks-id))))))
+
+  (t/testing "HOKS should not be shallow deleted without rights"
+    (test-utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
+      (let [organisaatio-oid "1.2.246.562.10.12000000013"
+            oppija-oid "1.2.246.562.24.44000000008"
+            post-response (post-new-hoks
+                            "1.2.246.562.15.76000000018" organisaatio-oid {})
+            hoks-id (-> (:body post-response) (test-utils/parse-body) :meta :id)
+            delete-response-1
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :patch (str virkailija-base-url "/oppijat/" oppija-oid
+                              "/hoksit/" hoks-id "/shallow-delete"))
+                {:oppilaitos-oid organisaatio-oid})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :oidHenkilo "1.2.246.562.24.44000000338"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000016"
+                 :privileges #{:write :read :update :delete :hoks_delete}}]})
+            delete-response-2
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :patch (str virkailija-base-url "/oppijat/" oppija-oid
+                              "/hoksit/" hoks-id "/shallow-delete"))
+                {:oppilaitos-oid organisaatio-oid})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :oidHenkilo "1.2.246.562.24.44000000338"
+               :organisation-privileges
+               [{:oid organisaatio-oid
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= 200 (:status post-response)))
+        (t/is (= 403 (:status delete-response-1)))
+        (t/is (= (str "{\"error\":\"User privileges does not "
+                      "match oppija opiskeluoikeus organisation\"}")
+                 (slurp (:body delete-response-1))))
+        (t/is (= 403 (:status delete-response-2)))
+        (t/is (= "{\"error\":\"User privileges do not match organisation\"}"
+                 (slurp (:body delete-response-2))))))))
 
 (t/deftest test-tep-jakso-raportti-structure
   (t/testing "report tep-jakso-raportti returns expected structure"
