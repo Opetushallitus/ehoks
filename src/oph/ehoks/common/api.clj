@@ -83,6 +83,14 @@
 
    ;; We don't need to do audit logging in the handlers below because
    ;; exceptions thrown go through `audit/wrap-logger` middleware.
+   ::koski/opiskeluoikeus-fetching-error (c-ex/with-logging
+                                           (custom-ex-handler
+                                             response/internal-server-error)
+                                           :error)
+   ::koski/koski-connection-error        (c-ex/with-logging
+                                           (custom-ex-handler
+                                             response/internal-server-error)
+                                           :error)
    ::organisaatio/organisation-not-found bad-request-handler
    ::hoks/disallowed-update              bad-request-handler
    :opiskeluoikeus-already-exists        bad-request-handler
