@@ -29,6 +29,7 @@
                         (ex-data e)
                         {:exception-class (.getClass e)
                          :message (.getMessage e)
+                         :type ::http-request-error
                          :log-data {:method method
                                     :url url
                                     :query-params (:query-params options)}})
