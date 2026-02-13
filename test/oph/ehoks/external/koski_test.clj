@@ -4,7 +4,7 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as k])
   (:import (clojure.lang ExceptionInfo)
-           (java.net ConnectException)))
+           (java.net ConnectException UnknownHostException)))
 
 (deftest test-filter-oppija
   (testing "Filtering Oppija values"
@@ -149,8 +149,19 @@
              {:oid "1.2.246.562.10.12944436166"}}
             {:oid "1.2.246.562.15.55003456345"
              :oppilaitos
-             {:oid "1.2.246.562.10.12944436166"}}]))
-    (client/reset-functions!)))
+             {:oid "1.2.246.562.10.12944436166"}}])))
+  (testing "Failing call for opiskeluoikeudet for oppija"
+    (client/set-post!
+      (fn [^String url _]
+        (cond
+          (.endsWith
+            url "/koski/api/sure/oids")
+          (throw (new UnknownHostException "ei löydy")))))
+    (is (thrown-with-msg?
+          ExceptionInfo
+          #"Error while contacting Koski:"
+          (k/get-oppija-opiskeluoikeudet "1.2.246.562.24.51659804532"))))
+  (client/reset-functions!))
 
 (deftest test-virhekoodi
   (testing "Can parse Koski-specific virhekoodi."
