@@ -1,17 +1,21 @@
 (ns oph.ehoks.external.utils
-  (:require [clojure.core.async :as a]))
+  (:import (java.util.concurrent ExecutionException)))
+
+(defn call-with-timeout
+  "Call a function with timeout, so that if that function doesn't return
+  before time-ms (in milliseconds), return ::timeout instead."
+  [time-ms callback]
+  (try
+    (let [fut (future (callback))
+          res (deref fut time-ms ::timeout)]
+      (when (= res ::timeout) (future-cancel fut))
+      res)
+    (catch ExecutionException e
+      (throw (ex-cause e)))))
 
 (defmacro with-timeout
-  "Simple macro for creating asyncronous timeout-safe function calls.
-   `body` will be wrapped inside go block.
-  Returns channel which returns either result of `body` or `timeout` depending
-  on if given time exceeds."
-  [time-ms body timeout]
-  `(a/go
-     (let [c# (a/go (try
-                      ~body
-                      (catch Exception e# e#)))
-           [v# p#] (a/alts! [c# (a/timeout ~time-ms)])]
-       (if (and (not= p# c#) (nil? v#))
-         ~timeout
-         v#))))
+  "Return the result of `body` if it returns something within `time-ms`
+  milliseconds.  Otherwise return the result of `timeout-body`."
+  [time-ms body timeout-body]
+  `(let [res# (call-with-timeout ~time-ms (fn [] ~body))]
+     (if (= res# ::timeout) ~timeout-body res#)))
