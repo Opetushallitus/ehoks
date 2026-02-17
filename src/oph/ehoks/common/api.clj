@@ -4,6 +4,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.external.connection :as conn]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
@@ -46,6 +47,14 @@
       (fn [^ExceptionInfo e _ _] (resp {custom-key (ex-message e)}))
       (fn [^ExceptionInfo e _ _] (resp {:error (ex-message e)})))))
 
+(defn dependent-system-failure-handler
+  "Reporting failed dependent systems."
+  [^ExceptionInfo _ __ ___]
+  (response/internal-server-error
+    {:error (str "(transient?) failure in call to a linked system, "
+                 "maybe downtime.  If this doesn't go away, contact "
+                 "eHOKS support.")}))
+
 (defn with-endpoint-logging
   "Tell which endpoint was called when the exception occurred"
   [handler]
@@ -83,6 +92,22 @@
 
    ;; We don't need to do audit logging in the handlers below because
    ;; exceptions thrown go through `audit/wrap-logger` middleware.
+   ::conn/http-request-error             (with-endpoint-logging
+                                           (c-ex/with-logging
+                                             dependent-system-failure-handler
+                                             :error))
+   ::koski/opiskeluoikeus-fetching-error (c-ex/with-logging
+                                           (custom-ex-handler
+                                             response/internal-server-error)
+                                           :error)
+   ::koski/koski-connection-error        (c-ex/with-logging
+                                           (custom-ex-handler
+                                             response/internal-server-error)
+                                           :error)
+   ::onr/oppija-fetching-error           (c-ex/with-logging
+                                           (custom-ex-handler
+                                             response/internal-server-error)
+                                           :error)
    ::organisaatio/organisation-not-found bad-request-handler
    ::hoks/disallowed-update              bad-request-handler
    :opiskeluoikeus-already-exists        bad-request-handler
