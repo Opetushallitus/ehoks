@@ -48,6 +48,28 @@
                      "oid found. Contact eHOKS support for more "
                      "information.")}))))))
 
+(deftest informative-error-for-service-breaks
+  (testing "error when ONR is down"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.60606060604"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
+          resp (hoks-utils/mock-st-post
+                 (hoks-utils/create-app nil) base-url hoks-data)]
+      (is (= (:status resp) 500))
+      (is (re-find #"Error while fetching oppija"
+                   (:error (test-utils/parse-body (:body resp)))))))
+  (testing "error when Koski is down"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.70000000003"
+                     :oppija-oid "1.2.246.562.24.12312312319"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
+          resp (hoks-utils/mock-st-post
+                 (hoks-utils/create-app nil) base-url hoks-data)]
+      (is (= (:status resp) 500))
+      (is (re-find #"Error while contacting Koski"
+                   (:error (test-utils/parse-body (:body resp))))))))
+
 (deftest prevent-creating-hoks-with-non-existing-oppija
   (testing "Prevent POST HOKS with non-existing oppija"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"

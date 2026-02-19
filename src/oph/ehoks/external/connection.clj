@@ -27,7 +27,10 @@
       (throw (ex-info (format "HTTP request error: %s" (.getMessage e))
                       (merge
                         (ex-data e)
-                        {:log-data {:method method
+                        {:exception-class (.getClass e)
+                         :message (.getMessage e)
+                         :type ::http-request-error
+                         :log-data {:method method
                                     :url url
                                     :query-params (:query-params options)}})
                       e)))))

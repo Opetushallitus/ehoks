@@ -11,7 +11,8 @@
             [oph.ehoks.db.migrations :as m]
             [oph.ehoks.db.dynamodb :as ddb]
             [taoensso.faraday :as far]
-            [clojure.java.jdbc :as jdbc]))
+            [clojure.java.jdbc :as jdbc])
+  (:import (java.net ConnectException)))
 
 (def base-url "/ehoks-oppija-backend/api/v1/oppija/session")
 
@@ -331,6 +332,9 @@
               {:status 200
                :body (opiskeluoikeus-60000000004 oppilaitos-oid)}
               (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.70000000003")
+              (throw (new ConnectException "Koski on unessa"))
+              (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000012")
               {:status 200
                :body (opiskeluoikeus-60000000012 oppilaitos-oid)}
@@ -361,8 +365,14 @@
                       :parentOidPath "|1.2.246.562.10.00000000001|"}}
               (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
               (let [oid (last (.split url "/"))]
-                (if (= oid "1.2.246.562.24.40404040406")
+                (cond
+                  (= oid "1.2.246.562.24.40404040406")
                   (throw (ex-info "Not found" {:status 404}))
+
+                  (= oid "1.2.246.562.24.60606060604")
+                  (throw (new ConnectException "splat"))
+
+                  :else
                   {:status 200
                    :body {:oidHenkilo oid
                           :hetu "250103-5360"

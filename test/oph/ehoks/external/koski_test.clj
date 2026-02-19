@@ -3,7 +3,8 @@
             [clojure.test :refer [deftest is testing]]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as k])
-  (:import [clojure.lang ExceptionInfo]))
+  (:import (clojure.lang ExceptionInfo)
+           (java.net ConnectException UnknownHostException)))
 
 (deftest test-filter-oppija
   (testing "Filtering Oppija values"
@@ -81,7 +82,17 @@
     ;; default
     []))
 
+(defn mock-http-client-get
+  [_ __]
+  (throw (new ConnectException "Connection timed out")))
+
 (deftest test-get-opiskeluoikeus!
+  (with-redefs [client/get mock-http-client-get]
+    (testing "Throws when no connection could be made."
+      (is (thrown-with-msg?
+            ExceptionInfo
+            #"Error while contacting Koski:"
+            (k/get-opiskeluoikeus! "1.2.246.562.15.34567890126")))))
   (with-redefs [k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-raw]
     (testing "The function returns opiskeluoikeus when found"
       (is (some? (k/get-opiskeluoikeus! "1.246.562.15.12345678911"))))
@@ -90,11 +101,7 @@
     (testing "The function throws on exceptional status codes."
       (is (thrown-with-msg?
             ExceptionInfo
-            (re-pattern
-              (str "Error while fetching opiskeluoikeus "
-                   "`1.246.562.15.12345678910` from Koski. Got response with "
-                   "HTTP status 400 and Koski-virhekoodi "
-                   "`badRequest.format.number`."))
+            #"Error while fetching opiskeluoikeus `[0-9.]*` from Koski"
             (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
 
 (deftest test-get-existing-opiskeluoikeus!
@@ -142,8 +149,19 @@
              {:oid "1.2.246.562.10.12944436166"}}
             {:oid "1.2.246.562.15.55003456345"
              :oppilaitos
-             {:oid "1.2.246.562.10.12944436166"}}]))
-    (client/reset-functions!)))
+             {:oid "1.2.246.562.10.12944436166"}}])))
+  (testing "Failing call for opiskeluoikeudet for oppija"
+    (client/set-post!
+      (fn [^String url _]
+        (cond
+          (.endsWith
+            url "/koski/api/sure/oids")
+          (throw (new UnknownHostException "ei löydy")))))
+    (is (thrown-with-msg?
+          ExceptionInfo
+          #"Error while contacting Koski:"
+          (k/get-oppija-opiskeluoikeudet "1.2.246.562.24.51659804532"))))
+  (client/reset-functions!))
 
 (deftest test-virhekoodi
   (testing "Can parse Koski-specific virhekoodi."
