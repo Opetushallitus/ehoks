@@ -108,13 +108,12 @@
 (defn find-tutkinnon-osat
   "Find tutkinnon osat by koodi URL"
   [^String koodi-uri]
-  (let [found-perusteet (:data (find-perusteet-external {:koodi koodi-uri}))
-        all-tutkinnonosat
-        (flatten
-          (map #(:tutkinnonOsat (get-peruste-by-id (:id %)))
-               found-perusteet))]
-    (filter #(= (:koodiUri %) koodi-uri)
-            all-tutkinnonosat)))
+  (->> {:koodi koodi-uri}
+       (find-perusteet-external)
+       :data
+       (map #(get-peruste-by-id (:id %)))
+       (mapcat :tutkinnonOsat)
+       (filter #(= (:koodiUri %) koodi-uri))))
 
 (defn get-tutkinnon-osa-viitteet
   "Get tutkinnon osa viitteet by ID"
