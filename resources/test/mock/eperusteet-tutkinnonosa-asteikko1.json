@@ -131,6 +131,28 @@
               "osaamistasonKriteerit": [
                 {
                   "_osaamistaso": "1",
+		  "osaamistaso": {
+		    "id" : 1,
+		    "koodi" : {
+		      "arvo" : "Hyväksytty",
+		      "id" : 7649298,
+		      "koodisto" : "arviointiasteikkoammatillinen15",
+		      "nimi" : {
+			"en" : "Pass",
+			"fi" : "Hyväksytty",
+			"sv" : "Godkänd"
+		      },
+		      "uri" : "arviointiasteikkoammatillinen15_hyvaksytty",
+		      "versio" : 1
+		    },
+		    "otsikko" : {
+		      "_id" : "3664452",
+		      "_tunniste" : "c4b81bac-ed8f-4668-aeda-653a006a057e",
+		      "en" : "Criteria for an acceptable performance",
+		      "fi" : "Hyväksytyn suorituksen kriteerit",
+		      "sv" : "Kriterier för godkänd prestation"
+		    }
+		  },
                   "kriteerit": [
                     {
                       "_tunniste": "fdacd252-32d7-4cfb-9ab6-91d2427878a8",

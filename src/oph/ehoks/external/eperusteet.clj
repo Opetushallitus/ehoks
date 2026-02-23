@@ -1,7 +1,7 @@
 (ns oph.ehoks.external.eperusteet
   (:require [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]
-            [com.rpl.specter :as spc :refer [ALL NONE FIRST]]))
+            [com.rpl.specter :as spc :refer [ALL]]))
 
 (defn map-perusteet
   "Map perusteet values"
@@ -15,44 +15,37 @@
                   (fn [x] (map #(select-keys % [:nimi]) x)))))
     values))
 
-(def asteikkomuunnos
-  "Scale tranformations"
-  {:1 {:1 ""}
-   :2 {:2 "1" :3 "3" :4 "5"}
-   :3 {:5 "1" :7 "3" :9 "5"}})
+(def interpret-osaamistaso-id
+  "Convert osaamistaso from id to arvosana description, takes a pair of
+  asteikko-id and osaamistaso-id"
+  {[:1 :1] ""
+   [:2 :2] "1" [:2 :3] "3" [:2 :4] "5"
+   [:3 :5] "1" [:3 :7] "3" [:3 :9] "5"})
 
-(defn- adjust-osaamistaso
-  "Convert osaamistaso according to values in asteikkomuunnos"
-  [asteikko osaamistaso]
-  (get-in asteikkomuunnos [(keyword asteikko) (keyword osaamistaso)]))
+(defn adjust-osaamistason-kriteeri-arviointi
+  "Adds osaamistaso if missing in a single kriteeri based on _osaamistaso"
+  [asteikko kriteeri]
+  (cond (empty? (:kriteerit kriteeri)) nil
+        (:osaamistaso kriteeri) kriteeri
+        :else (assoc kriteeri :osaamistaso
+                     (interpret-osaamistaso-id
+                       [asteikko (keyword (:_osaamistaso kriteeri))]))))
 
-(defn- remove-empty-kriteerit
-  "Remove empty kriteerit from several subfields"
-  [values]
-  (spc/setval [ALL :arviointi :arvioinninKohdealueet ALL
-               :arvioinninKohteet ALL :osaamistasonKriteerit ALL
-               #(empty? (:kriteerit %))]
-              NONE values))
-
-(defn- adjust-osaamistaso-based-on-asteikko
-  "Adjusts the osaamistaso in each appropriate spot in object"
-  [asteikko values]
-  (spc/transform [ALL :arviointi :arvioinninKohdealueet ALL
-                  :arvioinninKohteet ALL :osaamistasonKriteerit
-                  ALL :_osaamistaso]
-                 #(adjust-osaamistaso asteikko %) values))
+(defn adjust-arviointikohde-arviointi
+  "Adds osaamistaso if missing in osaamistasonKriteerit based on _osaamistaso"
+  [arvioinninkohde]
+  (let [asteikko (keyword (:_arviointiAsteikko arvioinninkohde))]
+    (update arvioinninkohde :osaamistasonKriteerit
+            (partial keep (partial adjust-osaamistason-kriteeri-arviointi
+                                   asteikko)))))
 
 (defn adjust-tutkinnonosa-arviointi
   "Adjusts osaamistasonKriteerit based on the osaamistaso of the tutkinnonosa"
-  [values]
-  ; Every tutkinnonosa should currently have the same arviointiAsteikko
-  ; for all of its arvioinninKohteet
-  (let [asteikko (spc/select-first
-                   [ALL :arviointi :arvioinninKohdealueet ALL
-                    :arvioinninKohteet FIRST :_arviointiAsteikko] values)]
-    (->> values
-         (remove-empty-kriteerit)
-         (adjust-osaamistaso-based-on-asteikko asteikko))))
+  [tutkinnonosat]
+  (spc/transform
+    [ALL :arviointi :arvioinninKohdealueet ALL :arvioinninKohteet ALL]
+    adjust-arviointikohde-arviointi
+    tutkinnonosat))
 
 (defn- get-peruste-by-id
   "Get peruste by ID. Uses eperusteet external api. An optional part argument
@@ -115,13 +108,12 @@
 (defn find-tutkinnon-osat
   "Find tutkinnon osat by koodi URL"
   [^String koodi-uri]
-  (let [found-perusteet (:data (find-perusteet-external {:koodi koodi-uri}))
-        all-tutkinnonosat
-        (flatten
-          (map #(:tutkinnonOsat (get-peruste-by-id (:id %)))
-               found-perusteet))]
-    (filter #(= (:koodiUri %) koodi-uri)
-            all-tutkinnonosat)))
+  (->> {:koodi koodi-uri}
+       (find-perusteet-external)
+       :data
+       (map #(get-peruste-by-id (:id %)))
+       (mapcat :tutkinnonOsat)
+       (filter #(= (:koodiUri %) koodi-uri))))
 
 (defn get-tutkinnon-osa-viitteet
   "Get tutkinnon osa viitteet by ID"

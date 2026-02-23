@@ -5,8 +5,7 @@
             [oph.ehoks.external.cache :as c]
             [clojure.java.io :as io]
             [clojure.string]
-            [cheshire.core :as cheshire]
-            [com.rpl.specter :as spc :refer [ALL]]))
+            [cheshire.core :as cheshire]))
 
 (defn with-clear-cache [t]
   (c/clear-cache!)
@@ -190,70 +189,66 @@
   (testing "Osaamistasot for arviointiAsteikko 3 are transformed and
             empty kriteerit are dropped"
     (client/with-mock-responses
-      [(fn [_ __] {:status 200
-                   :body {:data (get-mock-eperusteet-value
-                                  "mock/eperusteet-tutkinnonosa-asteikko3.json")
-                          :sivuja 0
-                          :kokonaismäärä 0
-                          :sivukoko 25
-                          :sivu 0}})]
-      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_asteikko3")
-            adjusted (ep/adjust-tutkinnonosa-arviointi response)
-            osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
-                                      ALL :arvioinninKohteet ALL
-                                      :osaamistasonKriteerit ALL :_osaamistaso]
-                                     adjusted)
-            kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
-                                   ALL :arvioinninKohteet ALL
-                                   :osaamistasonKriteerit ALL :kriteerit]
-                                  adjusted)]
-        (is (not (some #(= 7 %) osaamistasot)))
-        (is (not (some #(= 9 %) osaamistasot)))
-        (is (not (some #(empty? %) kriteerit))))))
+      [(fn [_ __]
+         ;; will use the same response as both find-perusteet-external
+         ;; and get-peruste-by-id response
+         {:status 200
+          :body {:data [{:id "foo1"}]  ; for find-perusteet-external
+                 :tutkinnonOsat        ; for get-peruste-by-id
+                 (get-mock-eperusteet-value
+                   "mock/eperusteet-tutkinnonosa-asteikko3.json")}})]
+      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_106003")
+            adjusted (ep/adjust-tutkinnonosa-arviointi response)]
+        (is (= [["9" nil] ["6" nil] ["5" nil] ["7" nil] ["8" nil]]
+               (->> response first :arviointi :arvioinninKohdealueet
+                    first :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso :osaamistaso)))))
+        (is (= [["9" "5"] ["5" "1"] ["7" "3"]]
+               (->> adjusted first :arviointi :arvioinninKohdealueet
+                    first :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso :osaamistaso))))))))
 
   (testing "Osaamistason kriteerit for arviointiAsteikko 2 are transformed and
             empty cells are dropped"
     (client/with-mock-responses
-      [(fn [_ __] {:status 200
-                   :body {:data (get-mock-eperusteet-value
-                                  "mock/eperusteet-tutkinnonosa-asteikko2.json")
-                          :sivuja 0
-                          :kokonaismäärä 0
-                          :sivukoko 25
-                          :sivu 0}})]
-      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_asteikko2")
-            adjusted (ep/adjust-tutkinnonosa-arviointi response)
-            osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
-                                      ALL :arvioinninKohteet ALL
-                                      :osaamistasonKriteerit ALL :_osaamistaso]
-                                     adjusted)
-            kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
-                                   ALL :arvioinninKohteet ALL
-                                   :osaamistasonKriteerit ALL :kriteerit]
-                                  adjusted)]
-        (is (not (some #(= 2 %) osaamistasot)))
-        (is (not (some #(= 4 %) osaamistasot)))
-        (is (not (some #(empty? %) kriteerit))))))
+      [(fn [_ __]
+         {:status 200
+          :body {:data [{:id "foo2"}]  ; for find-perusteet-external
+                 :tutkinnonOsat        ; for get-peruste-by-id
+                 (get-mock-eperusteet-value
+                   "mock/eperusteet-tutkinnonosa-asteikko2.json")}})]
+      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_100054")
+            adjusted (ep/adjust-tutkinnonosa-arviointi response)]
+        (is (= [["2" nil] ["3" nil] ["4" nil]]
+               (->> response first :arviointi :arvioinninKohdealueet
+                    first :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso :osaamistaso)))))
+        (is (= [["2" "1"] ["3" "3"] ["4" "5"]]
+               (->> adjusted first :arviointi :arvioinninKohdealueet
+                    first :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso :osaamistaso))))))))
 
   (testing "Osaamistason kriteerit for arviointiAsteikko 1 are transformed and
-            empty cells are dropped"
+            osaamistaso values already there are preserved"
     (client/with-mock-responses
-      [(fn [_ __] {:status 200
-                   :body {:data (get-mock-eperusteet-value
-                                  "mock/eperusteet-tutkinnonosa-asteikko1.json")
-                          :sivuja 0
-                          :kokonaismäärä 0
-                          :sivukoko 25
-                          :sivu 0}})]
-      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_asteikko1")
-            adjusted (ep/adjust-tutkinnonosa-arviointi response)
-            osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
-                                      ALL :arvioinninKohteet ALL
-                                      :osaamistasonKriteerit ALL :_osaamistaso]
-                                     adjusted)
-            kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
-                                   ALL :arvioinninKohteet ALL
-                                   :osaamistasonKriteerit ALL :kriteerit]
-                                  adjusted)]
-        (is (not (some #(not (clojure.string/blank? %)) osaamistasot)))
-        (is (not (some #(empty? %) kriteerit)))))))
+      [(fn [_ __]
+         {:status 200
+          :body {:data [{:id "foo3"}]  ; for find-perusteet-external
+                 :tutkinnonOsat        ; for get-peruste-by-id
+                 (get-mock-eperusteet-value
+                   "mock/eperusteet-tutkinnonosa-asteikko1.json")}})]
+      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_300186")
+            adjusted (ep/adjust-tutkinnonosa-arviointi response)]
+        (is (= [["1" "Hyväksytty"]]
+               (->> adjusted first :arviointi :arvioinninKohdealueet
+                    second :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso
+                               (comp :arvo :koodi :osaamistaso))))))
+        (is (= [["1" nil]]
+               (->> response first :arviointi :arvioinninKohdealueet
+                    first :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso :osaamistaso)))))
+        (is (= [["1" ""]]
+               (->> adjusted first :arviointi :arvioinninKohdealueet
+                    first :arvioinninKohteet first :osaamistasonKriteerit
+                    (map (juxt :_osaamistaso :osaamistaso)))))))))
