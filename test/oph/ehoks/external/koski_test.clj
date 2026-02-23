@@ -149,7 +149,10 @@
              {:oid "1.2.246.562.10.12944436166"}}
             {:oid "1.2.246.562.15.55003456345"
              :oppilaitos
-             {:oid "1.2.246.562.10.12944436166"}}])))
+             {:oid "1.2.246.562.10.12944436166"}}]))
+    (client/reset-functions!)))
+
+(deftest test-failing-get-oppija-opiskeluoikeudet
   (testing "Failing call for opiskeluoikeudet for oppija"
     (client/set-post!
       (fn [^String url _]
@@ -160,8 +163,8 @@
     (is (thrown-with-msg?
           ExceptionInfo
           #"Error while contacting Koski:"
-          (k/get-oppija-opiskeluoikeudet "1.2.246.562.24.51659804532"))))
-  (client/reset-functions!))
+          (k/get-oppija-opiskeluoikeudet "1.2.246.562.24.51659804532")))
+    (client/reset-functions!)))
 
 (deftest test-virhekoodi
   (testing "Can parse Koski-specific virhekoodi."
