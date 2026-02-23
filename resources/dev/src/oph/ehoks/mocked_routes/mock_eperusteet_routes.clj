@@ -8,13 +8,6 @@
          (mock-gen/json-response-file
            "dev-routes/eperusteet_api_perusteet.json"))
 
-    (GET "/eperusteet-amosaa-service/api/julkinen/koodi/:koodi" request
-         (if (= (get-in request [:params :koodi])
-                "paikallinen_tutkinnonosa_1.2.246.562.10.41253773158_1983")
-           (mock-gen/json-response-file
-             "dev-routes/eperusteet-amosaa-service_api_julkinen_koodi_paikallinen__tutkinnonosa__1.2.246.562.10.41253773158__1983.json")
-           (mock-gen/json-response [])))
-
     (GET "/eperusteet-service/api/tutkinnonosat/:tutkinnon-osa-id/viitteet" request
       (let [tutkinnon-osa-id (get-in request [:params :tutkinnon-osa-id])]
         (if (= tutkinnon-osa-id "3003003")
