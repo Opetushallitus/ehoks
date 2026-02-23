@@ -7,7 +7,6 @@
             [ring.util.http-response :as response]
             [schema.core :as s]
             [compojure.api.sweet :as c-api]
-            [oph.ehoks.external.amosaa :as amosaa]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koodisto :as koodisto]))
 
@@ -73,15 +72,6 @@
         :return (rest/response  [s/Any])
         (rest/with-not-found-handling
           (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))
-
-    (c-api/context "/eperusteet-amosaa" []
-      (c-api/GET "/koodi/:koodi" []
-        :path-params [koodi :- String]
-        :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
-                 Koodiin täydennetään automaattisesti
-                 'paikallinen_tutkinnonosa'"
-        :return (rest/response [s/Any])
-        (rest/ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))
 
     (c-api/context "/organisaatio" []
       (c-api/GET "/:oid" []

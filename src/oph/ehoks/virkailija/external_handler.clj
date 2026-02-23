@@ -6,7 +6,6 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.external.amosaa :as amosaa]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
 
@@ -116,13 +115,4 @@
         :path-params [koodi-uri :- s/Str]
         :return (restful/response [s/Any])
         (restful/with-not-found-handling
-          (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))
-
-    (c-api/context "/eperusteet-amosaa" []
-      (c-api/GET "/koodi/:koodi" []
-        :path-params [koodi :- String]
-        :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
-                 Koodiin täydennetään automaattisesti
-                 'paikallinen_tutkinnonosa'"
-        :return (restful/response [s/Any])
-        (restful/ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))
+          (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))))
