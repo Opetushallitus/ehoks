@@ -75,8 +75,7 @@
     (client/with-mock-responses
       [(fn [^String url _]
          (cond
-           (.contains
-             url "/rest/organisaatio/v4/")
+           (.contains url "organisaatio-service/api/")
            {:status 200
             :body {:oid           (last (string/split url #"/"))
                    :parentOidPath (str "|1.2.246.562.10.00000000001|"
@@ -567,8 +566,7 @@
       (client/with-mock-responses
         [(fn [^String url _]
            (cond
-             (.contains
-               url "/rest/organisaatio/v4/")
+             (.contains url "organisaatio-service/api/")
              {:status 200
               :body {:oid           (last (string/split url #"/"))
                      :parentOidPath "|"}}))]
