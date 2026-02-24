@@ -129,7 +129,7 @@
                        :kayttooikeudet [{:palvelu "EHOKS"
                                          :oikeus "CRUD"}]}]}]}
             (.endsWith
-              url (str "/rest/organisaatio/v4/" organisaatio-oid))
+              url (str "/api/" organisaatio-oid))
             {:status 200
              :body {:oid organisaatio-oid :parentOidPath "|"}}
             :else (unmatched-fn :get url options)))))
@@ -349,17 +349,17 @@
                          :kayttooikeudet [{:palvelu "EHOKS"
                                            :oikeus "CRUD"}]}]}]}
               (.endsWith
-                url "/rest/organisaatio/v4/1.2.246.562.10.12345678903")
+                url "/api/1.2.246.562.10.12345678903")
               {:status 200
                :body {:oid           "1.2.246.562.10.12345678903"
                       :parentOidPath "|"}}
               (.endsWith
-                url "/rest/organisaatio/v4/1.2.246.562.10.47861388602")
+                url "/api/1.2.246.562.10.47861388602")
               {:status 200
                :body {:oid           "1.2.246.562.10.47861388602"
                       :parentOidPath "|"}}
               (.endsWith
-                url "/rest/organisaatio/v4/1.2.246.562.10.12944436166")
+                url "/api/1.2.246.562.10.12944436166")
               {:status 200
                :body {:oid           "1.2.246.562.10.12944436166"
                       :parentOidPath "|1.2.246.562.10.00000000001|"}}

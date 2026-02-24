@@ -102,6 +102,10 @@ psql: stamps/db-running
 test: stamps/db-schema stamps/local-ddb-schema
 	lein test
 
+.PHONY: lint
+lint:
+	lein with-profile +test clj-kondo --lint src test
+
 .PHONY: stop-server
 stop-server:
 	# Sadly, this usually fails to kill the server since lein trampolines
