@@ -4,6 +4,7 @@
             [oph.ehoks.mocked-routes.mock-gen :as mock-gen]
             [oph.ehoks.mocked-routes.mock-koodisto-routes :as koodisto-mocks]
             [oph.ehoks.mocked-routes.mock-arvo-routes :as arvo-mocks]
+            [oph.ehoks.mocked-routes.mock-vvp-routes :as vvp-mocks]
             [oph.ehoks.mocked-routes.mock-eperusteet-routes
              :as eperusteet-mocks]
             [oph.ehoks.mocked-routes.mock-koski-routes :as koski-mocks]
@@ -29,6 +30,7 @@
     arvo-mocks/mock-routes
     oppijanumerorekisteri-mocks/mock-routes
     koodisto-mocks/mock-routes
+    vvp-mocks/mock-routes
     eperusteet-mocks/mock-routes
     koski-mocks/mock-routes
     organisaatio-mocks/mock-routes)
