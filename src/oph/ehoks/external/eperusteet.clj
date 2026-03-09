@@ -126,17 +126,6 @@
        :options {:as :json}})
     :body))
 
-(defn get-tutkinnon-osan-osa-alueet
-  "Get tutkinnon osa-alueet by ID"
-  [^Long id]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-tutkinnonosa-osa-alueet" id)
-       :options {:as :json}})
-    :body))
-
 (defn find-tutkinto
   "Get perusteet by diaari number"
   [^String diaarinumero]
