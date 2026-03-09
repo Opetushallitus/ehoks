@@ -16,17 +16,6 @@
           (mock-gen/json-response-file
             "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))))
 
-    (GET "/eperusteet-service/api/perusteenosat/:tutkinnon-osa-id/osaalueet" request
-      (let [tutkinnon-osa-id (get-in request [:params :tutkinnon-osa-id])]
-        (case tutkinnon-osa-id
-          "3708884"
-          (mock-gen/json-response-file
-            "dev-routes/eperusteet-service_api_perusteenosat_3708884_osaalueet.json")
-          "52824"
-          (mock-gen/json-response-file
-            "dev-routes/eperusteet-service_api_perusteenosat_52824_osaalueet.json")
-          (throw "ei toteutettu"))))
-
     (GET "/eperusteet-service/api/perusteet/diaari" []
          (mock-gen/json-response-file
            "dev-routes/eperusteet-service_api_perusteet_diaari.json"))
