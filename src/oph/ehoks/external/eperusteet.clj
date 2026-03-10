@@ -47,7 +47,7 @@
     adjust-arviointikohde-arviointi
     tutkinnonosat))
 
-(defn- get-peruste-by-id
+(defn get-peruste-by-id
   "Get peruste by ID. Uses eperusteet external api. An optional part argument
   can be used to get only a subpart of the whole peruste."
   ([^Long id ^String part]
@@ -114,17 +114,6 @@
        (map #(get-peruste-by-id (:id %)))
        (mapcat :tutkinnonOsat)
        (filter #(= (:koodiUri %) koodi-uri))))
-
-(defn get-tutkinnon-osa-viitteet
-  "Get tutkinnon osa viitteet by ID"
-  [^Long id]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-tutkinnonosa-viitteet" id)
-       :options {:as :json}})
-    :body))
 
 (defn find-tutkinto
   "Get perusteet by diaari number"

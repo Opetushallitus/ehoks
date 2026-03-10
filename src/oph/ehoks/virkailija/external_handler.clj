@@ -52,17 +52,6 @@
         (restful/ok (koodisto/get-koodi-latest-versiot koodi-uri))))
 
     (c-api/context "/eperusteet" []
-      (c-api/GET "/tutkinnonosat/:id/viitteet" []
-        :path-params [id :- Long]
-        :summary "Tutkinnon osan viitteet."
-        :return (restful/response [s/Any])
-        (try
-          (restful/ok (eperusteet/get-tutkinnon-osa-viitteet id))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 400)
-              (response/not-found
-                {:message "Tutkinnon osa not found"})
-              (throw e)))))
 
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
