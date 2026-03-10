@@ -22,11 +22,6 @@
         (rest/ok (koodisto/get-koodi koodi-uri))))
 
     (c-api/context "/eperusteet" []
-      (c-api/GET "/tutkinnonosat/:id/viitteet" [id]
-        :path-params [id :- Long]
-        :summary "Tutkinnon osan viitteet."
-        :return (rest/response [s/Any])
-        (rest/ok (eperusteet/get-tutkinnon-osa-viitteet id)))
 
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
