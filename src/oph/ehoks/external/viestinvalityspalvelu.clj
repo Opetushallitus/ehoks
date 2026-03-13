@@ -40,7 +40,7 @@
   [recipient title body]
   (->> {:otsikko title
         :sisalto body
-        :sisallonTyyppi :text
+        :sisallonTyyppi :html
         :kielet [:fi :sv :en]
         :lahettaja {:nimi "Opetushallitus – Utbildningsstyrelsen – EDUFI"
                     :sahkopostiOsoite "noreply@opintopolku.fi"}

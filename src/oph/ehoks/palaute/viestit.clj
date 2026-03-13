@@ -3,6 +3,20 @@
   (:require [clojure.string :as str]
             [hiccup.core :as h]))
 
+(defn palaute-message-subject
+  "Otsikko (subject) viestille, joka lähetetään palautteesta."
+  [{:keys [existing-palaute]}]
+  (if (= (:kyselytyyppi existing-palaute) "tyopaikkajakson_suorittaneet")
+    (str "Työpaikkaohjaajakysely - "
+         "Enkät till arbetsplatshandledaren - "
+         "Survey to workplace instructors")
+    (str "Palautetta oppilaitokselle - "
+         "Respons till läroanstalten - "
+         "Feedback to educational institution")))
+
+(def palaute-message-sender
+  "Opetushallitus – Utbildningsstyrelsen – EDUFI")
+
 (defn html-template
   "Ylätason HTML kaikille lähetettäville viesteille.  Käyttää kenttää:
     :suorituskieli  - tutkinnon kieli kahden kirjaimen koodina"
