@@ -20,6 +20,18 @@
   (:import (clojure.lang ExceptionInfo)
            (java.util UUID)))
 
+(defn palaute-ddb-record
+  "Hakee DynamoDB:stä palautetta vastaavan tietueen."
+  [palaute hoks koulutustoimija]
+  (if (:jakson-yksiloiva-tunniste palaute)
+    (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+      (:id hoks) (:jakson-yksiloiva-tunniste palaute))
+    (ddb/get-item!
+      :amis {:toimija_oppija (str koulutustoimija "/" (:oppija-oid hoks))
+             :tyyppi_kausi
+             (str (amis/translate-kyselytyyppi (:kyselytyyppi palaute))
+                  "/" (palaute/rahoituskausi (:heratepvm palaute)))})))
+
 (defn- enrich-ctx!
   "Lisää muista palveluista saatavia tietoja kontekstiin myöhempää
   käsittelyä varten."
@@ -31,24 +43,18 @@
         koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
     (assoc ctx
            :existing-ddb-herate
-           (delay
-             (if (:jakson-yksiloiva-tunniste existing-palaute)
-               (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
-                 (:id hoks) (:jakson-yksiloiva-tunniste existing-palaute))
-               (ddb/get-item!
-                 :amis
-                 {:toimija_oppija (str koulutustoimija "/" (:oppija-oid hoks))
-                  :tyyppi_kausi   (format "%s/%s"
-                                          (amis/translate-kyselytyyppi
-                                            (:kyselytyyppi existing-palaute))
-                                          (palaute/rahoituskausi
-                                            (:heratepvm existing-palaute)))})))
+           (delay (palaute-ddb-record existing-palaute hoks koulutustoimija))
+           :arvo-status
+           ;; needs more logic when tep-palaute may also be queried
+           (delay (some-> (:kyselylinkki existing-palaute)
+                          (arvo/get-kyselylinkki-status!)))
            :niputuspvm            (tep/next-niputus-date (date/now))
            :vastaamisajan-alkupvm (tep/next-niputus-date
                                     (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus
-           :hk-toteuttaja (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
+           :hk-toteuttaja
+           (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
            :koulutustoimija koulutustoimija
            :toimipiste (palaute/toimipiste-oid! suoritus))))
 
@@ -111,8 +117,9 @@
 
 (def hoks-cache-amount
   "How many HOKSes we cache.  Palautteet from
-  palaute/get-palautteet-waiting-for-vastaajatunnus! are ordered by
-  hoks-id, so 1 should suffice."
+  palaute/get-palautteet-waiting-for-vastaajatunnus! and
+  palaute/get-unsent-palautteet! are ordered by hoks-id, so 1 should
+  suffice."
   2)
 
 (def hoks-cache-time
