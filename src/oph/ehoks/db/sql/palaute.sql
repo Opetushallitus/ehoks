@@ -37,6 +37,20 @@ and	p.heratepvm <= now()
 and	p.deleted_at is null
 order by hoks_id asc
 
+-- :name get-unsent-palautteet! :? :*
+-- :doc Fetch palautteet with kyselylinkki but without sent messages.
+select * from palautteet p
+where kyselytyyppi in (:v*:kyselytyypit)
+  and kyselylinkki is not null
+  and tila in ('kysely_muodostettu', 'vastaajatunnus_muodostettu')
+  and not exists (
+	select 1 from palaute_viestit pv
+	where pv.palaute_id = p.id
+	  and viestityyppi = :viestityyppi
+	  and tila in ('odottaa_lahetysta', 'lahetetty'))
+  and deleted_at is null
+order by hoks_id asc
+
 -- :name update-arvo-tunniste! :? :*
 -- :doc Update arvo-tunniste for palaute with given id.
 update	palautteet

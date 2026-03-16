@@ -66,3 +66,30 @@
         (is (s/includes?
               (:body @req)
               "<p><a href=\\\"http:\\/\\/kysely?t=e\\\">"))))))
+
+(deftest test-check-palaute-for-sending
+  (testing "check-palaute-for-sending"
+    (testing "returns go for example context"
+      (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+             (l/check-palaute-for-sending esim-ctx))))
+    (testing "doesn't handle anything already in heratepalvelu"
+      (is (= [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
+             (l/check-palaute-for-sending
+               (assoc esim-ctx :existing-ddb-herate
+                      (delay {:toimija_oppija "foo/bar"}))))))
+    (testing "no action if email is missing"
+      (is (= [:lahetys-epaonnistunut nil :sahkoposti :ei-ole]
+             (l/check-palaute-for-sending
+               (assoc-in esim-ctx [:hoks :sahkoposti] "")))))
+    (testing "don't send messages for overdue palautekysely"
+      (is (= [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
+             (l/check-palaute-for-sending
+               (assoc esim-ctx :arvo-status
+                      (delay {:vastattu false
+                              :voimassa_loppupvm "2021-01-01T00:00:00Z"}))))))
+    (testing "don't send messages for already answered palautekysely"
+      (is (= [nil :vastattu :heratepvm :arvo-paivitys]
+             (l/check-palaute-for-sending
+               (assoc esim-ctx :arvo-status
+                      (delay {:vastattu true
+                              :voimassa_loppupvm "2051-01-01T00:00:00Z"}))))))))
