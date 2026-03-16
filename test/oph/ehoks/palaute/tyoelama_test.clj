@@ -641,8 +641,7 @@
 
   (let [initial-palautteet (hoks-utils/palautteet)
         palautteet
-        (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
-              :hoks-id nil :palaute-id nil}
+        (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]}
              (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec))
         tep-palaute (find-first
                       #(= (:jakson-yksiloiva-tunniste %) "4") palautteet)

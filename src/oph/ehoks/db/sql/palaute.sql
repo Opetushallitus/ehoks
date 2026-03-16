@@ -7,6 +7,16 @@ insert into palautteet (
 --~ (sql/values-for-insert params)
 ) returning *
 
+-- :name get-palaute-with-hankkimistapa-id-by-id! :? :*
+select	p.*, ohm.hankkimistapa_id
+from	palautteet p
+left join oht_hoks_mapping ohm
+on	(p.hoks_id = ohm.hoks_id
+		and p.jakson_yksiloiva_tunniste = ohm.yksiloiva_tunniste)
+where	(:hoks-id ::int is null or p.hoks_id = :hoks-id ::int)
+and	(:palaute-id ::int is null or p.id = :palaute-id ::int)
+and	p.deleted_at is null
+
 -- :name get-palautteet-waiting-for-vastaajatunnus! :? :*
 -- :doc List all unhandled palautteet whose herätepäivä has come
 select	p.id,
@@ -23,8 +33,6 @@ on	(p.hoks_id = ohm.hoks_id
 		and p.jakson_yksiloiva_tunniste = ohm.yksiloiva_tunniste)
 where	p.tila = 'odottaa_kasittelya'
 and	p.kyselytyyppi in (:v*:kyselytyypit)
-and	(:hoks-id ::int is null or p.hoks_id = :hoks-id ::int)
-and	(:palaute-id ::int is null or p.id = :palaute-id ::int)
 and	p.heratepvm <= now()
 and	p.deleted_at is null
 order by hoks_id asc

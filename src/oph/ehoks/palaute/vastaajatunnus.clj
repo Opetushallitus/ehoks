@@ -275,8 +275,7 @@
   (log/info "Creating vastaajatunnukset for kyselytyypit" kyselytyypit)
   (doall (map handle-palaute-waiting-for-heratepvm!
               (palaute/get-palautteet-waiting-for-vastaajatunnus!
-                db/spec {:kyselytyypit kyselytyypit
-                         :hoks-id nil :palaute-id nil}))))
+                db/spec {:kyselytyypit kyselytyypit}))))
 
 (defn handle-amis-palautteet-on-heratepvm!
   "Create kyselylinkki for palautteet whose herätepvm has come but
