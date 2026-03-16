@@ -282,8 +282,7 @@
                  {:hoks hoks-data :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
           (palaute/get-palautteet-waiting-for-vastaajatunnus!
-            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
-                     :hoks-id nil :palaute-id nil})]
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "HOKS with nonexistent opiskeluoikeus is marked as ei_laheteta"
         (with-redefs [koski/get-opiskeluoikeus-info-raw
                       mock-get-opiskeluoikeus-info-raw]
@@ -465,8 +464,7 @@
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
           (palaute/get-palautteet-waiting-for-vastaajatunnus!
-            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
-                     :hoks-id nil :palaute-id nil})]
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "HOKS creation marks correct palautteet as actionable"
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
@@ -533,8 +531,7 @@
           vastauslinkki-counter (atom 0)
           heratteet
           (palaute/get-palautteet-waiting-for-vastaajatunnus!
-            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
-                     :hoks-id nil :palaute-id nil})]
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "successful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
