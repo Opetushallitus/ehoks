@@ -237,28 +237,35 @@
         (palaute/update-tila! ctx state reason lisatiedot))
       (tapahtuma/build-and-insert! ctx reason lisatiedot))))
 
-(defn handle-palaute-waiting-for-heratepvm!
-  "Check that palaute is part of kohderyhmä and create and save
-  vastaajatunnus if so."
-  [palaute]
+(defn call-with-context-and-error-handling
+  "Process one palaute with given handler, giving full context to the
+  handler and processing any errors"
+  [tapahtumatyyppi handler palaute]
   (try
     (jdbc/with-db-transaction
       [tx db/spec]
-      (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
-                "palaute" (:id palaute))
-      (palaute-check-call-arvo-save-and-sync!
+      (handler
         (assoc (build-ctx! palaute) :tx tx)
         (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers)))
     (catch ExceptionInfo e
       (jdbc/with-db-transaction
         [tx db/spec]
         (-> (:ctx (ex-data e))
-            (or {:existing-palaute palaute})
-            (assoc :tapahtumatyyppi :arvo-luonti :tx tx)
+            (or {:existing-palaute palaute})  ; poor person's context
+            (assoc :tapahtumatyyppi tapahtumatyyppi :tx tx)
             (handle-exception e)))
-      nil) ; no arvo-tunnus created
+      nil) ; handler failed, nothing created
     (catch Exception e
       (log/error e "Unknown error processing palaute" palaute))))
+
+(defn handle-palaute-waiting-for-heratepvm!
+  "Check that palaute is part of kohderyhmä and create and save
+  vastaajatunnus if so."
+  [palaute]
+  (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
+            "palaute" (:id palaute))
+  (call-with-context-and-error-handling
+    :arvo-luonti palaute-check-call-arvo-save-and-sync! palaute))
 
 (defn handle-palautteet-waiting-for-heratepvm!
   "Fetch all unhandled palautteet whose heratepvm has come, check that
