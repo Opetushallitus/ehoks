@@ -1,14 +1,22 @@
 (ns oph.ehoks.palaute.lahetys
   (:require [clojure.tools.logging :as log]
             [clojure.string :as str]
+            [hugsql.core :as hugsql]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as pt]
             [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.palaute.viestit :as v]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as dateutil])
-  (:import (java.time LocalDate)))
+  (:import (java.time LocalDate)
+           (clojure.lang ExceptionInfo)))
+
+(declare insert!)
+(declare get-by-tila-and-viestityypit!)
+(hugsql/def-db-fns "oph/ehoks/db/sql/palauteviesti.sql")
 
 (defn send-palaute-initial-email!
   "Lähettää viestin, jossa kutsutaan vastaamaan Arvossa olevaan kyselyyn."
@@ -26,7 +34,7 @@
 (defn vastausaika-loppunut?
   "Onko kyselylinkin arvo-statuksessa vastausajan loppupvm saavutettu?"
   [status]
-  (when-let [loppupvm (:voimassa_loppupvm status)]
+  (when-let [loppupvm (:voimassa-loppupvm status)]
     (let [enddate (LocalDate/parse (first (str/split loppupvm #"T")))]
       (dateutil/is-after (dateutil/now) enddate))))
 
@@ -64,17 +72,53 @@
     [nil :vastattu :heratepvm :arvo-paivitys]
 
     :else
-    [:odottaa-lahetysta nil :voimassa-alkupvm :kysely-muodostettu]))
+    [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]))
+
+(defn record-palauteviesti!
+  "Record in DB the palauteviesti that was (not) sent."
+  [{:keys [existing-palaute hoks tx]} msg-state msg-id]
+  (insert! tx {:palaute-id (:id existing-palaute)
+               :vastaanottaja (:sahkoposti hoks)
+               :viestityyppi "email"
+               :tila (utils/to-underscore-str msg-state)
+               :ulkoinen-tunniste msg-id}))
 
 (defn palaute-check-send-save-and-sync!
   "Tekee kaikki palautekutsun lähetyksen vaiheet"
-  [{:keys [existing-palaute hoks tx] :as ctx} _] ; no handlers used yet
-  (let [[msg-state state field reason] (check-palaute-for-sending ctx)]
+  [{:keys [existing-palaute hoks] :as ctx} _] ; no handlers used yet
+  (let [[msg-state state field reason] (check-palaute-for-sending ctx)
+        reporting-msg-state (or msg-state :ei-laheteta)
+        additional-info {field (str (get existing-palaute field))
+                         :msg-state reporting-msg-state}]
     (log/info "Message state for palaute" (:id existing-palaute)
-              "of HOKS" (:id hoks) "is" (or msg-state :ei-laheteta)
+              "of HOKS" (:id hoks) "is" reporting-msg-state
               "and state for palaute is" (or state "unchanged")
               "because of" reason "in" field)
-    nil))  ; stub
+    ;; do DB stuff first because it's easier to cancel (exceptions will
+    ;; roll back the transaction)
+    (palaute/update-tila!
+      ctx (or state (:tila existing-palaute)) reason additional-info)
+    (when msg-state
+      (try
+        (let [msg-id (when (= msg-state :odottaa-lahetysta)
+                       (send-palaute-initial-email! ctx))]
+          (record-palauteviesti! ctx msg-state msg-id)
+          msg-id)
+        (catch ExceptionInfo e
+          ;; Most typical reason is that sending failed for some reason
+          ;; (and no message has been queued).  This means that there is
+          ;; no harm in retrying.  However, we handle the 400 case as
+          ;; permanent failure because 400 results are pretty certain to
+          ;; persist even if we retry.
+          (if (= 400 (:status (ex-data e)))
+            (do (record-palauteviesti! ctx :lahetys-epaonnistunut nil)
+                (pt/build-and-insert!
+                  ctx ::viestin-lahetys-epaonnistui
+                  {:errormsg (ex-message e)
+                   :body     (:body (ex-data e))}))
+            (throw (ex-info "Viestin lähetyksessä tapahtui virhe"
+                            {:type ::viestin-lahetys-epaonnistui :ctx ctx}
+                            e))))))))
 
 (defn handle-unsent-palaute!
   "Lähettää viestin yhdelle palautteelle, jos aiheellista."
