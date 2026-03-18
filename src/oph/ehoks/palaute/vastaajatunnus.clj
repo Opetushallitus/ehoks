@@ -252,7 +252,7 @@
     (jdbc/with-db-transaction
       [tx db/spec]
       (handler
-        (assoc (build-ctx! palaute) :tx tx)
+        (assoc (build-ctx! palaute) :tapahtumatyyppi tapahtumatyyppi :tx tx)
         (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers)))
     (catch ExceptionInfo e
       (jdbc/with-db-transaction
