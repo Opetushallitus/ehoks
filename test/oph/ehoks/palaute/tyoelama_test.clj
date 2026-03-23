@@ -451,7 +451,8 @@
                    :jakso          test-jakso
                    :opiskeluoikeus oo-test/opiskeluoikeus-1}]
           (heratepalvelu/sync-jakso!
-            (tep/build-jaksoherate-record-for-heratepalvelu ctx))
+            (tep/build-jaksoherate-record-for-heratepalvelu ctx)
+            :after-arvo-call)
           (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
                                     :opiskeluoikeus oo-test/opiskeluoikeus-1}
                                    test-jakso)
