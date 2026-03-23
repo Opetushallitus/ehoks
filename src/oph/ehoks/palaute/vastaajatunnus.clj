@@ -210,8 +210,8 @@
    {:keys [heratepalvelu-builder heratepalvelu-caller extra-handlers]}]
   (log/info "Replicating palaute" (:id existing-palaute) "to herätepalvelu")
   (try
-    (heratepalvelu-caller (heratepalvelu-builder ctx))
-    (doseq [handler extra-handlers] (handler ctx))
+    (heratepalvelu-caller (heratepalvelu-builder ctx) :after-arvo-call)
+    (doseq [handler extra-handlers] (handler ctx :after-arvo-call))
     (catch Exception e
       (log/warn "Herätepalvelu sync error:" (ex-message e) (:body (ex-data e)))
       (throw (ex-info
