@@ -14,9 +14,6 @@
          "Respons till läroanstalten - "
          "Feedback to educational institution")))
 
-(def palaute-message-sender
-  "Opetushallitus – Utbildningsstyrelsen – EDUFI")
-
 (defn html-template
   "Ylätason HTML kaikille lähetettäville viesteille.  Käyttää kenttää:
     :suorituskieli  - tutkinnon kieli kahden kirjaimen koodina"

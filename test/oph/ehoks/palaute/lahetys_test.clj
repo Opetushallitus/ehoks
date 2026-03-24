@@ -53,9 +53,8 @@
            (when (s/ends-with? url "lahetys/v1/viestit")
              (reset! req options)
              {:status 200
-              :body {:viestiTunniste "019cb395-5840-70fa-96c9-918eec8a6f41"
-                     :lahetysTunniste
-                     "019cb395-5840-70fa-96c9-918eec8a6f41"}}))]
+              :body {:lahetysTunniste "019cb395-5840-70fa-96c9-918eec8a6f41"
+                     :viestiTunniste "019cb395-viestitunniste"}}))]
         (is (= (l/send-palaute-initial-email! esim-ctx)
                "019cb395-5840-70fa-96c9-918eec8a6f41"))
         (is (s/includes?
