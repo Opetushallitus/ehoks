@@ -151,6 +151,7 @@
   :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
                     :dependencies [[ring/ring-mock]
                                    [ring/ring-devel]
+                                   [plumula/diff "0.1.1"]
                                    [clj-kondo]]
                     :plugins [[lein-bikeshed "0.5.2"]]
                     :env {:config "oph-configuration/test.edn"
