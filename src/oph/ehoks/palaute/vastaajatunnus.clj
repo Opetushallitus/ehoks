@@ -5,6 +5,7 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.handling :as handling]
+            [oph.ehoks.palaute.lahetys :as lahetys]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils])
   (:import (clojure.lang ExceptionInfo)))
@@ -111,7 +112,7 @@
         (palaute/update-tila! ctx state reason lisatiedot))
       (tapahtuma/build-and-insert! ctx reason lisatiedot))))
 
-(defn handle-palaute-waiting-for-heratepvm!
+(defn create-vastaajatunnus!
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so."
   [palaute]
@@ -119,6 +120,21 @@
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
     :arvo-luonti palaute-check-call-arvo-save-and-sync! palaute))
+
+(defn handle-palaute-waiting-for-heratepvm!
+  "Do all actions that need to be done to palaute when its heratepvm comes."
+  [palaute]
+  (let [vastaajatunnus (create-vastaajatunnus! palaute)
+        ;; this needs to have hankkimistapa_id too when työelämäpalaute
+        ;; support is added
+        updated-palaute (palaute/get-by-id! db/spec {:id (:id palaute)})]
+    ;; if creation succeeded, also send messages immediately (with fresh caches)
+    (if (contains? #{"kysely_muodostettu" "vastaajatunnus_muodostettu"}
+                   (:tila updated-palaute))
+      (lahetys/handle-unsent-palaute! updated-palaute)
+      (log/info "Palaute" (:id updated-palaute) "is in state"
+                (:tila updated-palaute) "so not proceeding to sending"))
+    vastaajatunnus))
 
 (defn handle-palautteet-waiting-for-heratepvm!
   "Fetch all unhandled palautteet whose heratepvm has come, check that
