@@ -6,8 +6,8 @@
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.palaute.tapahtuma :as pt]
-            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.palaute.viestit :as v]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as dateutil])
@@ -125,7 +125,7 @@
   [palaute]
   (log/info "Sending survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
-  (vt/call-with-context-and-error-handling
+  (handling/call-with-context-and-error-handling
     :lahetys palaute-check-send-save-and-sync! palaute))
 
 (defn handle-unsent-palautteet!

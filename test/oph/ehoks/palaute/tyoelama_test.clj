@@ -19,6 +19,7 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.palaute.vastaajatunnus :as vt]
@@ -658,7 +659,7 @@
           (is (= @arvo-tunnukset [])))]
     (with-redefs [organisaatio/get-organisaatio!
                   hoks-utils/mock-get-organisaatio!
-                  vt/get-hoks-by-id!
+                  handling/get-hoks-by-id!
                   hoks/get-by-id
                   koski/get-opiskeluoikeus-info-raw
                   hoks-utils/mock-get-opiskeluoikeus!
