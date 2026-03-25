@@ -9,7 +9,7 @@
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as opiskelija]
-            [oph.ehoks.palaute.vastaajatunnus :as vt]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.test-utils :as test-utils]
             [taoensso.faraday :as far])
   (:import (java.time LocalDate)))
@@ -50,7 +50,7 @@
             herate (first (palaute/get-by-hoks-id-and-kyselytyypit!
                             db/spec {:hoks-id (:id saved-hoks)
                                      :kyselytyypit ["aloittaneet"]}))
-            ctx (vt/build-ctx! herate)
+            ctx (handling/build-ctx! herate)
             amis-herate
             (opiskelija/build-amisherate-record-for-heratepalvelu ctx)]
         (is (= (:sahkoposti (:hoks ctx)) "irma.isomerkki@esimerkki.com"))
