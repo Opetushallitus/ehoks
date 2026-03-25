@@ -118,7 +118,6 @@
   (db-helpers/query
     [(str "select * from palautteet "
           "where arvo_tunniste is not null and "
-          "tila = 'vastaajatunnus_muodostettu' and "
           "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
 
 (defn mock-get-opiskeluoikeus! [oid]

@@ -676,7 +676,7 @@
         (testing "Arvo call for vastaajatunnus creation fails."
           (with-redefs [arvo/create-jaksotunnus!
                         (fn [_] (throw (ex-info "Arvo error" {})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (nil? (vt/create-vastaajatunnus! tep-palaute))))
           (is (contains?
                 (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
                       :hoks-id (:hoks-id tep-palaute)}
@@ -687,7 +687,7 @@
         (testing "jakso sync to Herätepalvelu fails."
           (with-redefs [heratepalvelu/sync-jakso!*
                         (fn [_] (throw (ex-info "Jakso sync error" {})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (nil? (vt/create-vastaajatunnus! tep-palaute))))
           (is (contains?
                 (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
                       :hoks-id (:hoks-id tep-palaute)}
@@ -699,7 +699,7 @@
           (with-redefs
            [heratepalvelu/sync-tpo-nippu!*
             (fn [_] (throw (ex-info "TPO-nippu sync failed" {})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (nil? (vt/create-vastaajatunnus! tep-palaute))))
           (check-current-state-is-same-as-initial-state)))
       (let [counter-value-before-fn-call @create-jaksotunnus-counter]
         (testing (str "When getting other than \"404 Not found\" error from "
@@ -711,14 +711,14 @@
                              "Koski error"
                              {:status 500
                               :type ::koski/opiskeluoikeus-fetching-error})))]
-            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (nil? (vt/create-vastaajatunnus! tep-palaute))))
           (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
           (check-current-state-is-same-as-initial-state))
         (testing (str "When opiskeluoikeus for palaute is not found from from "
                       "Koski, `tila` for it should be marked as `ei_laheteta`. "
                       "No call to Arvo should be made.")
           (with-redefs [koski/get-opiskeluoikeus! (fn [_] nil)]
-            (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+            (vt/create-vastaajatunnus! tep-palaute)
             (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
             (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                    "ei_laheteta"))))
@@ -728,9 +728,9 @@
           ; before vastaajatunnus creation.
           (palaute/update! db/spec {:id 5 :jakson-yksiloiva-tunniste 4})
           (is (= 2 @create-jaksotunnus-counter))
-          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+          (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
-          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+          (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
           (is (= "heratepalvelussa"
                  (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)})))))
@@ -742,14 +742,14 @@
           (db-helpers/query ["UPDATE palautteet
                              SET tila='odottaa_kasittelya'
                              WHERE jakson_yksiloiva_tunniste='4' RETURNING *"])
-          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+          (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
           (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                  "ei_laheteta")))
         (testing (str "Palaute should be marked as \"ei_laheteta\" when there "
                       "are one or more open keskeytymisajanjakso. No call to "
                       "Arvo should be made.")
-          (vt/handle-palaute-waiting-for-heratepvm! kesk-palaute)
+          (vt/create-vastaajatunnus! kesk-palaute)
           (is (= 3 @create-jaksotunnus-counter))
           (is (= (:tila (palaute/get-by-id! db/spec {:id (:id kesk-palaute)}))
                  "ei_laheteta")))))))

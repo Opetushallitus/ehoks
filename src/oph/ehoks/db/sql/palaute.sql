@@ -7,7 +7,15 @@ insert into palautteet (
 --~ (sql/values-for-insert params)
 ) returning *
 
+-- :name get-by-id! :? :*
+-- :doc Get palaute by palaute id.
+select	p.*
+from	palautteet p
+where	p.id = :palaute-id
+and	p.deleted_at is null
+
 -- :name get-palaute-with-hankkimistapa-id-by-id! :? :*
+-- :doc Get palaute and corresponding OHT id by palaute id or HOKS id
 select	p.*, ohm.hankkimistapa_id
 from	palautteet p
 left join oht_hoks_mapping ohm

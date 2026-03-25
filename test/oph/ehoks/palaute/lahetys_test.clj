@@ -141,7 +141,7 @@
           (->> {:kyselytyypit ["aloittaneet"]}
                (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec)
                (first)
-               (vt/handle-palaute-waiting-for-heratepvm!)))
+               (vt/create-vastaajatunnus!)))
         (let [heratteet
               (->> {:kyselytyypit ["aloittaneet"] :viestityyppi "email"}
                    (palaute/get-unsent-palautteet! db/spec))]
