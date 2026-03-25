@@ -21,6 +21,7 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
@@ -269,7 +270,7 @@
                 koski/get-opiskeluoikeus-info-raw
                 (fn [oo] (assoc oo-test/opiskeluoikeus-1 :oid oo))
                 ;; don't use cache for hokses this time
-                vt/get-hoks-by-id! hoks/get-by-id
+                handling/get-hoks-by-id! hoks/get-by-id
                 onr/get-oppija-raw!
                 mock-get-oppija-raw!
                 organisaatio/get-organisaatio!
@@ -446,7 +447,7 @@
 (defn create-arvo-kyselylinkki!
   [palaute]
   (-> palaute
-      (vt/build-ctx!)
+      (handling/build-ctx!)
       (op/build-kyselylinkki-request-body)
       (arvo/create-kyselytunnus!)))
 
