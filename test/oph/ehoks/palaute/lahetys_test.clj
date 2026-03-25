@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.string :as s]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.oppija.auth-handler-test :refer [mock-get-oppija-raw!]]
@@ -16,6 +17,7 @@
             [oph.ehoks.test-utils :as util]
             [oph.ehoks.utils.date :as date]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.lahetys :as l]
             [oph.ehoks.palaute.vastaajatunnus :as vt])
   (:import (java.time LocalDate)))
@@ -124,9 +126,8 @@
                 organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!]
     (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
-    (let [hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
-                 {:hoks hoks-test/hoks-1
-                  :opiskeluoikeus oo-test/opiskeluoikeus-1})
+    (let [ctx {:hoks hoks-test/hoks-1 :opiskeluoikeus oo-test/opiskeluoikeus-1}
+          hoks (hoks-handler/save-hoks-and-initiate-all-palautteet! ctx)
           sent-message (atom {})]
       (testing "handle-unsent-palaute! sending messages"
         (with-mock-responses
@@ -239,4 +240,18 @@
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi :kyselylinkki))))))
+
+          (testing "with a record already in Herätepalvelu"
+            (ddb/sync-amis-herate!
+              (op/build-amisherate-record-for-heratepalvelu
+                (assoc ctx
+                       :existing-palaute (first heratteet)
+                       :koulutustoimija "1.2.246.562.10.10000000009"
+                       :hk-toteuttaja (delay nil)))
+              :after-all-processing)
+            (is (nil? (l/handle-unsent-palaute! (first heratteet))))
+            (is (= [["heratepalvelussa" "aloittaneet"]]
+                   (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                        (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                        (map (juxt :tila :kyselytyyppi))))))
           nil)))))
