@@ -287,7 +287,7 @@
       (testing "HOKS with nonexistent opiskeluoikeus is marked as ei_laheteta"
         (with-redefs [koski/get-opiskeluoikeus-info-raw
                       mock-get-opiskeluoikeus-info-raw]
-          (vt/handle-palaute-waiting-for-heratepvm! (first heratteet)))
+          (vt/create-vastaajatunnus! (first heratteet)))
         (is (= [["ei_laheteta" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -300,7 +300,7 @@
         (with-redefs [date/now (constantly (LocalDate/of 2024 4 18))
                       koski/get-opiskeluoikeus-info-raw
                       mock-get-opiskeluoikeus-info-raw]
-          (vt/handle-palaute-waiting-for-heratepvm! (second heratteet)))
+          (vt/create-vastaajatunnus! (second heratteet)))
         (is (= [["ei_laheteta" "aloittaneet"]
                 ["ei_laheteta" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -548,7 +548,7 @@
                       :voimassa_loppupvm "2024-10-10"}})))
         (is (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (vt/handle-palaute-waiting-for-heratepvm!)
+                 (vt/create-vastaajatunnus!)
                  (some?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
@@ -615,7 +615,7 @@
                 (ex-info "bad request" {:status 400 :body arvo-error-body})))))
         (->> heratteet
              (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-             (vt/handle-palaute-waiting-for-heratepvm!))
+             (vt/create-vastaajatunnus!))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -644,7 +644,7 @@
                          {:status 404 :body "{\"error\": \"ei-kyselya\"}"})))))
         (->> heratteet
              (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-             (vt/handle-palaute-waiting-for-heratepvm!))
+             (vt/create-vastaajatunnus!))
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
                  {:request-id 0
                   :ensikertainen-hyvaksyminen "2023-04-16"}]

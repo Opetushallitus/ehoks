@@ -38,8 +38,7 @@
                     (palaute/get-palaute-with-hankkimistapa-id-by-id!
                       db/spec {:hoks-id hoks-id :palaute-id nil})
                     vastaajatunnukset
-                    (map vt/handle-palaute-waiting-for-heratepvm!
-                         amis-palautteet)]
+                    (map vt/create-vastaajatunnus! amis-palautteet)]
                 (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
                        ::audit/target {:vastaajatunnukset vastaajatunnukset
                                        :hoks-id hoks-id})))
@@ -65,8 +64,7 @@
                     (palaute/get-palaute-with-hankkimistapa-id-by-id!
                       db/spec {:palaute-id palaute-id :hoks-id nil})
                     vastaajatunnukset
-                    (map vt/handle-palaute-waiting-for-heratepvm!
-                         tep-palautteet)]
+                    (map vt/create-vastaajatunnus! tep-palautteet)]
                 (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
                        ::audit/target {:vastaajatunnukset vastaajatunnukset
                                        :hoks-id nil
