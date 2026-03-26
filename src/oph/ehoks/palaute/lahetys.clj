@@ -115,18 +115,26 @@
                 (pt/build-and-insert!
                   ctx ::viestin-lahetys-epaonnistui
                   {:errormsg (ex-message e)
-                   :body     (:body (ex-data e))}))
+                   :body     (:body (ex-data e))})
+                nil)  ; no msg-id created
             (throw (ex-info "Viestin lähetyksessä tapahtui virhe"
                             {:type ::viestin-lahetys-epaonnistui :ctx ctx}
                             e))))))))
 
-(defn handle-unsent-palaute!
+(defn send-invitation!
   "Lähettää viestin yhdelle palautteelle, jos aiheellista."
   [palaute]
   (log/info "Sending survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
     :lahetys palaute-check-send-save-and-sync! palaute))
+
+(defn handle-unsent-palaute!
+  "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
+  viestiä."
+  [palaute]
+  ;; TODO: also process viestinvalityspalvelu reports
+  (send-invitation! palaute))
 
 (defn handle-unsent-palautteet!
   "Hakee ja lähettää viestit (kyselykutsut) kaikille palautteille
