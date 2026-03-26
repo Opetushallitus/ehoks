@@ -23,6 +23,7 @@
                  [org.clojure/data.xml]
                  [org.clojure/data.json]
                  [environ]
+                 [hiccup]
                  [software.amazon.awssdk/sqs]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]

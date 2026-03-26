@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>2515da528505e1e3e9d3623214b9fba12b471ca8</tag>
+    <tag>ef7ec34f60efd3b7e0667250fdccc6a85c9c4f52</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -570,6 +570,10 @@
     <dependency>
       <groupId>environ</groupId>
       <artifactId>environ</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>hiccup</groupId>
+      <artifactId>hiccup</artifactId>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
