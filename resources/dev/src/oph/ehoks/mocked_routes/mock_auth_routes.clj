@@ -5,6 +5,8 @@
             [clj-http.client :as client]))
 
 (def cas-oppija-ticket "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+(def cas-virkailija-ticket "ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+(def cas-palvelu-ticket "ST-5777-aBcDeFgHiJkLmN123456-cas.1234567890ac")
 
 (def mock-routes
   (routes
@@ -54,17 +56,20 @@
                "Ticket &#39;%s&#39; not recognized"
                "</cas:authenticationFailure>\n"
                "</cas:serviceResponse>\n"))
-           (let [username (if (= (get-in request [:query-params "ticket"])
-                                 "ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac")
-                            "ehoksvirkailija"
-                            "ehoks")]
+           (let [[username ktyyppi]
+                 (if (= (get-in request [:query-params "ticket"])
+                        cas-virkailija-ticket)
+                   ["ehoksvirkailija" "VIRKAILIJA"]
+                   ["ehoks" "PALVELU"])]
              (response/ok
                (format
-                 (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
+                 (str "<cas:serviceResponse "
+                      "xmlns:cas='http://www.yale.edu/tp/cas'>"
                       "<cas:authenticationSuccess><cas:user>%s</cas:user>"
                       "<cas:attributes>"
-                      "<cas:oidHenkilo>1.2.246.562.24.11474338835</cas:oidHenkilo>"
-                      "<cas:kayttajaTyyppi>VIRKAILIJA</cas:kayttajaTyyppi>"
+                      "<cas:oidHenkilo>1.2.246.562.24.11474338835"
+                      "</cas:oidHenkilo>"
+                      "<cas:kayttajaTyyppi>%s</cas:kayttajaTyyppi>"
                       "<cas:idpEntityId>usernamePassword</cas:idpEntityId>"
                       "<cas:roles>"
                       "ROLE_APP_EHOKS_OPHPAAKAYTTAJA_1.2.246.562.10.12944436166"
@@ -90,19 +95,18 @@
                       "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
                       "</cas:authenticationDate></cas:attributes>"
                       "</cas:authenticationSuccess></cas:serviceResponse>")
-                 username)))))
+                 username ktyyppi)))))
 
     (GET "/cas/login" request
-         (response/see-other
-           (format
-             "%s?ticket=ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac"
-             (get-in request [:query-params "service"]))))
+      (response/see-other
+        (format "%s?ticket=%s"
+                (get-in request [:query-params "service"])
+                cas-virkailija-ticket)))
 
     (GET "/cas-oppija/login" request
       (response/see-other
-        (format
-          "%s?ticket=%s"
-          (get-in request [:query-params "service"]) cas-oppija-ticket)))
+        (format "%s?ticket=%s"
+                (get-in request [:query-params "service"]) cas-oppija-ticket)))
 
     (GET "/cas-oppija/logout" request
       (response/see-other (get-in request [:query-params "service"])))

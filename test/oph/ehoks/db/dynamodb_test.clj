@@ -9,7 +9,7 @@
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as opiskelija]
-            [oph.ehoks.palaute.vastaajatunnus :as vt]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.test-utils :as test-utils]
             [taoensso.faraday :as far])
   (:import (java.time LocalDate)))
@@ -50,11 +50,11 @@
             herate (first (palaute/get-by-hoks-id-and-kyselytyypit!
                             db/spec {:hoks-id (:id saved-hoks)
                                      :kyselytyypit ["aloittaneet"]}))
-            ctx (vt/build-ctx! herate)
+            ctx (handling/build-ctx! herate)
             amis-herate
             (opiskelija/build-amisherate-record-for-heratepalvelu ctx)]
         (is (= (:sahkoposti (:hoks ctx)) "irma.isomerkki@esimerkki.com"))
-        (ddb/sync-amis-herate! amis-herate)
+        (ddb/sync-amis-herate! amis-herate :after-all-processing)
         (let [ddb-key {:tyyppi_kausi
                        (str "aloittaneet/"
                             (palaute/rahoituskausi (LocalDate/now)))
@@ -68,7 +68,8 @@
                             :expr-attr-names {"#2" "viestintapalvelu-id"}
                             :expr-attr-vals {":1" "lahetetty"
                                              ":2" "2027-05-06"}})
-          (ddb/sync-amis-herate! (assoc amis-herate :sahkoposti "foo@bar.com"))
+          (ddb/sync-amis-herate! (assoc amis-herate :sahkoposti "foo@bar.com")
+                                 :after-all-processing)
           ; fields that are owned by herätepalvelu are not overwritten
           (let [new-ddb-item (ddb/get-item! :amis ddb-key)]
             (is (= (:sahkoposti new-ddb-item) "foo@bar.com"))

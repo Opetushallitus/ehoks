@@ -102,11 +102,20 @@
 
 (defn sync-amis-herate!
   "Put information for single opiskelijapalaute to herätepalvelu DDB."
-  [kyselyrecord]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-amis-heratteet)
-    (log/info "sync-amis-herate!: configured to not write to DDB.")
-    (sync-item! :amis kyselyrecord)))
+  [kyselyrecord processing-phase]
+  (let [resp (set (:heratepalvelu-responsibities config))]
+    (cond
+      (not (contains? resp :sync-amis-heratteet))
+      (log/info "sync-amis-herate!: configured to not write to DDB.")
+
+      ;; this phase recognition might be better based directly on
+      ;; the tila of given palaute (which is part of the kyselyrecord)
+      (and (= processing-phase :after-arvo-call)
+           (contains? resp :send-initial-messages))
+      (log/info "sync-amis-herate!: not syncing amis heräte"
+                "before its messages have been sent.")
+
+      :else (sync-item! :amis kyselyrecord))))
 
 (defn get-jakso-by-hoks-id-and-yksiloiva-tunniste!
   "Get työelämäjakso from DDB."
