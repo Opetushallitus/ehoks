@@ -129,11 +129,17 @@
         ;; support is added
         updated-palaute (palaute/get-by-id! db/spec {:id (:id palaute)})]
     ;; if creation succeeded, also send messages immediately (with fresh caches)
-    (if (contains? #{"kysely_muodostettu" "vastaajatunnus_muodostettu"}
-                   (:tila updated-palaute))
-      (lahetys/handle-unsent-palaute! updated-palaute)
+    (cond
+      (not (contains? #{"kysely_muodostettu" "vastaajatunnus_muodostettu"}
+                      (:tila updated-palaute)))
       (log/info "Palaute" (:id updated-palaute) "is in state"
-                (:tila updated-palaute) "so not proceeding to sending"))
+                (:tila updated-palaute) "so not proceeding to sending")
+
+      (= "tyopaikkajakson_suorittaneet" (:kyselytyyppi updated-palaute))
+      (log/info "Palaute" (:id updated-palaute) "is tyoelämäpalaute"
+                "so not proceeding to sending")
+
+      :else (lahetys/handle-unsent-palaute! updated-palaute))
     vastaajatunnus))
 
 (defn handle-palautteet-waiting-for-heratepvm!
