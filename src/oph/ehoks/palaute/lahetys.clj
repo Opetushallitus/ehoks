@@ -124,7 +124,7 @@
 (defn send-invitation!
   "Lähettää viestin yhdelle palautteelle, jos aiheellista."
   [palaute]
-  (log/info "Sending survey invitation for" (:kyselytyyppi palaute)
+  (log/info "Processing email survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
     :lahetys palaute-check-send-save-and-sync! palaute))
@@ -142,7 +142,7 @@
   [kyselytyypit]
   ;; tep-viestejä ei ole vielä toteutettu
   (assert (not (contains? (set kyselytyypit) "tyopaikkajakson_suorittaneet")))
-  (log/info "Sending messages for kyselytyypit" kyselytyypit)
+  (log/info "Processing messages for kyselytyypit" kyselytyypit)
   (doall (map handle-unsent-palaute!
               (palaute/get-unsent-palautteet!
                 db/spec {:kyselytyypit kyselytyypit
