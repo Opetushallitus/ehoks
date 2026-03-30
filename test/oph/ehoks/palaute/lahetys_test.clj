@@ -171,10 +171,10 @@
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
-            (is (= [["lahetys_epaonnistunut" "email" nil]]
+            (is (= [["lahetys_epaonnistunut" nil]]
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :tila :viestityyppi :ulkoinen_tunniste))))))
+                        (map (juxt :viesti_tila :ulkoinen_tunniste))))))
 
           (testing "with successful arvo-status and sending"
             (with-mock-responses
@@ -205,10 +205,10 @@
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
-            (is (= [["odottaa_lahetysta" "email" "brymir"]]
+            (is (= [["odottaa_lahetysta" "brymir"]]
                    (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :tila :viestityyppi :ulkoinen_tunniste))))))
+                        (map (juxt :viesti_tila :ulkoinen_tunniste))))))
 
           (testing "with expired kyselylinkki"
             (with-mock-responses
