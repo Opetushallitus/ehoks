@@ -19,11 +19,13 @@ RETURNING id
 -- :doc Fetch all messages (along with their respective palautteet) from
 -- given viestityypit in given tila
 
-SELECT p.tila AS palaute_tila, pv.*
+SELECT	p.*,
+	p.tila AS palaute_tila,
+	pv.*,
+	pv.tila AS viesti_tila
 FROM palaute_viestit pv
 LEFT JOIN palautteet p ON (pv.palaute_id = p.id)
 WHERE pv.viestityyppi in (:v*:viestityypit)
 AND pv.tila = :tila
 AND pv.deleted_at IS NULL
 AND p.deleted_at IS NULL
-
