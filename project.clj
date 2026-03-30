@@ -69,10 +69,10 @@
                          [jarohen/chime "0.3.3"]
 
                          ;; json
-                         [com.fasterxml.jackson.core/jackson-annotations "2.18.1"]
-                         [com.fasterxml.jackson.core/jackson-core "2.18.1"]
-                         [com.fasterxml.jackson.core/jackson-databind "2.18.1"]
-                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.18.1"]
+                         [com.fasterxml.jackson.core/jackson-annotations "2.18.6"]
+                         [com.fasterxml.jackson.core/jackson-core "2.18.6"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.18.6"]
+                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.18.6"]
                          [org.clojure/data.json "2.5.0"]
                          [com.google.code.gson/gson "2.11.0"]
 
