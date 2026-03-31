@@ -40,6 +40,20 @@
     (call! :post "/vastauslinkki/v1"
            {:form-params kyselylinkki-params :content-type :json})))
 
+(defn update-kyselytunnus!
+  "Päivittää Arvoon kyselylinkin muuttuneet tiedot."
+  [vastaajatunnus tila new-alkupvm new-loppupvm]
+  (try
+    (utils/to-dash-keys
+      (call! :patch (str "/vastauslinkki/v1/" vastaajatunnus)
+             {:content-type :json
+              :form-params {:metatiedot {:tila tila}
+                            :voimassa_alkupvm new-alkupvm
+                            :voimassa_loppupvm new-loppupvm}}))
+    (catch ExceptionInfo e
+      (when-not (= 404 (:status (ex-data e)))
+        (throw e)))))
+
 (defn delete-kyselytunnus
   "Poistaa kyselytunnuksen Arvosta."
   [tunnus]
