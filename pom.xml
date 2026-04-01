@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>a7a335d4e4c3343b096b5ca1b68c84de1b015f7c</tag>
+    <tag>e883755fef70c73865897df9ccefba14bbd46f81</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -340,7 +340,12 @@
       <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
-        <version>6.5.7</version>
+        <version>11.20.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-postgresql</artifactId>
+        <version>11.20.3</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -518,6 +523,10 @@
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>

@@ -10,6 +10,7 @@
                  [com.taoensso/faraday]
                  [metosin/compojure-api]
                  [org.flywaydb/flyway-core]
+                 [org.flywaydb/flyway-database-postgresql]
                  [org.clojure/java.jdbc]
                  [org.postgresql/postgresql]
                  [com.layerware/hugsql]
@@ -81,7 +82,8 @@
 
                          ;; postgresql
                          [org.clojure/java.jdbc "0.7.12"]
-                         [org.flywaydb/flyway-core "6.5.7"]
+                         [org.flywaydb/flyway-core "11.20.3"]
+                         [org.flywaydb/flyway-database-postgresql "11.20.3"]
                          [org.postgresql/postgresql "42.7.7"]
                          [com.layerware/hugsql "0.5.3"]
 
