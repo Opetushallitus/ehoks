@@ -7,11 +7,12 @@
 
 (deftest test-update-status!
   (testing "returns updated kyselylinkki when status is found"
-    (with-redefs [arvo/get-kyselylinkki-status!
+    (with-redefs [arvo/get-kyselytunnus-status!
                   (fn [_] {:vastattu          true
                            :voimassa-loppupvm "2025-12-31T00:00:00"})
                   oph.ehoks.palaute.opiskelija.kyselylinkki/update! identity]
-      (let [input {:kyselylinkki "https://testidomain.testi/ABC123"}
+      (let [input {:kyselylinkki "https://testidomain.testi/ABC123"
+                   :arvo-tunniste "ABC123"}
             result (kyselylinkki/update-status! input)]
         (is (= result
                (assoc input
@@ -19,12 +20,13 @@
                       :voimassa-loppupvm (LocalDate/of 2025 12 31)))))))
 
   (testing "returns original kyselylinkki when linkki is not found from Arvo"
-    (with-redefs [arvo/get-kyselylinkki-status! (fn [_] nil)
+    (with-redefs [arvo/get-kyselytunnus-status! (fn [_] nil)
                   oph.ehoks.palaute.opiskelija.kyselylinkki/update! identity]
       (with-log
-        (let [input {:kyselylinkki "ABC123"}
+        (let [input {:kyselylinkki "https://testidomain.testi/ABC123"
+                     :arvo-tunniste "ABC123"}
               result (kyselylinkki/update-status! input)]
           (is (= input result))
           (is (logged? 'oph.ehoks.palaute.opiskelija.kyselylinkki
                        :error
-                       #"kyselylinkki `ABC123` was not found from Arvo")))))))
+                       #"kyselylinkki `[^ ]*ABC123` was not found")))))))

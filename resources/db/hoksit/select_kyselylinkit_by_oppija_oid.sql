@@ -1,4 +1,5 @@
 SELECT kyselylinkki,
+       split_part(kyselylinkki, '/', -1) as arvo_tunniste,
        hoks_id,
        tyyppi,
        oppija_oid,
@@ -13,6 +14,7 @@ WHERE oppija_oid = ?
   AND alkupvm <= now()
 UNION
 SELECT p.kyselylinkki      AS kyselylinkki,
+       p.arvo_tunniste     AS arvo_tunniste,
        p.hoks_id           AS hoks_id,
        CASE
            WHEN p.kyselytyyppi = 'aloittaneet' THEN 'aloittaneet'
@@ -24,7 +26,7 @@ SELECT p.kyselylinkki      AS kyselylinkki,
        h.sahkoposti        AS sahkoposti,
        pv.created_at::date AS lahetyspvm,
        pv.tila::text       AS lahetystila,
-       null                AS vastattu,
+       p.tila = 'vastattu' AS vastattu,
        p.voimassa_loppupvm AS voimassa_loppupvm
 FROM palautteet p
          JOIN hoksit h ON h.id = p.hoks_id

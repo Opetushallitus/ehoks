@@ -32,8 +32,9 @@
   "Fetch the latest status (mainly, `:vastattu` and `voimassa-loppupvm`) of
   `kyselylinkki` from Arvo and update it accordingly."
   [kyselylinkki]
-  (let [linkki (:kyselylinkki kyselylinkki)]
-    (if-let [status (arvo/get-kyselylinkki-status! linkki)]
+  (let [vastaajatunnus (:arvo-tunniste kyselylinkki)
+        linkki (:kyselylinkki kyselylinkki)]
+    (if-let [status (arvo/get-kyselytunnus-status! vastaajatunnus)]
       (let [updates {:vastattu          (:vastattu status)
                      :voimassa-loppupvm
                      (LocalDate/parse
