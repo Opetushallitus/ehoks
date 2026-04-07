@@ -8,15 +8,15 @@
     (-> (Flyway/configure)
         (.dataSource
           (format
-            "jdbc:%s://%s:%d/%s?user=%s&password=%s"
+            "jdbc:%s://%s:%d/%s"
             (:db-type config)
             (:db-server config)
             (:db-port config)
-            (:db-name config)
-            (:db-username config)
-            (:db-password config))
-          nil
-          nil)
+            (:db-name config))
+          (:db-username config)
+          (:db-password config))
+        (.configuration {"flyway.postgresql.transactional.lock" false})
+        (.cleanDisabled false)
         (.load))))
 
 (defn migrate!
