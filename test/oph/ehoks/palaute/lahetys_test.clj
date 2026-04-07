@@ -145,14 +145,15 @@
         (let [heratteet
               (->> {:kyselytyypit ["aloittaneet"] :viestityyppi "email"}
                    (palaute/get-unsent-palautteet! db/spec))]
-          (is (= [["kysely_muodostettu" "aloittaneet"
+          (is (= [["kysely_muodostettu" "aloittaneet" "testivain"
                    "https://arvovastaus.csc.fi/v/test"]]
-                 (map (juxt :tila :kyselytyyppi :kyselylinkki) heratteet)))
+                 (map (juxt :tila :kyselytyyppi :arvo-tunniste :kyselylinkki)
+                      heratteet)))
 
           (testing "with unsuccessful sending"
             (with-mock-responses
               [(fn [url _]
-                 (when (s/ends-with? url "/vastauslinkki/v1/status/test")
+                 (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
                    {:status 200
                     :body {:tunnus "test"
                            :voimassa_loppupvm "2026-04-14"
@@ -178,7 +179,7 @@
           (testing "with successful arvo-status and sending"
             (with-mock-responses
               [(fn [url _]
-                 (when (s/ends-with? url "/vastauslinkki/v1/status/test")
+                 (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
                    {:status 200
                     :body {:tunnus "test"
                            :voimassa_loppupvm "2026-04-14"
@@ -212,7 +213,7 @@
           (testing "with expired kyselylinkki"
             (with-mock-responses
               [(fn [url _]
-                 (when (s/ends-with? url "/vastauslinkki/v1/status/test")
+                 (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
                    {:status 200
                     :body {:tunnus "test"
                            :voimassa_loppupvm "2022-04-14"
@@ -228,7 +229,7 @@
           (testing "with already vastattu kysely"
             (with-mock-responses
               [(fn [url _]
-                 (when (s/ends-with? url "/vastauslinkki/v1/status/test")
+                 (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
                    {:status 200
                     :body {:tunnus "test"
                            :voimassa_loppupvm "2026-04-14"

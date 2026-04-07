@@ -46,8 +46,8 @@
            (delay (palaute-ddb-record existing-palaute hoks koulutustoimija))
            :arvo-status
            ;; needs more logic when tep-palaute may also be queried
-           (delay (some-> (:kyselylinkki existing-palaute)
-                          (arvo/get-kyselylinkki-status!)))
+           (delay (some-> (:arvo-tunniste existing-palaute)
+                          (arvo/get-kyselytunnus-status!)))
            :niputuspvm            (tep/next-niputus-date (date/now))
            :vastaamisajan-alkupvm (tep/next-niputus-date
                                     (:heratepvm existing-palaute))
