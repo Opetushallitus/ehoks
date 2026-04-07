@@ -7,48 +7,26 @@ insert into palautteet (
 --~ (sql/values-for-insert params)
 ) returning *
 
+-- :name get-by-id! :? :*
+-- :doc Get palaute by palaute id.
+select	p.*
+from	palautteet p
+where	p.id = :palaute-id
+and	p.deleted_at is null
+
+-- :name get-palaute-with-hankkimistapa-id-by-id! :? :*
+-- :doc Get palaute and corresponding OHT id by palaute id or HOKS id
+select	p.*, ohm.hankkimistapa_id
+from	palautteet p
+left join oht_hoks_mapping ohm
+on	(p.hoks_id = ohm.hoks_id
+		and p.jakson_yksiloiva_tunniste = ohm.yksiloiva_tunniste)
+where	(:hoks-id ::int is null or p.hoks_id = :hoks-id ::int)
+and	(:palaute-id ::int is null or p.id = :palaute-id ::int)
+and	p.deleted_at is null
+
 -- :name get-palautteet-waiting-for-vastaajatunnus! :? :*
 -- :doc List all unhandled palautteet whose herätepäivä has come
-with oht_hoks_mapping as not materialized (
- select	oht.id as hankkimistapa_id,
-	oht.yksiloiva_tunniste,
-	osa.hoks_id
- from	hankittavat_ammat_tutkinnon_osat osa
- join	hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat osaoh
-	on (osa.id = osaoh.hankittava_ammat_tutkinnon_osa_id)
- join	osaamisen_hankkimistavat oht
-	on (osaoh.osaamisen_hankkimistapa_id = oht.id)
- where	osa.deleted_at is null
- and	osaoh.deleted_at is null
- and	oht.deleted_at is null
-union
- select	oht.id as hankkimistapa_id,
-	oht.yksiloiva_tunniste,
-	osa.hoks_id
- from	hankittavat_paikalliset_tutkinnon_osat osa
- join	hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat osaoh
-	on (osa.id = osaoh.hankittava_paikallinen_tutkinnon_osa_id)
- join	osaamisen_hankkimistavat oht
-	on (osaoh.osaamisen_hankkimistapa_id = oht.id)
- where	osa.deleted_at is null
- and	osaoh.deleted_at is null
- and	oht.deleted_at is null
-union
- select	oht.id as hankkimistapa_id,
-	oht.yksiloiva_tunniste,
-	osa.hoks_id
- from	hankittavat_yhteiset_tutkinnon_osat osa
- join	yhteisen_tutkinnon_osan_osa_alueet alue
-	on (osa.id = alue.yhteinen_tutkinnon_osa_id)
- join	yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat alueoh
-	on (alue.id = alueoh.yhteisen_tutkinnon_osan_osa_alue_id)
- join	osaamisen_hankkimistavat oht
-	on (alueoh.osaamisen_hankkimistapa_id = oht.id)
- where	osa.deleted_at is null
- and	alue.deleted_at is null
- and	alueoh.deleted_at is null
- and	oht.deleted_at is null
-)
 select	p.id,
 	p.hoks_id,
 	p.heratepvm,
@@ -63,10 +41,22 @@ on	(p.hoks_id = ohm.hoks_id
 		and p.jakson_yksiloiva_tunniste = ohm.yksiloiva_tunniste)
 where	p.tila = 'odottaa_kasittelya'
 and	p.kyselytyyppi in (:v*:kyselytyypit)
-and	(:hoks-id ::int is null or p.hoks_id = :hoks-id ::int)
-and	(:palaute-id ::int is null or p.id = :palaute-id ::int)
 and	p.heratepvm <= now()
 and	p.deleted_at is null
+order by hoks_id asc
+
+-- :name get-unsent-palautteet! :? :*
+-- :doc Fetch palautteet with kyselylinkki but without sent messages.
+select * from palautteet p
+where kyselytyyppi in (:v*:kyselytyypit)
+  and kyselylinkki is not null
+  and tila in ('kysely_muodostettu', 'vastaajatunnus_muodostettu')
+  and not exists (
+	select 1 from palaute_viestit pv
+	where pv.palaute_id = p.id
+	  and viestityyppi = :viestityyppi
+	  and tila in ('odottaa_lahetysta', 'lahetetty'))
+  and deleted_at is null
 order by hoks_id asc
 
 -- :name update-arvo-tunniste! :? :*

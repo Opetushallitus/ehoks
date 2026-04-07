@@ -155,7 +155,7 @@
   "Makes sure that the nippu for the työelämäpalaute exists in
   herätepalvelu's data base.  Without this, herätepalvelu doesn't know
   what to niputtaa when it's time."
-  [{:keys [arvo-response] :as ctx}]
+  [{:keys [arvo-response] :as ctx} _] ;; processing phase
   (heratepalvelu/sync-tpo-nippu!
     (nippu/build-tpo-nippu-for-heratepalvelu ctx)
     (:tunnus arvo-response)))
