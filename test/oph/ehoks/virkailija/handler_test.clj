@@ -1538,7 +1538,7 @@
            :sahkoposti        "testi@testi.fi"
            :lahetystila       "viestintapalvelussa"
            :voimassa-loppupvm (str (LocalDate/from loppupvm))}]
-      (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
+      (with-redefs [oph.ehoks.external.arvo/get-kyselytunnus-status!
                     (fn [_]
                       {:vastattu false
                        :voimassa-loppupvm (str loppupvm "Z")})]
@@ -1610,7 +1610,7 @@
                 body (test-utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
             (t/is (= (first (:data body)) kyselylinkki-reply)))
-          (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status!
+          (with-redefs [oph.ehoks.external.arvo/get-kyselytunnus-status!
                         (fn [_]
                           {:vastattu true
                            :voimassa-loppupvm (str new-loppupvm "Z")})]

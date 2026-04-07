@@ -155,7 +155,7 @@
   "Hakee kyselylinkit tietokannasta tunnuksen perusteella."
   [tunnus]
   (db-ops/query
-    [queries/select-kyselylinkit-by-fuzzy-linkki (str "%/" tunnus)]
+    [queries/select-kyselylinkit-by-vastaajatunnus tunnus]
     {:row-fn db-ops/from-sql}))
 
 (defn delete-kyselylinkki-by-tunnus

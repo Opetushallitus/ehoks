@@ -594,7 +594,8 @@
                                 (kyselylinkki/get-by-oppija-oid! oppija-oid))
                               lahetysdata
                               (map
-                                #(dissoc %1 :kyselylinkki :vastattu)
+                                #(dissoc %1 :kyselylinkki :vastattu
+                                         :arvo-tunniste)
                                 (filter
                                   #(and
                                      (= (:hoks-id %1) hoks-id)

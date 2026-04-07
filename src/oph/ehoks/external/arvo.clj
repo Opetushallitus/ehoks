@@ -1,6 +1,5 @@
 (ns oph.ehoks.external.arvo
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
@@ -22,14 +21,12 @@
         (c/with-api-headers)
         :body)))
 
-(defn get-kyselylinkki-status!
+(defn get-kyselytunnus-status!
   "Hakee kyselylinkin tilan Arvosta."
-  [kyselylinkki]
-  (try (->> (str/split kyselylinkki #"/")
-            last
-            (str "/vastauslinkki/v1/status/")
+  [vastaajatunnus]
+  (try (->> (str "/vastauslinkki/v1/status/" vastaajatunnus)
             (call! :get)
-            utils/to-dash-keys)
+            (utils/to-dash-keys))
        (catch ExceptionInfo e
          (when-not (= 404 (:status (ex-data e)))
            (throw e)))))
