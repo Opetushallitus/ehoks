@@ -174,7 +174,7 @@
             (is (= [["lahetys_epaonnistunut" nil]]
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :viesti_tila :ulkoinen_tunniste))))))
+                        (map (juxt :viesti-tila :ulkoinen-tunniste))))))
 
           (testing "with successful arvo-status and sending"
             (with-mock-responses
@@ -208,7 +208,7 @@
             (is (= [["odottaa_lahetysta" "brymir"]]
                    (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :viesti_tila :ulkoinen_tunniste))))))
+                        (map (juxt :viesti-tila :ulkoinen-tunniste))))))
 
           (testing "with expired kyselylinkki"
             (with-mock-responses
@@ -311,7 +311,7 @@
                 viesti (first viestit)]
             (testing "message was created with odottaa_lahetysta status"
               (is (= 1 (count viestit)))
-              (is (= "test-message-id" (:ulkoinen_tunniste viesti))))
+              (is (= "test-message-id" (:ulkoinen-tunniste viesti))))
 
             (testing "updates status to lahetetty when VVP reports LAHETETTY"
               (with-mock-responses
@@ -338,7 +338,7 @@
               (is (= [["lahetetty" "test-message-id"]]
                      (->> {:viestityypit ["email"] :tila "lahetetty"}
                           (l/get-by-tila-and-viestityypit! db/spec)
-                          (map (juxt :viesti_tila :ulkoinen_tunniste)))))
+                          (map (juxt :viesti-tila :ulkoinen-tunniste)))))
               (is (= [["lahetetty" "aloittaneet"]]
                      (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                           (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
@@ -384,7 +384,7 @@
 
           (testing "päättökyselyn viesti was created"
             (is (= 1 (count viestit)))
-            (is (= "test-message-id-2" (:ulkoinen_tunniste viesti))))
+            (is (= "test-message-id-2" (:ulkoinen-tunniste viesti))))
 
           (testing (str "updates status to lahetys-epaonnistunut "
                         "when VVP reports VIRHE")
@@ -404,7 +404,7 @@
             (is (= [["lahetys_epaonnistunut" "test-message-id-2"]]
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :viesti_tila :ulkoinen_tunniste)))))))))))
+                        (map (juxt :viesti-tila :ulkoinen-tunniste)))))))))))
 
 (deftest test-handle-palautteet-waiting-for-sending-status!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -451,34 +451,33 @@
           (l/handle-unsent-palaute! (first heratteet)))
 
         (testing "processes all messages waiting for sending status"
-          (let [viestit-before
-                (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
-                     (l/get-by-tila-and-viestityypit! db/spec))]
-            (is (= 1 (count viestit-before)))
+          (is (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                   (l/get-by-tila-and-viestityypit! db/spec)
+                   (count)
+                   (= 1)))
 
-            (with-mock-responses
-              [(fn [url _]
-                 (cond
-                   (s/ends-with? url "/vastauslinkki/v1/status/testivain")
-                   {:status 200
-                    :body {:tunnus "test"
-                           :voimassa_loppupvm "2026-04-14"
-                           :vastattu false}}
-                   (s/ends-with?
-                     url "/lahetykset/test-message-id/vastaanottajat")
-                   {:status 200
-                    :body {:vastaanottajat [{:tila "LAHETETTY"}]}}))
-               (fn [_ _])
-               (fn [url options]
-                 (when (s/ends-with? url "/vastauslinkki/v1/testivain")
-                   {:status 200
-                    :body (:body options)}))]
-              (l/handle-palautteet-waiting-for-sending-status!))
+          (with-mock-responses
+            [(fn [url _]
+               (cond
+                 (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+                 {:status 200
+                  :body {:tunnus "test"
+                         :voimassa_loppupvm "2026-04-14"
+                         :vastattu false}}
+                 (s/ends-with?
+                   url "/lahetykset/test-message-id/vastaanottajat")
+                 {:status 200
+                  :body {:vastaanottajat [{:tila "LAHETETTY"}]}}))
+             (fn [_ _])
+             (fn [url options]
+               (when (s/ends-with? url "/vastauslinkki/v1/testivain")
+                 {:status 200
+                  :body (:body options)}))]
+            (l/handle-palautteet-waiting-for-sending-status!))
 
-            (let [viestit-after
-                  (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
-                       (l/get-by-tila-and-viestityypit! db/spec))]
-              (is (= 0 (count viestit-after)))
-              (is (= 1 (->> {:viestityypit ["email"] :tila "lahetetty"}
-                            (l/get-by-tila-and-viestityypit! db/spec)
-                            count))))))))))
+          (is (= 0 (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                        (l/get-by-tila-and-viestityypit! db/spec)
+                        (count))))
+          (is (= 1 (->> {:viestityypit ["email"] :tila "lahetetty"}
+                        (l/get-by-tila-and-viestityypit! db/spec)
+                        (count)))))))))

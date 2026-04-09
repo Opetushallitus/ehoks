@@ -159,19 +159,16 @@
   (let [heratepvm (:heratepvm existing-palaute)
         new-alkupvm (greatest heratepvm (dateutil/now))
         new-loppupvm (palaute/vastaamisajan-loppupvm heratepvm new-alkupvm)
-        voimassaolo {:voimassa_alkupvm (str new-alkupvm)
-                     :voimassa_loppupvm (str new-loppupvm)}]
+        voimassaolo {:voimassa-alkupvm (str new-alkupvm)
+                     :voimassa-loppupvm (str new-loppupvm)}]
     (log/info "Palaute" (:id existing-palaute) "has now been sent"
               "so updating vastausaika to"
               (str new-alkupvm " -- " new-loppupvm))
-    (palaute/update!
-      tx (assoc voimassaolo :id (:id existing-palaute)))
-    (palaute/update-tila!
-      ctx :lahetetty :viesti-status
-      (assoc voimassaolo :viesti-status viesti-status))
+    (palaute/update! tx (assoc voimassaolo :id (:id existing-palaute)))
+    (palaute/update-tila! ctx :lahetetty :viesti-status
+                          (assoc voimassaolo :viesti-status viesti-status))
     (arvo/update-kyselytunnus!
-      (:arvo_tunniste existing-palaute)
-      "lahetetty" new-alkupvm new-loppupvm)))
+      (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)))
 
 (def vvp-state->viesti-tila
   {["SKANNAUS"] :odottaa-lahetysta,
@@ -189,13 +186,13 @@
   "Päivittää lähetysstatuksen yhdelle viestille ja päivittää palautteen
   tiedot vastaavasti."
   [{:keys [existing-viesti tx] :as ctx}]
-  (log/info "Updating delivery status for message" (:viesti_id existing-viesti)
-            "(external id" (:ulkoinen_tunniste existing-viesti) ")")
-  (let [status (vvp/message-state! (:ulkoinen_tunniste existing-viesti))
+  (log/info "Updating delivery status for message" (:viesti-id existing-viesti)
+            "(external id" (:ulkoinen-tunniste existing-viesti) ")")
+  (let [status (vvp/message-state! (:ulkoinen-tunniste existing-viesti))
         viesti-tila (vvp-state->viesti-tila status)]
-    (log/info "Delivery status for message" (:viesti_id existing-viesti)
+    (log/info "Delivery status for message" (:viesti-id existing-viesti)
               "is" status "which means" viesti-tila)
-    (update-tila! tx {:id (:viesti_id existing-viesti)
+    (update-tila! tx {:id (:viesti-id existing-viesti)
                       :tila (utils/to-underscore-str viesti-tila)})
     (if (= :lahetetty viesti-tila)
       (record-sending-to-db-and-arvo! (assoc ctx :viesti-status status))
