@@ -35,11 +35,15 @@
 
 (defn set-patch! [f] (swap! client-functions assoc :patch f))
 
-(defmacro with-mock-responses [[get-response post-response] & body]
+(defmacro with-mock-responses
+  "set handlers of GET, POST (and PATCH) requests temporarily to given
+  functions for the duration of body"
+  [[get-response post-response patch-response] & body]
   `(do
      (let [fns# (get-client-functions)]
        (set-get! ~get-response)
        (set-post! ~post-response)
+       (when ~patch-response (set-patch! ~patch-response))
        (let [result# (do ~@body)]
          (restore-functions! fns#)
          result#))))
