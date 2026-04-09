@@ -162,14 +162,13 @@
 
 (defn amispalaute-body
   "Luo AMIS-kyselyviestin tekstin. Data-objektiin kuuluvat seuraavat kentät:
-    :kyselytyyppi   - aloittaneet, tutkinnon_suorittaneet tai
-                      tutkinnon_osia_suorittaneet
+    :kyselytyyppi   - aloittaneet, valmistuneet tai osia_suorittaneet
     :muistutus?     - onko kyseessä muistutusviesti jo lähetetystä linkistä
     :kyselylinkki   - kyselylinkki, joka lähetetään opiskelijalle"
   [{:keys [kyselytyyppi kyselylinkki muistutus?]}]
-  (let [templates {"aloittaneet" amispalaute-body-alkukysely
-                   "tutkinnon_suorittaneet" amispalaute-body-loppukysely
-                   "tutkinnon_osia_suorittaneet" amispalaute-body-loppukysely}
+  (let [templates {"aloittaneet"    amispalaute-body-alkukysely
+                   "valmistuneet"   amispalaute-body-loppukysely
+                   "osia_suorittaneet" amispalaute-body-loppukysely}
         template (templates kyselytyyppi)]
     (list (when muistutus? (amismuistutus-body kyselylinkki))
           (template kyselylinkki))))
