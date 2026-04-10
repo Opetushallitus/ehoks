@@ -3,6 +3,7 @@ SELECT
   osa.hoks_id AS osa__hoks_id,
   osa.tutkinnon_osa_koodi_uri AS osa__tutkinnon_osa_koodi_uri,
   osa.tutkinnon_osa_koodi_versio AS osa__tutkinnon_osa_koodi_versio,
+  osa.tutkinnon_osan_perusteen_diaarinro AS osa__tutkinnon_osan_perusteen_diaarinro,
   osa.vaatimuksista_tai_tavoitteista_poikkeaminen
     AS osa__vaatimuksista_tai_tavoitteista_poikkeaminen,
   osa.koulutuksen_jarjestaja_oid AS osa__koulutuksen_jarjestaja_oid,
