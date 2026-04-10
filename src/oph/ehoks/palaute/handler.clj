@@ -35,11 +35,8 @@
             (c-api/POST "/:hoks-id/kyselylinkki" [hoks-id]
               :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
               (let [amis-palautteet
-                    (palaute/get-palautteet-waiting-for-vastaajatunnus!
-                      db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"
-                                              "osia_suorittaneet"]
-                               :hoks-id hoks-id
-                               :palaute-id nil})
+                    (palaute/get-palaute-with-hankkimistapa-id-by-id!
+                      db/spec {:hoks-id hoks-id :palaute-id nil})
                     vastaajatunnukset
                     (map vt/handle-palaute-waiting-for-heratepvm!
                          amis-palautteet)]
@@ -65,11 +62,8 @@
                               ticket :- s/Str]
               :path-params [palaute-id :- s/Int]
               (let [tep-palautteet
-                    (palaute/get-palautteet-waiting-for-vastaajatunnus!
-                      db/spec
-                      {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
-                       :palaute-id palaute-id
-                       :hoks-id nil})
+                    (palaute/get-palaute-with-hankkimistapa-id-by-id!
+                      db/spec {:palaute-id palaute-id :hoks-id nil})
                     vastaajatunnukset
                     (map vt/handle-palaute-waiting-for-heratepvm!
                          tep-palautteet)]

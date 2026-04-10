@@ -20,6 +20,18 @@
   (:import (clojure.lang ExceptionInfo)
            (java.util UUID)))
 
+(defn palaute-ddb-record
+  "Hakee DynamoDB:stä palautetta vastaavan tietueen."
+  [palaute hoks koulutustoimija]
+  (if (:jakson-yksiloiva-tunniste palaute)
+    (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+      (:id hoks) (:jakson-yksiloiva-tunniste palaute))
+    (ddb/get-item!
+      :amis {:toimija_oppija (str koulutustoimija "/" (:oppija-oid hoks))
+             :tyyppi_kausi
+             (str (amis/translate-kyselytyyppi (:kyselytyyppi palaute))
+                  "/" (palaute/rahoituskausi (:heratepvm palaute)))})))
+
 (defn- enrich-ctx!
   "Lisää muista palveluista saatavia tietoja kontekstiin myöhempää
   käsittelyä varten."
@@ -31,24 +43,18 @@
         koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
     (assoc ctx
            :existing-ddb-herate
-           (delay
-             (if (:jakson-yksiloiva-tunniste existing-palaute)
-               (ddb/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
-                 (:id hoks) (:jakson-yksiloiva-tunniste existing-palaute))
-               (ddb/get-item!
-                 :amis
-                 {:toimija_oppija (str koulutustoimija "/" (:oppija-oid hoks))
-                  :tyyppi_kausi   (format "%s/%s"
-                                          (amis/translate-kyselytyyppi
-                                            (:kyselytyyppi existing-palaute))
-                                          (palaute/rahoituskausi
-                                            (:heratepvm existing-palaute)))})))
+           (delay (palaute-ddb-record existing-palaute hoks koulutustoimija))
+           :arvo-status
+           ;; needs more logic when tep-palaute may also be queried
+           (delay (some-> (:arvo-tunniste existing-palaute)
+                          (arvo/get-kyselytunnus-status!)))
            :niputuspvm            (tep/next-niputus-date (date/now))
            :vastaamisajan-alkupvm (tep/next-niputus-date
                                     (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus
-           :hk-toteuttaja (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
+           :hk-toteuttaja
+           (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
            :koulutustoimija koulutustoimija
            :toimipiste (palaute/toimipiste-oid! suoritus))))
 
@@ -111,8 +117,9 @@
 
 (def hoks-cache-amount
   "How many HOKSes we cache.  Palautteet from
-  palaute/get-palautteet-waiting-for-vastaajatunnus! are ordered by
-  hoks-id, so 1 should suffice."
+  palaute/get-palautteet-waiting-for-vastaajatunnus! and
+  palaute/get-unsent-palautteet! are ordered by hoks-id, so 1 should
+  suffice."
   2)
 
 (def hoks-cache-time
@@ -203,8 +210,8 @@
    {:keys [heratepalvelu-builder heratepalvelu-caller extra-handlers]}]
   (log/info "Replicating palaute" (:id existing-palaute) "to herätepalvelu")
   (try
-    (heratepalvelu-caller (heratepalvelu-builder ctx))
-    (doseq [handler extra-handlers] (handler ctx))
+    (heratepalvelu-caller (heratepalvelu-builder ctx) :after-arvo-call)
+    (doseq [handler extra-handlers] (handler ctx :after-arvo-call))
     (catch Exception e
       (log/warn "Herätepalvelu sync error:" (ex-message e) (:body (ex-data e)))
       (throw (ex-info
@@ -237,28 +244,35 @@
         (palaute/update-tila! ctx state reason lisatiedot))
       (tapahtuma/build-and-insert! ctx reason lisatiedot))))
 
-(defn handle-palaute-waiting-for-heratepvm!
-  "Check that palaute is part of kohderyhmä and create and save
-  vastaajatunnus if so."
-  [palaute]
+(defn call-with-context-and-error-handling
+  "Process one palaute with given handler, giving full context to the
+  handler and processing any errors"
+  [tapahtumatyyppi handler palaute]
   (try
     (jdbc/with-db-transaction
       [tx db/spec]
-      (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
-                "palaute" (:id palaute))
-      (palaute-check-call-arvo-save-and-sync!
-        (assoc (build-ctx! palaute) :tx tx)
+      (handler
+        (assoc (build-ctx! palaute) :tapahtumatyyppi tapahtumatyyppi :tx tx)
         (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers)))
     (catch ExceptionInfo e
       (jdbc/with-db-transaction
         [tx db/spec]
         (-> (:ctx (ex-data e))
-            (or {:existing-palaute palaute})
-            (assoc :tapahtumatyyppi :arvo-luonti :tx tx)
+            (or {:existing-palaute palaute})  ; poor person's context
+            (assoc :tapahtumatyyppi tapahtumatyyppi :tx tx)
             (handle-exception e)))
-      nil) ; no arvo-tunnus created
+      nil) ; handler failed, nothing created
     (catch Exception e
       (log/error e "Unknown error processing palaute" palaute))))
+
+(defn handle-palaute-waiting-for-heratepvm!
+  "Check that palaute is part of kohderyhmä and create and save
+  vastaajatunnus if so."
+  [palaute]
+  (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
+            "palaute" (:id palaute))
+  (call-with-context-and-error-handling
+    :arvo-luonti palaute-check-call-arvo-save-and-sync! palaute))
 
 (defn handle-palautteet-waiting-for-heratepvm!
   "Fetch all unhandled palautteet whose heratepvm has come, check that
@@ -268,8 +282,7 @@
   (log/info "Creating vastaajatunnukset for kyselytyypit" kyselytyypit)
   (doall (map handle-palaute-waiting-for-heratepvm!
               (palaute/get-palautteet-waiting-for-vastaajatunnus!
-                db/spec {:kyselytyypit kyselytyypit
-                         :hoks-id nil :palaute-id nil}))))
+                db/spec {:kyselytyypit kyselytyypit}))))
 
 (defn handle-amis-palautteet-on-heratepvm!
   "Create kyselylinkki for palautteet whose herätepvm has come but

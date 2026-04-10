@@ -59,7 +59,7 @@
 
 (defn sync-jakso!
   "Put information about single työelämäpalaute to herätepalvelu DDB."
-  [jaksorecord]
+  [jaksorecord _] ; processing phase
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-jakso-heratteet)
     (log/info "sync-jakso!: configured to not write to DDB.")
