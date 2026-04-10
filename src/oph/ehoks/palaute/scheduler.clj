@@ -56,7 +56,17 @@
       (log/info "handle-unsent-palautteet!: ended with result"
                 result))
     (catch Exception e
-      (log/error e "Unhandled exception in handle-unsent-palautteet!"))))
+      (log/error e "Unhandled exception in handle-unsent-palautteet!")))
+  (try
+    (log/info "Handling viestit whose sending status is unknown.")
+    (let [result (lahetys/handle-palautteet-waiting-for-sending-status!)]
+      (log/info "handle-palautteet-waiting-for-sending-status!: ended with"
+                "result" result))
+    (catch Exception e
+      (log/error e "Unhandled exception in"
+                 "handle-palautteet-waiting-for-sending-status!")))
+  (log/info "Done palaute hourly actions.")
+  true)
 
 (defn time->instant
   "Converts a specific time of day into an instant on today"

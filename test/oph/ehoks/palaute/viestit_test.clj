@@ -120,7 +120,7 @@
   (testing "amispalaute-html formats correctly loppukysely"
     (let [actual (v/amispalaute-html
                    {:suorituskieli "fi"
-                    :kyselytyyppi "tutkinnon_suorittaneet"
+                    :kyselytyyppi "valmistuneet"
                     :kyselylinkki "https://kysely.linkki/123"})]
       (is (= actual mock-amispalaute-html-loppukysely)
           (format-diff (d/diff actual mock-amispalaute-html-loppukysely))))))
@@ -190,7 +190,7 @@
   (testing "amismuistutus-html formats correctly"
     (let [actual (v/amispalaute-html
                    {:suorituskieli "fi"
-                    :kyselytyyppi "tutkinnon_osia_suorittaneet"
+                    :kyselytyyppi "osia_suorittaneet"
                     :muistutus? true
                     :kyselylinkki "https://kysely.linkki/123"})]
       (is (= actual mock-amismuistutus-html)
