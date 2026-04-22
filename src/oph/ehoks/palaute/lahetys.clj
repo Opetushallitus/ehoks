@@ -90,7 +90,7 @@
                :tila (utils/to-underscore-str msg-state)
                :ulkoinen-tunniste msg-id}))
 
-(defn palaute-check-send-save-and-sync!
+(defn palaute-check-send-and-save!
   "Tekee kaikki palautekutsun lähetyksen vaiheet"
   [{:keys [existing-palaute hoks] :as ctx} _] ; no handlers used yet
   (let [[msg-state state field reason] (check-palaute-for-sending ctx)
@@ -134,7 +134,7 @@
   (log/info "Processing email survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
-    :lahetys palaute-check-send-save-and-sync! palaute))
+    :lahetys palaute-check-send-and-save! palaute))
 
 (defn handle-unsent-palaute!
   "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
