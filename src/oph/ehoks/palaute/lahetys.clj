@@ -195,8 +195,11 @@
         viesti-tila (vvp-state->viesti-tila status)]
     (log/info "Delivery status for message" (:viesti-id existing-viesti)
               "is" status "which means" viesti-tila)
-    (update-tila! tx {:id (:viesti-id existing-viesti)
-                      :tila (utils/to-underscore-str viesti-tila)})
+    (if viesti-tila
+      (update-tila! tx {:id (:viesti-id existing-viesti)
+                        :tila (utils/to-underscore-str viesti-tila)})
+      (throw (ex-info "Unknown delivery status"
+                      {:type ::viestistatuksen-haku-epaonnistui :ctx ctx})))
     (if (= :lahetetty viesti-tila)
       (record-sending-to-db-and-arvo! (assoc ctx :viesti-status status))
       (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))))
