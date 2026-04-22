@@ -5,11 +5,13 @@
             [hugsql.core :as hugsql]
             [medley.core :refer [greatest]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.handling :as handling]
+            [oph.ehoks.palaute.opiskelija :as opiskelija]
             [oph.ehoks.palaute.tapahtuma :as pt]
             [oph.ehoks.palaute.viestit :as v]
             [oph.ehoks.utils :as utils]
@@ -155,7 +157,18 @@
                 db/spec {:kyselytyypit kyselytyypit
                          :viestityyppi "email"}))))
 
-(defn record-sending-to-db-and-arvo!
+(defn sync-to-heratepalvelu!
+  "Enrich context with enough information to sync palaute into
+  herätepalvelu and then do the sync.  Currently only works for
+  AMIS-kysely kyselytyypit."
+  [{:keys [existing-palaute] :as ctx}]
+  (-> existing-palaute
+      (handling/build-ctx!)
+      (merge ctx)  ; because original context has e.g. tx and existing-viesti
+      (opiskelija/build-amisherate-record-for-heratepalvelu)
+      (ddb/sync-amis-herate! :after-viestinvalityspalvelu-status)))
+
+(defn record-sending-to-db-hp-and-arvo!
   "Päivittää Arvoon ja tietokantaan palautteen tilan sekä vastaamisajan
   alku- ja loppupäivän sillä hetkellä kun viestin saadaan tietää lähteneen"
   [{:keys [existing-palaute viesti-status tx] :as ctx}]
@@ -171,7 +184,8 @@
     (palaute/update-tila! ctx :lahetetty :viesti-status
                           (assoc voimassaolo :viesti-status viesti-status))
     (arvo/update-kyselytunnus!
-      (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)))
+      (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)
+    (sync-to-heratepalvelu! ctx)))
 
 (def vvp-state->viesti-tila
   {["SKANNAUS"] :odottaa-lahetysta,
@@ -201,7 +215,7 @@
       (throw (ex-info "Unknown delivery status"
                       {:type ::viestistatuksen-haku-epaonnistui :ctx ctx})))
     (if (= :lahetetty viesti-tila)
-      (record-sending-to-db-and-arvo! (assoc ctx :viesti-status status))
+      (record-sending-to-db-hp-and-arvo! (assoc ctx :viesti-status status))
       (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))))
 
 (defn handle-palaute-waiting-for-sending-status!
