@@ -289,13 +289,13 @@
        :heratepvm heratepvm
        :alkupvm alkupvm
        :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-       :toimipiste_oid toimipiste
+       :toimipiste-oid toimipiste
        :lahetystila ; FIXME when it can have other states
        (if (not-empty (:sahkoposti hoks))
          "ei_lahetetty"
          "ei_laheteta")
        :puhelinnumero (:puhelinnumero hoks)
-       :hankintakoulutuksen_toteuttaja @hk-toteuttaja
+       :hankintakoulutuksen-toteuttaja @hk-toteuttaja
        :ehoks-id (:id hoks)
        :herate-source (or (translate-source (:herate-source existing-palaute))
                           "sqs_viesti_ehoksista")
@@ -315,6 +315,7 @@
                                  (not-empty (:puhelinnumero hoks)))
                           "ei_lahetetty"
                           "ei_laheteta")
+       :suorituskieli (suoritus/kieli suoritus)
        :tallennuspvm (date/now)
        :toimija_oppija (str koulutustoimija "/" oppija-oid)
        :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)
