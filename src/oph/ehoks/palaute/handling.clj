@@ -52,8 +52,7 @@
                                     (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus
-           :hk-toteuttaja
-           (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
+           :hk-toteuttaja (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
            :koulutustoimija koulutustoimija
            :toimipiste (palaute/toimipiste-oid! suoritus))))
 
