@@ -24,7 +24,9 @@
   \"set key1 = 1,key2 = 'val2'\" when `params` is {:key1 1 :key2 \"val2\"})`."
   [params options]
   (str "set updated_at = now(), "
-       (str/join "," (for [[field _] params]
+       (str/join "," (for [[field _] params
+                            :when (not (#{:updated-at :created-at :deleted-at}
+                                        field))]
                        (-> (utils/to-underscore-str field)
                            (identifier-param-quote options)
                            (str " = :v:" (name field)))))))

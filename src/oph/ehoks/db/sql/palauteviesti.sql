@@ -15,6 +15,15 @@ VALUES (
 	:ulkoinen-tunniste)
 RETURNING id
 
+-- :name get-by-palaute-and-viestityypit! :? :*
+-- :doc Fetch all messages for the given palaute-id
+
+SELECT *
+FROM palaute_viestit
+WHERE viestityyppi in (:v*:viestityypit)
+AND palaute_id = :palaute-id
+AND deleted_at IS NULL
+
 -- :name get-by-tila-and-viestityypit! :? :*
 -- :doc Fetch all messages (along with their respective palautteet) from
 -- given viestityypit in given tila

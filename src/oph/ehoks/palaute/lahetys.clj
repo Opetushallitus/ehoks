@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [clojure.string :as str]
             [hugsql.core :as hugsql]
-            [medley.core :refer [greatest]]
+            [medley.core :refer [greatest find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
@@ -21,6 +21,7 @@
 
 (declare insert!)
 (declare get-by-tila-and-viestityypit!)
+(declare get-by-palaute-and-viestityypit!)
 (declare update-tila!)
 (hugsql/def-db-fns "oph/ehoks/db/sql/palauteviesti.sql")
 
@@ -157,6 +158,18 @@
                 db/spec {:kyselytyypit kyselytyypit
                          :viestityyppi "email"}))))
 
+(defn enrich-with-viestit!
+  "Add the :palaute-email and :palaute-sms fields to ctx to allow syncing
+  correct lahetyspvm, lahetystila, sms-lahetystila and viestintapalvelu-id
+  for amis-heräte."
+  [{:keys [existing-palaute tx] :as ctx}]
+  (let [viestit (get-by-palaute-and-viestityypit!
+                  tx {:palaute-id (:id existing-palaute)
+                      :viestityypit ["email" "sms"]})
+        email (find-first #(= "email" (:viestityyppi %)) viestit)
+        sms (find-first #(= "sms" (:viestityyppi %)) viestit)]
+    (assoc ctx :palaute-email email :palaute-sms sms)))
+
 (defn sync-to-heratepalvelu!
   "Enrich context with enough information to sync palaute into
   herätepalvelu and then do the sync.  Currently only works for
@@ -165,6 +178,7 @@
   (-> existing-palaute
       (handling/build-ctx!)
       (merge ctx)  ; because original context has e.g. tx and existing-viesti
+      (enrich-with-viestit!)
       (opiskelija/build-amisherate-record-for-heratepalvelu)
       (ddb/sync-amis-herate! :after-viestinvalityspalvelu-status)))
 
