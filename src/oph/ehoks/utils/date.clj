@@ -1,7 +1,8 @@
 (ns oph.ehoks.utils.date
   "Date related utility functions. Some of the functions are simple wrappers of
   `java.time/LocalDate` that can be mocked in the tests."
-  (:import [java.time
+  (:import [java.sql Timestamp]
+           [java.time
             LocalDate
             ZonedDateTime
             Instant
@@ -13,11 +14,18 @@
 (defn now ^LocalDate [] (LocalDate/now))
 (defn now-with-time ^Instant [] (Instant/now))
 
+(def ehoks-zone (ZoneId/of "Europe/Helsinki"))
+
+(defn timestamp->localdate
+  "Converts a java.sql.Timestamp to java.time.LocalDate"
+  [^Timestamp ts]
+  (some-> ts (.toInstant) (.atZone ehoks-zone) (.toLocalDate)))
+
 (defn time->instant
   "Converts a specific time of day into an instant on today"
   [hour minute sec]
   (-> (LocalTime/of hour minute sec)
-      (.adjustInto (ZonedDateTime/now (ZoneId/of "Europe/Helsinki")))
+      (.adjustInto (ZonedDateTime/now ehoks-zone))
       (Instant/from)))
 
 (defn finnish-business-hours?

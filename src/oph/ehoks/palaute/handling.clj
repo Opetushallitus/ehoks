@@ -43,8 +43,8 @@
     (assoc ctx
            :existing-ddb-herate
            (delay (palaute-ddb-record existing-palaute hoks koulutustoimija))
-           :arvo-status
            ;; needs more logic when tep-palaute may also be queried
+           :arvo-status
            (delay (some-> (:arvo-tunniste existing-palaute)
                           (arvo/get-kyselytunnus-status!)))
            :niputuspvm            (tep/next-niputus-date (date/now))
