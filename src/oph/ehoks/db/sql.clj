@@ -25,7 +25,7 @@
   [params options]
   (str "set updated_at = now(), "
        (str/join "," (for [[field _] params
-                            :when (not (#{:updated-at :created-at :deleted-at}
+                           :when (not (#{:updated-at :created-at :deleted-at}
                                         field))]
                        (-> (utils/to-underscore-str field)
                            (identifier-param-quote options)

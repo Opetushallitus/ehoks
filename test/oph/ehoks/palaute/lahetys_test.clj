@@ -357,12 +357,16 @@
                      (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                           (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                           (map (juxt :tila :kyselytyyppi)))))
-              (let [ddb-item (ddb/get-item! :amis
-                               {:toimija_oppija
-                                "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
-                                :tyyppi_kausi "aloittaneet/2022-2023"})]
-                (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
-                (is (= "https://arvovastaus.csc.fi/v/test" (:kyselylinkki ddb-item)))
+              (let [ddb-item
+                    (ddb/get-item!
+                      :amis
+                      {:toimija_oppija
+                       "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                       :tyyppi_kausi "aloittaneet/2022-2023"})]
+                (is (= "testi.testaaja@testidomain.testi"
+                       (:sahkoposti ddb-item)))
+                (is (= "https://arvovastaus.csc.fi/v/test"
+                       (:kyselylinkki ddb-item)))
                 (is (= "lahetetty" (:lahetystila ddb-item)))
                 (is (= "ei_laheteta" (:sms-lahetystila ddb-item))))))))
 
@@ -427,10 +431,12 @@
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
                         (map (juxt :viesti-tila :ulkoinen-tunniste)))))
-            (is (nil? (ddb/get-item! :amis
-                        {:toimija_oppija
-                         "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
-                         :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"})))))))))
+            (is (nil?
+                  (ddb/get-item!
+                    :amis
+                    {:toimija_oppija
+                     "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                     :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"})))))))))
 
 (deftest test-handle-palautteet-waiting-for-sending-status!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -508,13 +514,16 @@
           (is (= 1 (->> {:viestityypit ["email"] :tila "lahetetty"}
                         (l/get-by-tila-and-viestityypit! db/spec)
                         (count))))
-          (let [ddb-item (ddb/get-item! :amis
-                           {:toimija_oppija
-                            "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
-                            :tyyppi_kausi "aloittaneet/2022-2023"})]
+          (let [ddb-item
+                (ddb/get-item!
+                  :amis
+                  {:toimija_oppija
+                   "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                   :tyyppi_kausi "aloittaneet/2022-2023"})]
             (is (some? ddb-item))
             (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
-            (is (= "https://arvovastaus.csc.fi/v/test" (:kyselylinkki ddb-item)))
+            (is (= "https://arvovastaus.csc.fi/v/test"
+                   (:kyselylinkki ddb-item)))
             (is (= "lahetetty" (:lahetystila ddb-item)))))))))
 
 (deftest test-vastausaika-updated-on-confirmed-delivery!
