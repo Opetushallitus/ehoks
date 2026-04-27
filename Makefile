@@ -46,7 +46,7 @@ stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json \
 
 MAVEN_REPO = $(HOME)/.m2/repository
 SS_JAR = $(MAVEN_REPO)/net/sourceforge/schemaspy/schemaspy/5.0.0/schemaspy-5.0.0.jar
-PG_JAR = $(MAVEN_REPO)/org/postgresql/postgresql/42.2.12/postgresql-42.2.12.jar
+PG_JAR = $(MAVEN_REPO)/org/postgresql/postgresql/42.7.7/postgresql-42.7.7.jar
 
 schemaDoc: stamps/db-schema
 	lein with-profile schemaspy deps
