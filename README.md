@@ -324,6 +324,23 @@ Interaktiivisessa ajossa Var:eja voi lisätä myös `.carve/ignore` listaukseen,
 jolloin näitä ei poisteta työkalun toimesta, eivätkä samat Var:it tule
 uudelleen vastaan interaktiivisessa ajossa.
 
+### Vanhentuneiden kirjastojen ja haavoittuvuuksien tarkistus
+
+Vuosikellotyönä tehtävä kirjastohaavoittuvuuksien tarkistus on yleensä
+tehty komennolla:
+
+```
+$ docker run -it --rm -v .:/tmp docker.io/aquasec/trivy fs \
+	--severity CRITICAL,HIGH --scanners vuln /tmp
+```
+
+Vanhentuneiden kirjastojen tarkistamiseen ei ole mitään erityisen hyvää
+työkalua, mutta scripts-kansiossa on skripti, joka osaa useimmista
+riippuvuuksista näyttää, milloin kirjasto on viimeksi päivitetty:
+
+```
+$ sh scripts/list-deps-dates.sh
+```
 
 ## Dummy-datan tuonti tietokantaan
 
