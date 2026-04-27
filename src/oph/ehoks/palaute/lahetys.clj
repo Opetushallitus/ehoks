@@ -230,7 +230,11 @@
                       {:type ::viestistatuksen-haku-epaonnistui :ctx ctx})))
     (if (= :lahetetty viesti-tila)
       (record-sending-to-db-hp-and-arvo! (assoc ctx :viesti-status status))
-      (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))))
+      (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))
+    ;; temporary fix until we also send SMS's: sync even failed
+    ;; palautteet to herätepalvelu for trying to send SMS
+    (when (= :lahetys-epaonnistunut viesti-tila)
+      (sync-to-heratepalvelu! ctx))))
 
 (defn handle-palaute-waiting-for-sending-status!
   "Tekee asiat, mitä tarvitsee tehdä yhdelle viestille jonka lähetysstatusta

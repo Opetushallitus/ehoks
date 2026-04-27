@@ -313,8 +313,9 @@
                                   (:tila existing-palaute)
                                   (:tila palaute-email)
                                   (empty? (:sahkoposti hoks)))
-       :lahetyspvm (some-> palaute-email :updated-at
-                           date/timestamp->localdate str)
+       :lahetyspvm (when (= "lahetetty" (:tila palaute-email))
+                     (some-> palaute-email :updated-at
+                             date/timestamp->localdate str))
        :viestintapalvelu-id (:ulkoinen-tunniste palaute-email)
        :puhelinnumero (:puhelinnumero hoks)
        :hankintakoulutuksen-toteuttaja @hk-toteuttaja
