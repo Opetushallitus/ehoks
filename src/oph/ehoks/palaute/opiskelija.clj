@@ -275,10 +275,29 @@
      :heratepvm (:heratepvm existing-palaute)
      :request_id request-id}))
 
+(defn combine-tila
+  "Calculate lahetystila (if :email) or sms-lahetystila (if :sms) based
+  on palaute and palaute-viesti states"
+  [msg-type kyselytyyppi palaute-tila viesti-tila no-contact-info?]
+  (cond
+    (contains? #{"vastausaika_loppunut" "vastattu" "ei_laheteta"} palaute-tila)
+    palaute-tila
+
+    (contains? #{"lahetetty" "lahetys_epaonnistunut"} viesti-tila)
+    viesti-tila
+
+    (and (= msg-type :sms) (= "aloittaneet" kyselytyyppi))
+    "ei_laheteta"
+
+    no-contact-info? "ei_laheteta"
+
+    :else "ei_lahetetty"))
+
 (defn build-amisherate-record-for-heratepalvelu
   "Turns the information context into AMISherate in heratepalvelu format."
   [{:keys [existing-palaute hoks koulutustoimija suoritus opiskeluoikeus
-           toimipiste hk-toteuttaja arvo-response request-id]}]
+           toimipiste palaute-email palaute-sms
+           hk-toteuttaja arvo-response request-id]}]
   (let [heratepvm (:heratepvm existing-palaute)
         oppija-oid (:oppija-oid hoks)
         rahoituskausi (palaute/rahoituskausi heratepvm)
@@ -289,13 +308,17 @@
        :heratepvm heratepvm
        :alkupvm alkupvm
        :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-       :toimipiste_oid toimipiste
-       :lahetystila ; FIXME when it can have other states
-       (if (not-empty (:sahkoposti hoks))
-         "ei_lahetetty"
-         "ei_laheteta")
+       :toimipiste-oid toimipiste
+       :lahetystila (combine-tila :email (:kyselytyyppi existing-palaute)
+                                  (:tila existing-palaute)
+                                  (:tila palaute-email)
+                                  (empty? (:sahkoposti hoks)))
+       :lahetyspvm (when (= "lahetetty" (:tila palaute-email))
+                     (some-> palaute-email :updated-at
+                             date/timestamp->localdate str))
+       :viestintapalvelu-id (:ulkoinen-tunniste palaute-email)
        :puhelinnumero (:puhelinnumero hoks)
-       :hankintakoulutuksen_toteuttaja @hk-toteuttaja
+       :hankintakoulutuksen-toteuttaja @hk-toteuttaja
        :ehoks-id (:id hoks)
        :herate-source (or (translate-source (:herate-source existing-palaute))
                           "sqs_viesti_ehoksista")
@@ -309,12 +332,11 @@
        :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
        :osaamisala (str/join "," (suoritus/get-osaamisalat suoritus heratepvm))
        :rahoituskausi rahoituskausi
-       :sms-lahetystila (if (and (or (= kyselytyyppi "tutkinnon_suorittaneet")
-                                     (= kyselytyyppi
-                                        "tutkinnon_osia_suorittaneet"))
-                                 (not-empty (:puhelinnumero hoks)))
-                          "ei_lahetetty"
-                          "ei_laheteta")
+       :sms-lahetystila (combine-tila :sms (:kyselytyyppi existing-palaute)
+                                      (:tila existing-palaute)
+                                      (:tila palaute-sms)
+                                      (empty? (:puhelinnumero hoks)))
+       :suorituskieli (suoritus/kieli suoritus)
        :tallennuspvm (date/now)
        :toimija_oppija (str koulutustoimija "/" oppija-oid)
        :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)
