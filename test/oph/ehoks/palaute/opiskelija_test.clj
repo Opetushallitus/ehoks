@@ -295,8 +295,7 @@
                  {:hoks hoks-data :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
           (palaute/get-palautteet-waiting-for-vastaajatunnus!
-            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
-                     :hoks-id nil :palaute-id nil})]
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "HOKS with nonexistent opiskeluoikeus is marked as ei_laheteta"
         (with-redefs [koski/get-opiskeluoikeus-info-raw
                       mock-get-opiskeluoikeus-info-raw]
@@ -435,7 +434,8 @@
                      :existing-palaute
                      {:kyselytyyppi "aloittaneet"
                       :heratepvm (:ensikertainen-hyvaksyminen
-                                   hoks-test/hoks-1)})))
+                                   hoks-test/hoks-1)}))
+            :after-all-processing)
           (ddb/sync-amis-herate!
             (op/build-amisherate-record-for-heratepalvelu
               (assoc ctx
@@ -444,7 +444,8 @@
                      :existing-palaute
                      {:kyselytyyppi "valmistuneet"
                       :heratepvm (:osaamisen-saavuttamisen-pvm
-                                   hoks-test/hoks-1)})))
+                                   hoks-test/hoks-1)}))
+            :after-all-processing)
           (are [kysely-type]
                (= :heratepalvelussa (op/initiate-if-needed! ctx kysely-type))
             :aloituskysely :paattokysely))
@@ -478,8 +479,7 @@
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
           (palaute/get-palautteet-waiting-for-vastaajatunnus!
-            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
-                     :hoks-id nil :palaute-id nil})]
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "HOKS creation marks correct palautteet as actionable"
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
@@ -546,8 +546,7 @@
           vastauslinkki-counter (atom 0)
           heratteet
           (palaute/get-palautteet-waiting-for-vastaajatunnus!
-            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]
-                     :hoks-id nil :palaute-id nil})]
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "successful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
@@ -613,16 +612,13 @@
                     :vastattu          false
                     :sahkoposti        "testi.testaaja@testidomain.testi"
                     :voimassa-loppupvm (LocalDate/from loppupvm)}))))))
-      (testing "Palaute is synced to herätepalvelu after Arvo call"
+      (testing "Palaute is not synced to herätepalvelu after Arvo call"
         (let [ddb-key {:tyyppi_kausi "tutkinnon_suorittaneet/2023-2024"
                        :toimija_oppija
                        "1.2.246.562.10.346830761110/1.2.246.562.24.12312312319"}
               ddb-item (far/get-item
                          @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
-          (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
-          (is (= "https://arvovastaus.csc.fi/v/foo1" (:kyselylinkki ddb-item)))
-          (is (not (empty? (:request-id ddb-item))))
-          (is (= "351407" (str (:tutkintotunnus ddb-item))))))
+          (is (empty? ddb-item))))
       (testing "unsuccessful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url _]
@@ -690,9 +686,8 @@
                 organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!]
     (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-4)
-    (let [hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
-                 {:hoks hoks-test/hoks-4
-                  :opiskeluoikeus oo-test/opiskeluoikeus-1})
+    (let [ctx {:hoks hoks-test/hoks-4 :opiskeluoikeus oo-test/opiskeluoikeus-1}
+          hoks (hoks-handler/save-hoks-and-initiate-all-palautteet! ctx)
           vastauslinkki-counter (atom 0)
           [aloituskysely paattokysely]
           (palaute/get-by-hoks-id-and-kyselytyypit!
@@ -722,9 +717,31 @@
           ; before vastaajatunnus creation.
           (palaute/update! db/spec aloituskysely)
           (palaute/update! db/spec paattokysely)
+          (ddb/sync-amis-herate!
+            (op/build-amisherate-record-for-heratepalvelu
+              (assoc ctx
+                     :existing-palaute aloituskysely
+                     :koulutustoimija "1.2.246.562.10.346830761110"
+                     :hk-toteuttaja (delay nil)))
+            :after-all-processing)
           (is (= 2 @vastauslinkki-counter))
           (vt/handle-amis-palautteet-on-heratepvm! {})
-          (is (= 2 @vastauslinkki-counter)) ; shouldn't be incremented
+          (is (= 3 @vastauslinkki-counter)) ; not incremented for aloitus
+          (is (= [["heratepalvelussa" "aloittaneet"]
+                  ["odottaa_kasittelya" "valmistuneet"]]
+                 (->> {:hoks-id (:id hoks)
+                       :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                      (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                      (map (juxt :tila :kyselytyyppi)))))
+          (ddb/sync-amis-herate!
+            (op/build-amisherate-record-for-heratepalvelu
+              (assoc ctx
+                     :existing-palaute paattokysely
+                     :koulutustoimija "1.2.246.562.10.346830761110"
+                     :hk-toteuttaja (delay nil)))
+            :after-all-processing)
+          (vt/handle-amis-palautteet-on-heratepvm! {})
+          (is (= 3 @vastauslinkki-counter)) ; not incremented for either
           (is (= [["heratepalvelussa" "aloittaneet"]
                   ["heratepalvelussa" "valmistuneet"]]
                  (->> {:hoks-id (:id hoks)
