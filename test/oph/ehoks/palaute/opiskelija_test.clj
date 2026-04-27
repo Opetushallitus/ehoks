@@ -21,6 +21,7 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
@@ -282,7 +283,7 @@
                 koski/get-opiskeluoikeus-info-raw
                 (fn [oo] (assoc oo-test/opiskeluoikeus-1 :oid oo))
                 ;; don't use cache for hokses this time
-                vt/get-hoks-by-id! hoks/get-by-id
+                handling/get-hoks-by-id! hoks/get-by-id
                 onr/get-oppija-raw!
                 mock-get-oppija-raw!
                 organisaatio/get-organisaatio!
@@ -299,7 +300,7 @@
       (testing "HOKS with nonexistent opiskeluoikeus is marked as ei_laheteta"
         (with-redefs [koski/get-opiskeluoikeus-info-raw
                       mock-get-opiskeluoikeus-info-raw]
-          (vt/handle-palaute-waiting-for-heratepvm! (first heratteet)))
+          (vt/create-vastaajatunnus! (first heratteet)))
         (is (= [["ei_laheteta" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -312,7 +313,7 @@
         (with-redefs [date/now (constantly (LocalDate/of 2024 4 18))
                       koski/get-opiskeluoikeus-info-raw
                       mock-get-opiskeluoikeus-info-raw]
-          (vt/handle-palaute-waiting-for-heratepvm! (second heratteet)))
+          (vt/create-vastaajatunnus! (second heratteet)))
         (is (= [["ei_laheteta" "aloittaneet"]
                 ["ei_laheteta" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -459,7 +460,7 @@
 (defn create-arvo-kyselylinkki!
   [palaute]
   (-> palaute
-      (vt/build-ctx!)
+      (handling/build-ctx!)
       (op/build-kyselylinkki-request-body)
       (arvo/create-kyselytunnus!)))
 
@@ -560,7 +561,7 @@
                       :voimassa_loppupvm "2024-10-10"}})))
         (is (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (vt/handle-palaute-waiting-for-heratepvm!)
+                 (vt/create-vastaajatunnus!)
                  (some?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
@@ -627,7 +628,7 @@
                 (ex-info "bad request" {:status 400 :body arvo-error-body})))))
         (->> heratteet
              (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-             (vt/handle-palaute-waiting-for-heratepvm!))
+             (vt/create-vastaajatunnus!))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
@@ -656,7 +657,7 @@
                          {:status 404 :body "{\"error\": \"ei-kyselya\"}"})))))
         (->> heratteet
              (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-             (vt/handle-palaute-waiting-for-heratepvm!))
+             (vt/create-vastaajatunnus!))
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
                  {:request-id 0
                   :ensikertainen-hyvaksyminen "2023-04-16"}]

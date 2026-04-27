@@ -6,8 +6,8 @@
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.handling :as handling]
             [oph.ehoks.palaute.tapahtuma :as pt]
-            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.palaute.viestit :as v]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as dateutil])
@@ -115,18 +115,26 @@
                 (pt/build-and-insert!
                   ctx ::viestin-lahetys-epaonnistui
                   {:errormsg (ex-message e)
-                   :body     (:body (ex-data e))}))
+                   :body     (:body (ex-data e))})
+                nil)  ; no msg-id created
             (throw (ex-info "Viestin lähetyksessä tapahtui virhe"
                             {:type ::viestin-lahetys-epaonnistui :ctx ctx}
                             e))))))))
 
-(defn handle-unsent-palaute!
+(defn send-invitation!
   "Lähettää viestin yhdelle palautteelle, jos aiheellista."
   [palaute]
-  (log/info "Sending survey invitation for" (:kyselytyyppi palaute)
+  (log/info "Processing email survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
-  (vt/call-with-context-and-error-handling
+  (handling/call-with-context-and-error-handling
     :lahetys palaute-check-send-save-and-sync! palaute))
+
+(defn handle-unsent-palaute!
+  "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
+  viestiä."
+  [palaute]
+  ;; TODO: also process viestinvalityspalvelu reports
+  (send-invitation! palaute))
 
 (defn handle-unsent-palautteet!
   "Hakee ja lähettää viestit (kyselykutsut) kaikille palautteille
@@ -134,7 +142,7 @@
   [kyselytyypit]
   ;; tep-viestejä ei ole vielä toteutettu
   (assert (not (contains? (set kyselytyypit) "tyopaikkajakson_suorittaneet")))
-  (log/info "Sending messages for kyselytyypit" kyselytyypit)
+  (log/info "Processing messages for kyselytyypit" kyselytyypit)
   (doall (map handle-unsent-palaute!
               (palaute/get-unsent-palautteet!
                 db/spec {:kyselytyypit kyselytyypit
