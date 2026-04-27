@@ -211,7 +211,7 @@ Migraation voi luoda:
 lein genmigration /path/to/migrations "Title of the migration"
 ```
 
-#### Flyway migraatiovirheen korjaaminen
+#### Flyway-migraatiovirheen korjaaminen
 
 Erityisesti kehitysympäristöissä kuten QA:lla voi tulla tilanne, jossa eri kehityshaaroja asenneltaessa tietokannan migraatiot voivat mennä solmuun. Yleisin virhetilanne on se, että asennettavasta versiosta puuttuu jokin migraatio, joka palvelimella olevasta versiosta löytyy ja tästä syystä asennus epäonnistuu migration checksum mismatch-virheeseen.
 
