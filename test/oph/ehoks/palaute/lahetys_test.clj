@@ -431,12 +431,17 @@
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
                         (map (juxt :viesti-tila :ulkoinen-tunniste)))))
-            (is (nil?
+            (let [herate
                   (ddb/get-item!
                     :amis
                     {:toimija_oppija
                      "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
-                     :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"})))))))))
+                     :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"})]
+              (is (nil? (:lahetyspvm herate)))
+              (is (= "lahetys_epaonnistunut" (:lahetystila herate)))
+              (is (= "ei_lahetetty" (:sms-lahetystila herate)))
+              (is (= "test-message-id-2" (:viestintapalvelu-id herate)))
+              (is (= "2023-05-17" (:voimassa-loppupvm herate))))))))))
 
 (deftest test-handle-palautteet-waiting-for-sending-status!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
