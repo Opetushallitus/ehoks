@@ -110,6 +110,7 @@
                          [camel-snake-kebab "0.4.3"]
                          [org.mozilla/rhino "1.7.12"]
                          [clj-kondo "2026.01.19" :exclusions [org.ow2.asm/asm]]
+                         [io.airlift/aircompressor "2.0.3"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.5.0"]

@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>742ad795750502a8c3e2a47f205d338e320084e0</tag>
+    <tag>e8aebc2a88a3a7d30d7a912b28420a35b1e7cd58</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -473,6 +473,11 @@
             <groupId>org.ow2.asm</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.airlift</groupId>
+        <artifactId>aircompressor</artifactId>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.clojure</groupId>
