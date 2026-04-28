@@ -1,8 +1,10 @@
 @startuml
+Virkailija -> CAS: istunnon perustaminen
+CAS -> Virkailija: istuntotiketti (TGT)
+Virkailija -> CAS: palvelukirjautumistiketin haku
+CAS -> Virkailija: palvelutiketti (ST)
 Virkailija -> eHOKS: Kirjautuminen
 eHOKS -> CAS: Käyttäjän tunnistaminen tiketin perusteella
-CAS -> eHOKS: Käyttäjänimi
-eHOKS -> Käyttöoikeuspalvelu: Käyttäjän tiedot käyttäjänimen perusteella
-Käyttöoikeuspalvelu -> eHOKS: Käyttäjätiedot ja käyttöoikeudet organisaatioittain
-eHOKS -> Virkailija: Istunto
+CAS -> eHOKS: Käyttäjänimi ja käyttöoikeudet
+eHOKS -> Virkailija: eHOKS-Istunto
 @enduml
