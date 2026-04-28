@@ -81,6 +81,9 @@ stamps/diagrams-up-to-date: $(DIAGRAMS)
 %.png: %.dot
 	dot -Tpng $< >$@
 
+doc/integrations.png: doc/integrations.dot
+	circo -Tpng $< >$@
+
 %.png: %.txt
 	plantuml -tpng $<
 

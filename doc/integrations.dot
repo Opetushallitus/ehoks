@@ -1,40 +1,52 @@
 digraph{
-  graph [fontname = "monospace", fontsize="10", color="grey", fontcolor="grey"];
+  graph [fontname = "monospace", fontsize="10"];
   node [fontname = "monospace", shape="box", style="filled"];
   edge [fontname = "monospace", color="blue", fontcolor="blue",fontsize="10"];
 
   subgraph clusterEhoks {
     label="eHOKS"
-    "virkailija-backend"
-    "oppija-backend"
+    "virkailija-backend" [label="\N
+    käyttäjät, joilla oikeuksia
+    eHOKS-järjestelmään"]
+    "oppija-backend" [label="\N
+    käyttäjät, joilla tietoja
+    eHOKS-järjestelmässä"]
+    "palaute-backend" [label="\N\neräajot"]
   }
 
   subgraph clusterOpetushallitus {
-    label="Opetushallitus"
+    label="Opetushallituksen taustapalvelut"
     "koodisto"
-    "cas"
+    "CAS"
     "oppijanumerorekisteri"
+    "organisaatiopalvelu"
     "koski"
     "ePerusteet"
     "lokalisointi"
     "opintopolku-tunnistautuminen"
-    "kayttöoikeus-service"
+    "viestinvälityspalvelu"
   }
 
-  "ohj" -> "virkailija-backend"
-  "koodisto" -> "virkailija-backend"
-  "cas" -> "virkailija-backend"
-  "virkailija-backend" -> "cas"
-  "oppijanumerorekisteri" -> "virkailija-backend"
-  "kayttöoikeus-service" -> "virkailija-backend"
-  "koski" -> "virkailija-backend"
-  "ePerusteet" -> "virkailija-backend"
-  "lokalisointi" -> "virkailija-backend"
+  "virkailija-backend" -> "koodisto" [label="hakee koodit validointiin"]
+  "virkailija-backend" -> "CAS" [label="tarkistaa pääsyn\nhakee käyttöoikeudet"]
+  "virkailija-backend" -> "oppijanumerorekisteri" [label="hakee nimet"]
+  "virkailija-backend" -> "organisaatiopalvelu" [label="hakee nimet
+  tarkistaa organisaatiotyypit
+  hakee org.hierarkian käyttöoikeuksia varten"]
+  "virkailija-backend" -> "koski" [label="hakee opiskeluoikeudet"]
+  "virkailija-backend" -> "ePerusteet" [label="hakee arviointitiedot"]
+  "virkailija-backend" -> "lokalisointi" [label="hakee käännökset"]
 
-  "opintopolku-tunnistautuminen" -> "oppija-backend"
-  "koski" -> "oppija-backend"
-  "ePerusteet" -> "oppija-backend"
-  "lokalisointi" -> "oppija-backend"
-  "oppijanumerorekisteri" -> "oppija-backend"
-  "koodisto" -> "oppija-backend"
+  "oppija-backend" -> "koodisto" [label="hakee koodit kenttien täyttöön"]
+  "oppija-backend" -> "opintopolku-tunnistautuminen" [label="selvittää oppijan"]
+  "oppija-backend" -> "koski" [label="hakee opiskeluoikeuden"]
+  "oppija-backend" -> "ePerusteet" [label="hakee arviointitiedot"]
+  "oppija-backend" -> "lokalisointi" [label="hakee käännökset"]
+  "oppija-backend" -> "oppijanumerorekisteri" [label="hakee nimen"]
+
+  "palaute-backend" -> "koski" [label="hakee opiskeluoikeudet"]
+  "palaute-backend" -> "Arvo" [label="luo ammatillisen palautteet"]
+  "palaute-backend" -> "viestinvälityspalvelu" [label="lähettää palautepyynnön"]
+  "palaute-backend" -> "Elisa Dialogi" [label="lähettää palautepyynnön"]
+
 }
