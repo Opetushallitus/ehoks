@@ -72,6 +72,18 @@ tags::
 	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' \
 		--exclude='myenv' .
 
+DIAGRAMS = doc/backend-auth-seq.png doc/infrastructure.png \
+	   doc/integrations.png doc/virkailija-auth-seq.png
+
+stamps/diagrams-up-to-date: $(DIAGRAMS)
+	touch $@
+
+%.png: %.dot
+	dot -Tpng $< >$@
+
+%.png: %.txt
+	plantuml -tpng $<
+
 stamps/setup-clj-kondo:
 	mkdir -p .clj-kondo
 	lein clj-kondo --lint "$$(lein classpath)" --dependencies \
