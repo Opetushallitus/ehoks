@@ -88,7 +88,7 @@
   "Record in DB the palauteviesti that was (not) sent."
   [{:keys [existing-palaute hoks tx]} msg-state msg-id]
   (insert! tx {:palaute-id (:id existing-palaute)
-               :vastaanottaja (:sahkoposti hoks)
+               :vastaanottaja (str (:sahkoposti hoks))
                :viestityyppi "email"
                :tila (utils/to-underscore-str msg-state)
                :ulkoinen-tunniste msg-id}))
