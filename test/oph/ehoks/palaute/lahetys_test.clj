@@ -368,6 +368,7 @@
                 (is (= "https://arvovastaus.csc.fi/v/test"
                        (:kyselylinkki ddb-item)))
                 (is (= "lahetetty" (:lahetystila ddb-item)))
+                (is (= 0 (:muistutukset ddb-item)))
                 (is (= "ei_laheteta" (:sms-lahetystila ddb-item))))))))
 
       (testing "update-delivery-status! with VIRHE status"

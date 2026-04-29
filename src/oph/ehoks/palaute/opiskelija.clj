@@ -317,6 +317,9 @@
                      (some-> palaute-email :updated-at
                              date/timestamp->localdate str))
        :viestintapalvelu-id (:ulkoinen-tunniste palaute-email)
+       ;; this needs to be fixed if we ever sync herätteet after
+       ;; sending reminders
+       :muistutukset 0
        :puhelinnumero (:puhelinnumero hoks)
        :hankintakoulutuksen-toteuttaja @hk-toteuttaja
        :ehoks-id (:id hoks)
