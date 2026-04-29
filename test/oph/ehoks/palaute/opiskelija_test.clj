@@ -97,6 +97,40 @@
             :paikallinen_tutkinnon_osa      true
             :paikallinen_tutkinnon_osa_nimi "Paikallinen osa"}))))
 
+(deftest test-combine-tila
+  (are [msg-type kyselytyyppi palaute-tila viesti-tila no-contact-info?
+        expected]
+       (= (op/combine-tila
+            msg-type kyselytyyppi palaute-tila viesti-tila no-contact-info?)
+          expected)
+    ; terminal palaute-tila takes priority over everything
+    :email "aloittaneet" "vastausaika_loppunut" "lahetetty"             false
+    "vastausaika_loppunut"
+    :email "aloittaneet" "vastattu"             "lahetetty"             false
+    "vastattu"
+    :email "aloittaneet" "ei_laheteta"          "lahetetty"             false
+    "ei_laheteta"
+    ; viesti-tila used when palaute is not yet terminal
+    :email "aloittaneet" "odottaa_kasittelya"   "lahetetty"             false
+    "lahetetty"
+    :email "aloittaneet" "odottaa_kasittelya"   "lahetys_epaonnistunut" false
+    "lahetys_epaonnistunut"
+    ; sms for aloittaneet is always ei_laheteta regardless of contact info
+    :sms   "aloittaneet" "odottaa_kasittelya"   nil                     false
+    "ei_laheteta"
+    :sms   "aloittaneet" "odottaa_kasittelya"   nil                     true
+    "ei_laheteta"
+    ; no contact info → ei_laheteta
+    :email "aloittaneet" "odottaa_kasittelya"   nil                     true
+    "ei_laheteta"
+    :sms   "valmistuneet" "odottaa_kasittelya"  nil                     true
+    "ei_laheteta"
+    ; has contact info, nothing sent yet → ei_lahetetty
+    :email "aloittaneet" "odottaa_kasittelya"   nil                     false
+    "ei_lahetetty"
+    :sms   "valmistuneet" "odottaa_kasittelya"  nil                     false
+    "ei_lahetetty"))
+
 (defn test-not-initiated
   ([ctx reason]
     (test-not-initiated nil ctx reason))

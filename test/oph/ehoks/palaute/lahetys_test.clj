@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.string :as s]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks-test :as hoks-test]
@@ -163,32 +164,6 @@
                  (map (juxt :tila :kyselytyyppi :arvo-tunniste :kyselylinkki)
                       heratteet)))
 
-          (testing "with unsuccessful sending"
-            (with-mock-responses
-              [(fn [url _]
-                 (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
-                   {:status 200
-                    :body {:tunnus "test"
-                           :voimassa_loppupvm "2026-04-14"
-                           :vastattu false}}))
-               (fn [^String url _]
-                 (when (s/ends-with? url "/lahetys/v1/viestit")
-                   (throw (ex-info
-                            "clj-http: status 400"
-                            {:status 400
-                             :body (str "{\"validointiVirheet\":["
-                                        "\"jokin on pakollinen\"]}")}))))]
-              (l/handle-unsent-palaute! (first heratteet)))
-            (is (= [["kysely_muodostettu" "aloittaneet"
-                     "https://arvovastaus.csc.fi/v/test"]]
-                   (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
-                        (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
-                        (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
-            (is (= [["lahetys_epaonnistunut" nil]]
-                   (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
-                        (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :viesti-tila :ulkoinen-tunniste))))))
-
           (testing "with successful arvo-status and sending"
             (with-mock-responses
               [(fn [url _]
@@ -223,6 +198,10 @@
                         (l/get-by-tila-and-viestityypit! db/spec)
                         (map (juxt :viesti-tila :ulkoinen-tunniste))))))
 
+          (db-ops/query
+            ["DELETE FROM palaute_viestit WHERE palaute_id=? RETURNING id"
+             (:id (first heratteet))])
+
           (testing "with expired kyselylinkki"
             (with-mock-responses
               [(fn [url _]
@@ -254,6 +233,46 @@
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi :kyselylinkki))))))
+
+          (testing "with unsuccessful sending"
+            (with-mock-responses
+              [(fn [url _]
+                 (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+                   {:status 200
+                    :body {:tunnus "test"
+                           :voimassa_loppupvm "2026-04-14"
+                           :vastattu false}}))
+               (fn [^String url _]
+                 (when (s/ends-with? url "/lahetys/v1/viestit")
+                   (throw (ex-info
+                            "clj-http: status 400"
+                            {:status 400
+                             :body (str "{\"validointiVirheet\":["
+                                        "\"jokin on pakollinen\"]}")}))))]
+              (l/handle-unsent-palaute! (first heratteet)))
+            (is (= [["kysely_muodostettu" "aloittaneet"
+                     "https://arvovastaus.csc.fi/v/test"]]
+                   (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                        (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                        (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
+            (is (= [["lahetys_epaonnistunut" nil]]
+                   (->> {:viestityypit ["email"]
+                         :palaute-id (:id (first heratteet))}
+                        (l/get-by-palaute-and-viestityypit! db/spec)
+                        (map (juxt :tila :ulkoinen-tunniste)))))
+            (let [ddb-item
+                  (ddb/get-item!
+                    :amis
+                    {:toimija_oppija
+                     "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                     :tyyppi_kausi "aloittaneet/2022-2023"})]
+              (is (= "testi.testaaja@testidomain.testi"
+                     (:sahkoposti ddb-item)))
+              (is (= "https://arvovastaus.csc.fi/v/test"
+                     (:kyselylinkki ddb-item)))
+              (is (= 0 (:muistutukset ddb-item)))
+              (is (= "lahetys_epaonnistunut" (:lahetystila ddb-item)))
+              (is (= "ei_laheteta" (:sms-lahetystila ddb-item)))))
 
           (testing "with a record already in Herätepalvelu"
             (ddb/sync-amis-herate!
@@ -356,7 +375,20 @@
               (is (= [["lahetetty" "aloittaneet"]]
                      (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                           (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
-                          (map (juxt :tila :kyselytyyppi)))))))))
+                          (map (juxt :tila :kyselytyyppi)))))
+              (let [ddb-item
+                    (ddb/get-item!
+                      :amis
+                      {:toimija_oppija
+                       "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                       :tyyppi_kausi "aloittaneet/2022-2023"})]
+                (is (= "testi.testaaja@testidomain.testi"
+                       (:sahkoposti ddb-item)))
+                (is (= "https://arvovastaus.csc.fi/v/test"
+                       (:kyselylinkki ddb-item)))
+                (is (= "lahetetty" (:lahetystila ddb-item)))
+                (is (= 0 (:muistutukset ddb-item)))
+                (is (= "ei_laheteta" (:sms-lahetystila ddb-item))))))))
 
       (testing "update-delivery-status! with VIRHE status"
         (with-mock-responses
@@ -418,7 +450,18 @@
             (is (= [["lahetys_epaonnistunut" "test-message-id-2"]]
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :viesti-tila :ulkoinen-tunniste)))))))))))
+                        (map (juxt :viesti-tila :ulkoinen-tunniste)))))
+            (let [herate
+                  (ddb/get-item!
+                    :amis
+                    {:toimija_oppija
+                     "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                     :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"})]
+              (is (instance? java.lang.String (:lahetyspvm herate)))
+              (is (= "lahetys_epaonnistunut" (:lahetystila herate)))
+              (is (= "ei_lahetetty" (:sms-lahetystila herate)))
+              (is (= "test-message-id-2" (:viestintapalvelu-id herate)))
+              (is (= "2023-05-17" (:voimassa-loppupvm herate))))))))))
 
 (deftest test-handle-palautteet-waiting-for-sending-status!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -495,7 +538,18 @@
                         (count))))
           (is (= 1 (->> {:viestityypit ["email"] :tila "lahetetty"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (count)))))))))
+                        (count))))
+          (let [ddb-item
+                (ddb/get-item!
+                  :amis
+                  {:toimija_oppija
+                   "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+                   :tyyppi_kausi "aloittaneet/2022-2023"})]
+            (is (some? ddb-item))
+            (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
+            (is (= "https://arvovastaus.csc.fi/v/test"
+                   (:kyselylinkki ddb-item)))
+            (is (= "lahetetty" (:lahetystila ddb-item)))))))))
 
 (deftest test-vastausaika-updated-on-confirmed-delivery!
   (testing (str "voimassa_alkupvm and voimassa_loppupvm are updated to reflect "
