@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>5a691da31bb7c9059d35feb16d03b815c010f172</tag>
+    <tag>35f7ff6e3c32c852a0ace899115231be3d785153</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -174,7 +174,7 @@
       <dependency>
         <groupId>ring</groupId>
         <artifactId>ring-jetty-adapter</artifactId>
-        <version>1.15.3</version>
+        <version>1.15.4</version>
         <exclusions>
           <exclusion>
             <artifactId>slf4j-api</artifactId>
@@ -473,6 +473,11 @@
             <groupId>org.ow2.asm</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.airlift</groupId>
+        <artifactId>aircompressor</artifactId>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.clojure</groupId>

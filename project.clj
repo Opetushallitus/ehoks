@@ -37,7 +37,7 @@
                          [com.google.guava/guava "32.0.0-jre"]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.13.0"]
-                         [ring/ring-jetty-adapter "1.15.3"
+                         [ring/ring-jetty-adapter "1.15.4"
                           :exclusions [org.slf4j/slf4j-api]]
                          [ring/ring-servlet "1.13.0"]
 
@@ -111,6 +111,7 @@
                          [camel-snake-kebab "0.4.3"]
                          [org.mozilla/rhino "1.7.12"]
                          [clj-kondo "2026.01.19" :exclusions [org.ow2.asm/asm]]
+                         [io.airlift/aircompressor "2.0.3"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.5.0"]
