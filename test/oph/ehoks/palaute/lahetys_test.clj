@@ -438,7 +438,7 @@
                     {:toimija_oppija
                      "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
                      :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"})]
-              (is (nil? (:lahetyspvm herate)))
+              (is (= "2026-04-29" (:lahetyspvm herate)))
               (is (= "lahetys_epaonnistunut" (:lahetystila herate)))
               (is (= "ei_lahetetty" (:sms-lahetystila herate)))
               (is (= "test-message-id-2" (:viestintapalvelu-id herate)))

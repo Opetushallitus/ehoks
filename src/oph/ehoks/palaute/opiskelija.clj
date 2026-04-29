@@ -313,9 +313,8 @@
                                   (:tila existing-palaute)
                                   (:tila palaute-email)
                                   (empty? (:sahkoposti hoks)))
-       :lahetyspvm (when (= "lahetetty" (:tila palaute-email))
-                     (some-> palaute-email :updated-at
-                             date/timestamp->localdate str))
+       :lahetyspvm (some-> palaute-email :updated-at
+                           date/timestamp->localdate str)
        :viestintapalvelu-id (:ulkoinen-tunniste palaute-email)
        ;; this needs to be fixed if we ever sync herätteet after
        ;; sending reminders
