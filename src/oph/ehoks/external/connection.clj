@@ -3,7 +3,8 @@
             [oph.ehoks.external.http-client :as client]))
 
 (def get-client-fn
-  (some-fn {:delete client/delete :get client/get :post client/post}
+  (some-fn {:delete client/delete :get client/get
+            :post client/post :patch client/patch}
            #(throw (ex-info "Unsupported method" {:method %}))))
 
 (defn with-api-headers

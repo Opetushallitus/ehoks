@@ -171,10 +171,10 @@
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
-            (is (= [["lahetys_epaonnistunut" "email" nil]]
+            (is (= [["lahetys_epaonnistunut" nil]]
                    (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :tila :viestityyppi :ulkoinen_tunniste))))))
+                        (map (juxt :viesti-tila :ulkoinen-tunniste))))))
 
           (testing "with successful arvo-status and sending"
             (with-mock-responses
@@ -205,10 +205,10 @@
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
-            (is (= [["odottaa_lahetysta" "email" "brymir"]]
+            (is (= [["odottaa_lahetysta" "brymir"]]
                    (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
                         (l/get-by-tila-and-viestityypit! db/spec)
-                        (map (juxt :tila :viestityyppi :ulkoinen_tunniste))))))
+                        (map (juxt :viesti-tila :ulkoinen-tunniste))))))
 
           (testing "with expired kyselylinkki"
             (with-mock-responses
@@ -256,3 +256,317 @@
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                         (map (juxt :tila :kyselytyyppi))))))
           nil)))))
+
+(deftest test-update-delivery-status!
+  (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
+                koski/get-oppija-opiskeluoikeudet
+                koski-test/mock-get-oppija-opiskeluoikeudet
+                koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw
+                onr/get-oppija-raw!
+                mock-get-oppija-raw!
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
+    (let [ctx {:hoks (assoc
+                       hoks-test/hoks-1
+                       :osaamisen-saavuttamisen-pvm (LocalDate/of 2023 4 17))
+               :opiskeluoikeus oo-test/opiskeluoikeus-1}
+          hoks (hoks-handler/save-hoks-and-initiate-all-palautteet! ctx)]
+
+      (testing "update-delivery-status! with LAHETETTY status"
+        (with-mock-responses
+          [(fn [_ __] {})
+           (fn [url _]
+             (when (s/ends-with? url "/api/vastauslinkki/v1")
+               {:status 200
+                :body {:tunnus "testivain"
+                       :kysely_linkki "https://arvovastaus.csc.fi/v/test"
+                       :voimassa_loppupvm "2024-10-10"}}))]
+          (->> {:kyselytyypit ["aloittaneet"]}
+               (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec)
+               (first)
+               (vt/create-vastaajatunnus!)))
+
+        (let [heratteet
+              (->> {:kyselytyypit ["aloittaneet"] :viestityyppi "email"}
+                   (palaute/get-unsent-palautteet! db/spec))]
+          (with-mock-responses
+            [(fn [url _]
+               (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+                 {:status 200
+                  :body {:tunnus "test"
+                         :voimassa_loppupvm "2026-04-14"
+                         :vastattu false}}))
+             (fn [^String url _]
+               (when (s/ends-with? url "/lahetys/v1/viestit")
+                 {:status 200
+                  :body {:viestiTunniste "test-message-id"
+                         :lahetysTunniste "test-message-id"}}))]
+            (is (= "test-message-id"
+                   (l/handle-unsent-palaute! (first heratteet)))))
+
+          (let [viestit (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                             (l/get-by-tila-and-viestityypit! db/spec))
+                viesti (first viestit)]
+            (testing "message was created with odottaa_lahetysta status"
+              (is (= 1 (count viestit)))
+              (is (= "test-message-id" (:ulkoinen-tunniste viesti))))
+
+            (testing "updates status to lahetetty when VVP reports LAHETETTY"
+              (with-mock-responses
+                [(fn [url _]
+                   (cond
+                     (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+                     {:status 200
+                      :body {:tunnus "test"
+                             :voimassa_loppupvm "2026-04-14"
+                             :vastattu false}}
+                     (s/ends-with?
+                       url "/lahetykset/test-message-id/vastaanottajat")
+                     {:status 200
+                      :body {:vastaanottajat [{:tila "LAHETETTY"}]}}))
+                 (fn [_ _])
+                 (fn [url options]
+                   (when (s/ends-with? url "/vastauslinkki/v1/testivain")
+                     {:status 200
+                      :body (:body options)}))]
+                (l/handle-palaute-waiting-for-sending-status! viesti))
+
+              (is (= [] (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                             (l/get-by-tila-and-viestityypit! db/spec))))
+              (is (= [["lahetetty" "test-message-id"]]
+                     (->> {:viestityypit ["email"] :tila "lahetetty"}
+                          (l/get-by-tila-and-viestityypit! db/spec)
+                          (map (juxt :viesti-tila :ulkoinen-tunniste)))))
+              (is (= [["lahetetty" "aloittaneet"]]
+                     (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                          (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                          (map (juxt :tila :kyselytyyppi)))))))))
+
+      (testing "update-delivery-status! with VIRHE status"
+        (with-mock-responses
+          [(fn [_ __] {})
+           (fn [url _]
+             (when (s/ends-with? url "/api/vastauslinkki/v1")
+               {:status 200
+                :body {:tunnus "testivain2"
+                       :kysely_linkki "https://arvovastaus.csc.fi/v/test2"
+                       :voimassa_loppupvm "2024-10-10"}}))]
+          (let [palautteet (palaute/get-palautteet-waiting-for-vastaajatunnus!
+                             db/spec {:kyselytyypit ["valmistuneet"]})]
+            (is (= 1 (count palautteet)))
+            (is (= "testivain2"
+                   (vt/create-vastaajatunnus! (first palautteet))))))
+
+        (let [heratteet
+              (->> {:kyselytyypit ["valmistuneet"] :viestityyppi "email"}
+                   (palaute/get-unsent-palautteet! db/spec))]
+          (is (= 1 (count heratteet)))
+          (with-mock-responses
+            [(fn [url _]
+               (when (s/ends-with? url "/vastauslinkki/v1/status/testivain2")
+                 {:status 200
+                  :body {:tunnus "test2"
+                         :voimassa_loppupvm "2026-04-14"
+                         :vastattu false}}))
+             (fn [^String url _]
+               (when (s/ends-with? url "/lahetys/v1/viestit")
+                 {:status 200
+                  :body {:viestiTunniste "test-message-id-2"
+                         :lahetysTunniste "test-message-id-2"}}))]
+            (is (= "test-message-id-2"
+                   (l/handle-unsent-palaute! (first heratteet))))))
+
+        (let [viestit (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                           (l/get-by-tila-and-viestityypit! db/spec))
+              viesti (first viestit)]
+
+          (testing "päättökyselyn viesti was created"
+            (is (= 1 (count viestit)))
+            (is (= "test-message-id-2" (:ulkoinen-tunniste viesti))))
+
+          (testing (str "updates status to lahetys-epaonnistunut "
+                        "when VVP reports VIRHE")
+            (with-mock-responses
+              [(fn [url _]
+                 (when (s/ends-with?
+                         url "/lahetykset/test-message-id-2/vastaanottajat")
+                   {:status 200
+                    :body {:vastaanottajat [{:tila "VIRHE"}]}}))
+               (fn [_ __] {})]
+              (l/handle-palaute-waiting-for-sending-status! viesti))
+
+            (is (= [["kysely_muodostettu" "valmistuneet"]]
+                   (->> {:hoks-id (:id hoks) :kyselytyypit ["valmistuneet"]}
+                        (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                        (map (juxt :tila :kyselytyyppi)))))
+            (is (= [["lahetys_epaonnistunut" "test-message-id-2"]]
+                   (->> {:viestityypit ["email"] :tila "lahetys_epaonnistunut"}
+                        (l/get-by-tila-and-viestityypit! db/spec)
+                        (map (juxt :viesti-tila :ulkoinen-tunniste)))))))))))
+
+(deftest test-handle-palautteet-waiting-for-sending-status!
+  (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
+                koski/get-oppija-opiskeluoikeudet
+                koski-test/mock-get-oppija-opiskeluoikeudet
+                koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw
+                onr/get-oppija-raw!
+                mock-get-oppija-raw!
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
+    (let [ctx {:hoks hoks-test/hoks-1 :opiskeluoikeus oo-test/opiskeluoikeus-1}]
+      (hoks-handler/save-hoks-and-initiate-all-palautteet! ctx)
+
+      (with-mock-responses
+        [(fn [_ __] {})
+         (fn [url _]
+           (when (s/ends-with? url "/api/vastauslinkki/v1")
+             {:status 200
+              :body {:tunnus "testivain"
+                     :kysely_linkki "https://arvovastaus.csc.fi/v/test"
+                     :voimassa_loppupvm "2024-10-10"}}))]
+        (->> {:kyselytyypit ["aloittaneet"]}
+             (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec)
+             (first)
+             (vt/create-vastaajatunnus!)))
+
+      (let [heratteet
+            (->> {:kyselytyypit ["aloittaneet"] :viestityyppi "email"}
+                 (palaute/get-unsent-palautteet! db/spec))]
+        (with-mock-responses
+          [(fn [url _]
+             (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+               {:status 200
+                :body {:tunnus "test"
+                       :voimassa_loppupvm "2026-04-14"
+                       :vastattu false}}))
+           (fn [^String url _]
+             (when (s/ends-with? url "/lahetys/v1/viestit")
+               {:status 200
+                :body {:viestiTunniste "test-message-id"
+                       :lahetysTunniste "test-message-id"}}))]
+          (l/handle-unsent-palaute! (first heratteet)))
+
+        (testing "processes all messages waiting for sending status"
+          (is (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                   (l/get-by-tila-and-viestityypit! db/spec)
+                   (count)
+                   (= 1)))
+
+          (with-mock-responses
+            [(fn [url _]
+               (cond
+                 (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+                 {:status 200
+                  :body {:tunnus "test"
+                         :voimassa_loppupvm "2026-04-14"
+                         :vastattu false}}
+                 (s/ends-with?
+                   url "/lahetykset/test-message-id/vastaanottajat")
+                 {:status 200
+                  :body {:vastaanottajat [{:tila "LAHETETTY"}]}}))
+             (fn [_ _])
+             (fn [url options]
+               (when (s/ends-with? url "/vastauslinkki/v1/testivain")
+                 {:status 200
+                  :body (:body options)}))]
+            (l/handle-palautteet-waiting-for-sending-status!))
+
+          (is (= 0 (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                        (l/get-by-tila-and-viestityypit! db/spec)
+                        (count))))
+          (is (= 1 (->> {:viestityypit ["email"] :tila "lahetetty"}
+                        (l/get-by-tila-and-viestityypit! db/spec)
+                        (count)))))))))
+
+(deftest test-vastausaika-updated-on-confirmed-delivery!
+  (testing (str "voimassa_alkupvm and voimassa_loppupvm are updated to reflect "
+                "the actual sending date, not the original heratepvm")
+    (let [initial-date (LocalDate/of 2023 4 18)
+          sending-date (LocalDate/of 2023 4 21)]
+      (with-redefs [date/now (constantly initial-date)
+                    koski/get-oppija-opiskeluoikeudet
+                    koski-test/mock-get-oppija-opiskeluoikeudet
+                    koski/get-opiskeluoikeus-info-raw
+                    koski-test/mock-get-opiskeluoikeus-raw
+                    onr/get-oppija-raw!
+                    mock-get-oppija-raw!
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
+        (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
+        (hoks-handler/save-hoks-and-initiate-all-palautteet!
+          {:hoks hoks-test/hoks-1 :opiskeluoikeus oo-test/opiskeluoikeus-1})
+
+        (with-mock-responses
+          [(fn [_ __] {})
+           (fn [url _]
+             (when (s/ends-with? url "/api/vastauslinkki/v1")
+               {:status 200
+                :body {:tunnus "testivain"
+                       :kysely_linkki "https://arvovastaus.csc.fi/v/test"
+                       :voimassa_loppupvm "2024-10-10"}}))]
+          (->> {:kyselytyypit ["aloittaneet"]}
+               (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec)
+               (first)
+               (vt/create-vastaajatunnus!)
+               (= "testivain")
+               (is)))
+
+        (let [palautteet (palaute/get-unsent-palautteet!
+                           db/spec {:kyselytyypit ["aloittaneet"]
+                                    :viestityyppi "email"})
+              palaute (first palautteet)]
+          (is (= 1 (count palautteet)))
+          (is (= "2023-04-18" (str (:voimassa-alkupvm palaute))))
+
+          (with-mock-responses
+            [(fn [url _]
+               (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+                 {:status 200
+                  :body {:tunnus "test"
+                         :voimassa_loppupvm "2026-04-14"
+                         :vastattu false}}))
+             (fn [url _]
+               (when (s/ends-with? url "/lahetys/v1/viestit")
+                 {:status 200
+                  :body {:viestiTunniste "test-message-id"
+                         :lahetysTunniste "test-message-id"}}))]
+            (is (= "test-message-id" (l/handle-unsent-palaute! palaute)))))
+
+        (let [viesti (first (l/get-by-tila-and-viestityypit!
+                              db/spec {:viestityypit ["email"]
+                                       :tila "odottaa_lahetysta"}))]
+          (is (= "odottaa_lahetysta" (:viesti-tila viesti)))
+          (is (= "test-message-id" (:ulkoinen-tunniste viesti)))
+          (let [arvo-patch-options (atom nil)]
+            (with-redefs [date/now (constantly sending-date)]
+              (with-mock-responses
+                [(fn [url _]
+                   (when (s/ends-with?
+                           url "/lahetykset/test-message-id/vastaanottajat")
+                     {:status 200
+                      :body {:vastaanottajat [{:tila "LAHETETTY"}]}}))
+                 (fn [_ _])
+                 (fn [url options]
+                   (when (s/ends-with? url "/vastauslinkki/v1/testivain")
+                     (reset! arvo-patch-options options)
+                     {:status 200 :body (:body options)}))]
+                (l/handle-palaute-waiting-for-sending-status! viesti)))
+            (is (= (str sending-date)
+                   (str (get-in @arvo-patch-options
+                                [:form-params :voimassa_alkupvm]))))
+            (is (= (str (.plusDays sending-date 29))
+                   (str (get-in @arvo-patch-options
+                                [:form-params :voimassa_loppupvm])))))
+
+          (let [palautteet (palaute/get-by-hoks-id-and-kyselytyypit!
+                             db/spec {:hoks-id (:hoks-id viesti)
+                                      :kyselytyypit ["aloittaneet"]})
+                palaute (first palautteet)]
+            (is (= 1 (count palautteet)))
+            (is (= (str sending-date) (str (:voimassa-alkupvm palaute))))
+            (is (= (str (.plusDays sending-date 29))
+                   (str (:voimassa-loppupvm palaute))))))))))

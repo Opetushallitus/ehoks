@@ -1,9 +1,12 @@
 (ns oph.ehoks.palaute.lahetys
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
             [clojure.string :as str]
             [hugsql.core :as hugsql]
+            [medley.core :refer [greatest]]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.handling :as handling]
@@ -16,6 +19,7 @@
 
 (declare insert!)
 (declare get-by-tila-and-viestityypit!)
+(declare update-tila!)
 (hugsql/def-db-fns "oph/ehoks/db/sql/palauteviesti.sql")
 
 (defn send-palaute-initial-email!
@@ -147,3 +151,70 @@
               (palaute/get-unsent-palautteet!
                 db/spec {:kyselytyypit kyselytyypit
                          :viestityyppi "email"}))))
+
+(defn record-sending-to-db-and-arvo!
+  "Päivittää Arvoon ja tietokantaan palautteen tilan sekä vastaamisajan
+  alku- ja loppupäivän sillä hetkellä kun viestin saadaan tietää lähteneen"
+  [{:keys [existing-palaute viesti-status tx] :as ctx}]
+  (let [heratepvm (:heratepvm existing-palaute)
+        new-alkupvm (greatest heratepvm (dateutil/now))
+        new-loppupvm (palaute/vastaamisajan-loppupvm heratepvm new-alkupvm)
+        voimassaolo {:voimassa-alkupvm (str new-alkupvm)
+                     :voimassa-loppupvm (str new-loppupvm)}]
+    (log/info "Palaute" (:id existing-palaute) "has now been sent"
+              "so updating vastausaika to"
+              (str new-alkupvm " -- " new-loppupvm))
+    (palaute/update! tx (assoc voimassaolo :id (:id existing-palaute)))
+    (palaute/update-tila! ctx :lahetetty :viesti-status
+                          (assoc voimassaolo :viesti-status viesti-status))
+    (arvo/update-kyselytunnus!
+      (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)))
+
+(def vvp-state->viesti-tila
+  {["SKANNAUS"] :odottaa-lahetysta,
+   ["ODOTTAA"] :odottaa-lahetysta,
+   ["LAHETYKSESSA"] :odottaa-lahetysta,
+   ["VIRHE"] :lahetys-epaonnistunut,
+   ["LAHETETTY"] :lahetetty,
+   ["DELIVERY"] :lahetetty,
+   ["BOUNCE"] :lahetys-epaonnistunut,
+   ["COMPLAINT"] :lahetetty,
+   ["REJECT"] :lahetys-epaonnistunut,
+   ["DELIVERYDELAY"] :odottaa-lahetysta})
+
+(defn update-delivery-status!
+  "Päivittää lähetysstatuksen yhdelle viestille ja päivittää palautteen
+  tiedot vastaavasti."
+  [{:keys [existing-viesti tx] :as ctx}]
+  (log/info "Updating delivery status for message" (:viesti-id existing-viesti)
+            "(external id" (:ulkoinen-tunniste existing-viesti) ")")
+  (let [status (vvp/message-state! (:ulkoinen-tunniste existing-viesti))
+        viesti-tila (vvp-state->viesti-tila status)]
+    (log/info "Delivery status for message" (:viesti-id existing-viesti)
+              "is" status "which means" viesti-tila)
+    (update-tila! tx {:id (:viesti-id existing-viesti)
+                      :tila (utils/to-underscore-str viesti-tila)})
+    (if (= :lahetetty viesti-tila)
+      (record-sending-to-db-and-arvo! (assoc ctx :viesti-status status))
+      (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))))
+
+(defn handle-palaute-waiting-for-sending-status!
+  "Tekee asiat, mitä tarvitsee tehdä yhdelle viestille jonka lähetysstatusta
+  ei vielä tiedetä."
+  [palaute-viesti]
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (update-delivery-status! {:existing-palaute palaute-viesti
+                              :existing-viesti palaute-viesti
+                              :tapahtumatyyppi :lahetys
+                              :tx tx})))
+
+(defn handle-palautteet-waiting-for-sending-status!
+  "Päivittää lähetysstatuksen viesteille, joille sitä ei ole vielä tiedetä."
+  []
+  (log/info "Checking delivery status for new messages")
+  (doall (map handle-palaute-waiting-for-sending-status!
+              (get-by-tila-and-viestityypit!
+                db/spec {:tila "odottaa_lahetysta"
+                         :viestityypit ["email" "email_muistutus_1"
+                                        "email_muistutus_2"]}))))
