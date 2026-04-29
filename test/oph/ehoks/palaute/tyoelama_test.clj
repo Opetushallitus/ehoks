@@ -466,7 +466,8 @@
                    :jakso          test-jakso
                    :opiskeluoikeus oo-test/opiskeluoikeus-1}]
           (heratepalvelu/sync-jakso!
-            (tep/build-jaksoherate-record-for-heratepalvelu ctx))
+            (tep/build-jaksoherate-record-for-heratepalvelu ctx)
+            :after-arvo-call)
           (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
                                     :opiskeluoikeus oo-test/opiskeluoikeus-1}
                                    test-jakso)
@@ -656,8 +657,7 @@
 
   (let [initial-palautteet (hoks-utils/palautteet)
         palautteet
-        (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
-              :hoks-id nil :palaute-id nil}
+        (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]}
              (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec))
         tep-palaute (find-first
                       #(= (:jakson-yksiloiva-tunniste %) "4") palautteet)

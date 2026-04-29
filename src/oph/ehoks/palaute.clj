@@ -142,12 +142,16 @@
     (db-handler tx palaute)))
 
 (defn update-tila!
-  [{:keys [existing-palaute] :as ctx} tila reason lisatiedot]
-  (jdbc/with-db-transaction
-    [tx db/spec]
-    (update! tx {:id   (:id existing-palaute)
-                 :tila (utils/to-underscore-str tila)})
-    (tapahtuma/build-and-insert! ctx tila reason lisatiedot)))
+  "Update palaute (given in :existing-palaute in ctx) to state tila."
+  [{:keys [existing-palaute tx] :as ctx} tila reason lisatiedot]
+  (if (not tx)
+    (jdbc/with-db-transaction
+      [tx db/spec]
+      (update-tila! (assoc ctx :tx tx) tila reason lisatiedot))
+    (do
+      (update! tx {:id   (:id existing-palaute)
+                   :tila (utils/to-underscore-str tila)})
+      (tapahtuma/build-and-insert! ctx tila reason lisatiedot))))
 
 (defn feedback-collecting-prevented?
   "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on
