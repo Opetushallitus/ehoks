@@ -3,13 +3,15 @@
             [clojure.tools.logging :as log]
             [clojure.string :as str]
             [hugsql.core :as hugsql]
-            [medley.core :refer [greatest]]
+            [medley.core :refer [greatest find-first]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.viestinvalityspalvelu :as vvp]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.handling :as handling]
+            [oph.ehoks.palaute.opiskelija :as opiskelija]
             [oph.ehoks.palaute.tapahtuma :as pt]
             [oph.ehoks.palaute.viestit :as v]
             [oph.ehoks.utils :as utils]
@@ -19,6 +21,7 @@
 
 (declare insert!)
 (declare get-by-tila-and-viestityypit!)
+(declare get-by-palaute-and-viestityypit!)
 (declare update-tila!)
 (hugsql/def-db-fns "oph/ehoks/db/sql/palauteviesti.sql")
 
@@ -85,12 +88,36 @@
   "Record in DB the palauteviesti that was (not) sent."
   [{:keys [existing-palaute hoks tx]} msg-state msg-id]
   (insert! tx {:palaute-id (:id existing-palaute)
-               :vastaanottaja (:sahkoposti hoks)
+               :vastaanottaja (str (:sahkoposti hoks))
                :viestityyppi "email"
                :tila (utils/to-underscore-str msg-state)
                :ulkoinen-tunniste msg-id}))
 
-(defn palaute-check-send-save-and-sync!
+(defn enrich-with-viestit!
+  "Add the :palaute-email and :palaute-sms fields to ctx to allow syncing
+  correct lahetyspvm, lahetystila, sms-lahetystila and viestintapalvelu-id
+  for amis-heräte."
+  [{:keys [existing-palaute tx] :as ctx}]
+  (let [viestit (get-by-palaute-and-viestityypit!
+                  tx {:palaute-id (:id existing-palaute)
+                      :viestityypit ["email" "sms"]})
+        email (find-first #(= "email" (:viestityyppi %)) viestit)
+        sms (find-first #(= "sms" (:viestityyppi %)) viestit)]
+    (assoc ctx :palaute-email email :palaute-sms sms)))
+
+(defn sync-to-heratepalvelu!
+  "Enrich context with enough information to sync palaute into
+  herätepalvelu and then do the sync.  Currently only works for
+  AMIS-kysely kyselytyypit."
+  [{:keys [existing-palaute] :as ctx}]
+  (-> existing-palaute
+      (handling/build-ctx!)
+      (merge ctx)  ; because original context has e.g. tx and existing-viesti
+      (enrich-with-viestit!)
+      (opiskelija/build-amisherate-record-for-heratepalvelu)
+      (ddb/sync-amis-herate! :after-viestinvalityspalvelu-status)))
+
+(defn palaute-check-send-and-save!
   "Tekee kaikki palautekutsun lähetyksen vaiheet"
   [{:keys [existing-palaute hoks] :as ctx} _] ; no handlers used yet
   (let [[msg-state state field reason] (check-palaute-for-sending ctx)
@@ -110,6 +137,9 @@
         (let [msg-id (when (= msg-state :odottaa-lahetysta)
                        (send-palaute-initial-email! ctx))]
           (record-palauteviesti! ctx msg-state msg-id)
+          ;; temporary hack to sync failed messages to Heratepalvelu
+          (when (= msg-state :lahetys-epaonnistunut)
+            (sync-to-heratepalvelu! ctx))
           msg-id)
         (catch ExceptionInfo e
           ;; Most typical reason is that sending failed for some reason
@@ -119,10 +149,11 @@
           ;; persist even if we retry.
           (if (= 400 (:status (ex-data e)))
             (do (record-palauteviesti! ctx :lahetys-epaonnistunut nil)
-                (pt/build-and-insert!
-                  ctx ::viestin-lahetys-epaonnistui
-                  {:errormsg (ex-message e)
-                   :body     (:body (ex-data e))})
+                (pt/build-and-insert! ctx ::viestin-lahetys-epaonnistui
+                                      {:errormsg (ex-message e)
+                                       :body     (:body (ex-data e))})
+                ;; temporary hack to sync failed messages to Heratepalvelu
+                (sync-to-heratepalvelu! ctx)
                 nil)  ; no msg-id created
             (throw (ex-info "Viestin lähetyksessä tapahtui virhe"
                             {:type ::viestin-lahetys-epaonnistui :ctx ctx}
@@ -134,7 +165,7 @@
   (log/info "Processing email survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
-    :lahetys palaute-check-send-save-and-sync! palaute))
+    :lahetys palaute-check-send-and-save! palaute))
 
 (defn handle-unsent-palaute!
   "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
@@ -155,7 +186,7 @@
                 db/spec {:kyselytyypit kyselytyypit
                          :viestityyppi "email"}))))
 
-(defn record-sending-to-db-and-arvo!
+(defn record-sending-to-db-hp-and-arvo!
   "Päivittää Arvoon ja tietokantaan palautteen tilan sekä vastaamisajan
   alku- ja loppupäivän sillä hetkellä kun viestin saadaan tietää lähteneen"
   [{:keys [existing-palaute viesti-status tx] :as ctx}]
@@ -171,7 +202,8 @@
     (palaute/update-tila! ctx :lahetetty :viesti-status
                           (assoc voimassaolo :viesti-status viesti-status))
     (arvo/update-kyselytunnus!
-      (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)))
+      (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)
+    (sync-to-heratepalvelu! ctx)))
 
 (def vvp-state->viesti-tila
   {["SKANNAUS"] :odottaa-lahetysta,
@@ -195,11 +227,18 @@
         viesti-tila (vvp-state->viesti-tila status)]
     (log/info "Delivery status for message" (:viesti-id existing-viesti)
               "is" status "which means" viesti-tila)
-    (update-tila! tx {:id (:viesti-id existing-viesti)
-                      :tila (utils/to-underscore-str viesti-tila)})
+    (if viesti-tila
+      (update-tila! tx {:id (:viesti-id existing-viesti)
+                        :tila (utils/to-underscore-str viesti-tila)})
+      (throw (ex-info "Unknown delivery status"
+                      {:type ::viestistatuksen-haku-epaonnistui :ctx ctx})))
     (if (= :lahetetty viesti-tila)
-      (record-sending-to-db-and-arvo! (assoc ctx :viesti-status status))
-      (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))))
+      (record-sending-to-db-hp-and-arvo! (assoc ctx :viesti-status status))
+      (pt/build-and-insert! ctx :viesti-status {:viesti-status status}))
+    ;; temporary fix until we also send SMS's: sync even failed
+    ;; palautteet to herätepalvelu for trying to send SMS
+    (when (= :lahetys-epaonnistunut viesti-tila)
+      (sync-to-heratepalvelu! ctx))))
 
 (defn handle-palaute-waiting-for-sending-status!
   "Tekee asiat, mitä tarvitsee tehdä yhdelle viestille jonka lähetysstatusta

@@ -29,8 +29,7 @@
   (as-> result r
     (remove-vals nil? r)
     (map-vals pgarray->vec r)
-    (utils/to-dash-keys r)
-    (dissoc r :created-at :updated-at :deleted-at)))
+    (utils/to-dash-keys r)))
 
 (defn result-one-snake->kebab
   [this result options]
