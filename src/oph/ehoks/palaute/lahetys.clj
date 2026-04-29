@@ -93,6 +93,30 @@
                :tila (utils/to-underscore-str msg-state)
                :ulkoinen-tunniste msg-id}))
 
+(defn enrich-with-viestit!
+  "Add the :palaute-email and :palaute-sms fields to ctx to allow syncing
+  correct lahetyspvm, lahetystila, sms-lahetystila and viestintapalvelu-id
+  for amis-heräte."
+  [{:keys [existing-palaute tx] :as ctx}]
+  (let [viestit (get-by-palaute-and-viestityypit!
+                  tx {:palaute-id (:id existing-palaute)
+                      :viestityypit ["email" "sms"]})
+        email (find-first #(= "email" (:viestityyppi %)) viestit)
+        sms (find-first #(= "sms" (:viestityyppi %)) viestit)]
+    (assoc ctx :palaute-email email :palaute-sms sms)))
+
+(defn sync-to-heratepalvelu!
+  "Enrich context with enough information to sync palaute into
+  herätepalvelu and then do the sync.  Currently only works for
+  AMIS-kysely kyselytyypit."
+  [{:keys [existing-palaute] :as ctx}]
+  (-> existing-palaute
+      (handling/build-ctx!)
+      (merge ctx)  ; because original context has e.g. tx and existing-viesti
+      (enrich-with-viestit!)
+      (opiskelija/build-amisherate-record-for-heratepalvelu)
+      (ddb/sync-amis-herate! :after-viestinvalityspalvelu-status)))
+
 (defn palaute-check-send-and-save!
   "Tekee kaikki palautekutsun lähetyksen vaiheet"
   [{:keys [existing-palaute hoks] :as ctx} _] ; no handlers used yet
@@ -113,6 +137,9 @@
         (let [msg-id (when (= msg-state :odottaa-lahetysta)
                        (send-palaute-initial-email! ctx))]
           (record-palauteviesti! ctx msg-state msg-id)
+          ;; temporary hack to sync failed messages to Heratepalvelu
+          (when (= msg-state :lahetys-epaonnistunut)
+            (sync-to-heratepalvelu! ctx))
           msg-id)
         (catch ExceptionInfo e
           ;; Most typical reason is that sending failed for some reason
@@ -122,10 +149,11 @@
           ;; persist even if we retry.
           (if (= 400 (:status (ex-data e)))
             (do (record-palauteviesti! ctx :lahetys-epaonnistunut nil)
-                (pt/build-and-insert!
-                  ctx ::viestin-lahetys-epaonnistui
-                  {:errormsg (ex-message e)
-                   :body     (:body (ex-data e))})
+                (pt/build-and-insert! ctx ::viestin-lahetys-epaonnistui
+                                      {:errormsg (ex-message e)
+                                       :body     (:body (ex-data e))})
+                ;; temporary hack to sync failed messages to Heratepalvelu
+                (sync-to-heratepalvelu! ctx)
                 nil)  ; no msg-id created
             (throw (ex-info "Viestin lähetyksessä tapahtui virhe"
                             {:type ::viestin-lahetys-epaonnistui :ctx ctx}
@@ -157,30 +185,6 @@
               (palaute/get-unsent-palautteet!
                 db/spec {:kyselytyypit kyselytyypit
                          :viestityyppi "email"}))))
-
-(defn enrich-with-viestit!
-  "Add the :palaute-email and :palaute-sms fields to ctx to allow syncing
-  correct lahetyspvm, lahetystila, sms-lahetystila and viestintapalvelu-id
-  for amis-heräte."
-  [{:keys [existing-palaute tx] :as ctx}]
-  (let [viestit (get-by-palaute-and-viestityypit!
-                  tx {:palaute-id (:id existing-palaute)
-                      :viestityypit ["email" "sms"]})
-        email (find-first #(= "email" (:viestityyppi %)) viestit)
-        sms (find-first #(= "sms" (:viestityyppi %)) viestit)]
-    (assoc ctx :palaute-email email :palaute-sms sms)))
-
-(defn sync-to-heratepalvelu!
-  "Enrich context with enough information to sync palaute into
-  herätepalvelu and then do the sync.  Currently only works for
-  AMIS-kysely kyselytyypit."
-  [{:keys [existing-palaute] :as ctx}]
-  (-> existing-palaute
-      (handling/build-ctx!)
-      (merge ctx)  ; because original context has e.g. tx and existing-viesti
-      (enrich-with-viestit!)
-      (opiskelija/build-amisherate-record-for-heratepalvelu)
-      (ddb/sync-amis-herate! :after-viestinvalityspalvelu-status)))
 
 (defn record-sending-to-db-hp-and-arvo!
   "Päivittää Arvoon ja tietokantaan palautteen tilan sekä vastaamisajan
