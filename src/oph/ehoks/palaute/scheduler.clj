@@ -2,11 +2,12 @@
   (:require [chime.core :as chime]
             [clojure.tools.logging :as log]
             [oph.ehoks.utils :as util]
+            [oph.ehoks.utils.date :as date]
             [oph.ehoks.palaute.initiation :as palaute]
             [oph.ehoks.palaute.lahetys :as lahetys]
             [oph.ehoks.palaute.vastaajatunnus :as vt])
   (:import (java.lang AutoCloseable)
-           (java.time Instant LocalTime ZonedDateTime ZoneId Period Duration)))
+           (java.time Period Duration)))
 
 (defn daily-actions!
   "Run all palaute checks that need to be run on a daily basis."
@@ -35,6 +36,19 @@
   (log/info "Done palaute hourly actions.")
   true)
 
+(defn business-hourly-actions!
+  [_]
+  (log/info "Commencing palaute hourly actions (only business hours).")
+  (try
+    (log/info "Handling palautteet that we should send messages for.")
+    (let [result (lahetys/handle-unsent-palautteet!
+                   ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
+      (log/info "handle-unsent-palautteet!: ended with result"
+                result))
+    (catch Exception e
+      (log/error e "Unhandled exception in handle-unsent-palautteet!")))
+  true)
+
 (defn as-often-as-possible-actions!
   "Run all actions that should be taken as often as possible."
   [_]
@@ -50,14 +64,6 @@
       (log/error e (str "Unhandled exception in "
                         "handle-palautteet-waiting-for-heratepvm!"))))
   (try
-    (log/info "Handling palautteet that we should send messages for.")
-    (let [result (lahetys/handle-unsent-palautteet!
-                   ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
-      (log/info "handle-unsent-palautteet!: ended with result"
-                result))
-    (catch Exception e
-      (log/error e "Unhandled exception in handle-unsent-palautteet!")))
-  (try
     (log/info "Handling viestit whose sending status is unknown.")
     (let [result (lahetys/handle-palautteet-waiting-for-sending-status!)]
       (log/info "handle-palautteet-waiting-for-sending-status!: ended with"
@@ -68,32 +74,30 @@
   (log/info "Done palaute hourly actions.")
   true)
 
-(defn time->instant
-  "Converts a specific time of day into an instant on today"
-  [hour minute sec]
-  (-> (LocalTime/of hour minute sec)
-      (.adjustInto (ZonedDateTime/now (ZoneId/of "Europe/Helsinki")))
-      (Instant/from)))
-
 (def schedules
-  [{:start (time->instant 6 0 0) :period (Period/ofDays 1)
+  [{:start (date/time->instant 6 0 0) :period (Period/ofDays 1)
     :action daily-actions!}
 
-   {:start (time->instant 1 0 0) :period (Duration/ofHours 1)
+   {:start (date/time->instant 1 0 0) :period (Duration/ofHours 1)
     :action hourly-actions!}
 
-   {:start (time->instant 1 0 0) :period (Duration/ofMinutes 5)
+   {:start (date/time->instant 1 0 0) :period (Duration/ofHours 1)
+    :filter date/finnish-business-hours?
+    :action business-hourly-actions!}
+
+   {:start (date/time->instant 0 3 0) :period (Duration/ofMinutes 5)
     :action as-often-as-possible-actions!}])
 
 (defn run-scheduler!
   "Run a given action periodically starting at start-time and repeating
   at rate."
-  ^AutoCloseable [action start-time rate]
+  ^AutoCloseable [action start-time rate filter-fn]
   (log/info "Starting palaute scheduler with start time" start-time
             "and rate" rate)
   (let [scheduler
         (chime/chime-at
-          (chime/periodic-seq start-time rate)
+          (cond->> (chime/periodic-seq start-time rate)
+            filter-fn (filter filter-fn))
           action
           {:on-finished (fn [] (log/info "Palaute scheduler stopped."))
            :error-handler (fn [e]
@@ -109,6 +113,6 @@
   "Run all schedulers used by palaute-backend, possibly overriding
   the timing."
   [& [override-start override-rate]]
-  (doseq [{:keys [action start period]} schedules]
+  (doseq [{:keys [action start period filter]} schedules]
     (run-scheduler!
-      action (or override-start start) (or override-rate period))))
+      action (or override-start start) (or override-rate period) filter)))
