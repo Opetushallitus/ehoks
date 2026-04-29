@@ -3,6 +3,7 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.utils :as util]
             [oph.ehoks.palaute.initiation :as palaute]
+            [oph.ehoks.palaute.lahetys :as lahetys]
             [oph.ehoks.palaute.vastaajatunnus :as vt])
   (:import (java.lang AutoCloseable)
            (java.time Instant LocalTime ZonedDateTime ZoneId Period Duration)))
@@ -34,6 +35,29 @@
   (log/info "Done palaute hourly actions.")
   true)
 
+(defn as-often-as-possible-actions!
+  "Run all actions that should be taken as often as possible."
+  [_]
+  (try
+    (log/info (str "Handling palautteet that have reached "
+                   "their heratepvm."))
+    (let [result (vt/handle-palautteet-waiting-for-heratepvm!
+                   ["aloittaneet" "valmistuneet" "osia_suorittaneet"
+                    "tyopaikkajakson_suorittaneet"])]
+      (log/info "handle-palautteet-waiting-for-heratepvm!: ended with result"
+                result))
+    (catch Exception e
+      (log/error e (str "Unhandled exception in "
+                        "handle-palautteet-waiting-for-heratepvm!"))))
+  (try
+    (log/info "Handling palautteet that we should send messages for.")
+    (let [result (lahetys/handle-unsent-palautteet!
+                   ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
+      (log/info "handle-unsent-palautteet!: ended with result"
+                result))
+    (catch Exception e
+      (log/error e "Unhandled exception in handle-unsent-palautteet!"))))
+
 (defn time->instant
   "Converts a specific time of day into an instant on today"
   [hour minute sec]
@@ -49,16 +73,7 @@
     :action hourly-actions!}
 
    {:start (time->instant 1 0 0) :period (Duration/ofMinutes 5)
-    :action (fn [_]
-              (try
-                (log/info (str "Handling palautteet that have reached "
-                               "their heratepvm."))
-                (vt/handle-palautteet-waiting-for-heratepvm!
-                  ["aloittaneet" "valmistuneet" "osia_suorittaneet"
-                   "tyopaikkajakson_suorittaneet"])
-                (catch Exception e
-                  (log/error e (str "Unhandled exception in scheduled "
-                                    "handling of palautteet")))))}])
+    :action as-often-as-possible-actions!}])
 
 (defn run-scheduler!
   "Run a given action periodically starting at start-time and repeating

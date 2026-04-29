@@ -10,6 +10,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.lahetys :as lahetys]
             [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.restful :as restful]
             [ring.util.http-response :as response]
@@ -32,26 +33,47 @@
           (c-api/context "/opiskelijapalaute" []
             :tags ["opiskelijapalaute"]
 
-            (c-api/POST "/:hoks-id/kyselylinkki" [hoks-id]
-              :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
-              (let [amis-palautteet
-                    (palaute/get-palaute-with-hankkimistapa-id-by-id!
-                      db/spec {:hoks-id hoks-id :palaute-id nil})
-                    vastaajatunnukset
-                    (map vt/handle-palaute-waiting-for-heratepvm!
-                         amis-palautteet)]
-                (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
-                       ::audit/target {:vastaajatunnukset vastaajatunnukset
-                                       :hoks-id hoks-id})))
+            (c-api/context ":hoks-id" [hoks-id]
+
+              (c-api/POST "/kyselylinkki" []
+                :summary "Luo yhden HOKSin kyselylinkit, jos ne kuuluvat
+                         kohderyhmään."
+                (let [amis-palautteet
+                      (palaute/get-palaute-with-hankkimistapa-id-by-id!
+                        db/spec {:hoks-id hoks-id :palaute-id nil})
+                      vastaajatunnukset
+                      (map vt/create-vastaajatunnus! amis-palautteet)]
+                  (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
+                         ::audit/target {:vastaajatunnukset vastaajatunnukset
+                                         :hoks-id hoks-id})))
+
+              (c-api/POST "/kutsuviesti" []
+                :summary "Lähettää yhden HOKSin palautekutsut, jos mahdollista."
+                (let [amis-palautteet
+                      (palaute/get-palaute-with-hankkimistapa-id-by-id!
+                        db/spec {:hoks-id hoks-id :palaute-id nil})
+                      lahetys-ids
+                      (map lahetys/send-invitation! amis-palautteet)]
+                  (assoc (restful/ok {:lahetykset lahetys-ids})
+                         ::audit/target {:lahetykset lahetys-ids
+                                         :hoks-id hoks-id}))))
 
             (c-api/POST "/kyselylinkit" []
               :summary "Luo kyselylinkit niille palautteille, jotka
                        odottavat käsittelyä."
-              (let [palautteet
-                    (vt/handle-amis-palautteet-on-heratepvm! {})]
-                (-> {:kyselylinkit palautteet}
+              (let [tulos (vt/handle-amis-palautteet-on-heratepvm! {})]
+                (-> {:kyselylinkit tulos}
                     (restful/ok)
-                    (assoc ::audit/target {:palautteet palautteet})))))
+                    (assoc ::audit/target {:kyselylinkit tulos}))))
+
+            (c-api/POST "/kutsuviestit" []
+              :summary "Lähettää palautekutsut niille palautteille, jotka
+                       odottavat lähetystä."
+              (let [tulos (lahetys/handle-unsent-palautteet!
+                            ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
+                (-> {:lahetykset tulos}
+                    (restful/ok)
+                    (assoc ::audit/target {:lahetykset tulos})))))
 
           (c-api/context "/tyoelamapalaute" []
             :tags ["tyoelamapalaute"]
@@ -65,8 +87,7 @@
                     (palaute/get-palaute-with-hankkimistapa-id-by-id!
                       db/spec {:palaute-id palaute-id :hoks-id nil})
                     vastaajatunnukset
-                    (map vt/handle-palaute-waiting-for-heratepvm!
-                         tep-palautteet)]
+                    (map vt/create-vastaajatunnus! tep-palautteet)]
                 (assoc (restful/ok {:vastaajatunnukset vastaajatunnukset})
                        ::audit/target {:vastaajatunnukset vastaajatunnukset
                                        :hoks-id nil
