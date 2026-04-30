@@ -46,7 +46,7 @@ stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json \
 
 MAVEN_REPO = $(HOME)/.m2/repository
 SS_JAR = $(MAVEN_REPO)/net/sourceforge/schemaspy/schemaspy/5.0.0/schemaspy-5.0.0.jar
-PG_JAR = $(MAVEN_REPO)/org/postgresql/postgresql/42.2.12/postgresql-42.2.12.jar
+PG_JAR = $(MAVEN_REPO)/org/postgresql/postgresql/42.7.7/postgresql-42.7.7.jar
 
 schemaDoc: stamps/db-schema
 	lein with-profile schemaspy deps
@@ -71,6 +71,21 @@ stamps/example-data: stamps/server-running
 tags::
 	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' \
 		--exclude='myenv' .
+
+DIAGRAMS = doc/backend-auth-seq.png doc/infrastructure.png \
+	   doc/integrations.png doc/virkailija-auth-seq.png
+
+stamps/diagrams-up-to-date: $(DIAGRAMS)
+	touch $@
+
+%.png: %.dot
+	dot -Tpng $< >$@
+
+doc/integrations.png: doc/integrations.dot
+	circo -Tpng $< >$@
+
+%.png: %.txt
+	plantuml -tpng $<
 
 stamps/setup-clj-kondo:
 	mkdir -p .clj-kondo
