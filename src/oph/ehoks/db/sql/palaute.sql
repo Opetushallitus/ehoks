@@ -54,8 +54,8 @@ where kyselytyyppi in (:v*:kyselytyypit)
   and not exists (
 	select 1 from palaute_viestit pv
 	where pv.palaute_id = p.id
-	  and viestityyppi = :viestityyppi
-	  and tila in ('odottaa_lahetysta', 'lahetetty'))
+	and viestityyppi = :viestityyppi
+  )
   and deleted_at is null
 order by hoks_id asc
 
