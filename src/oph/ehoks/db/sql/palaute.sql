@@ -43,7 +43,8 @@ where	p.tila = 'odottaa_kasittelya'
 and	p.kyselytyyppi in (:v*:kyselytyypit)
 and	p.heratepvm <= now()
 and	p.deleted_at is null
-order by hoks_id asc
+order by hoks_id desc  -- newest HOKSes first so old ones cannot block
+limit 1000             -- process at most 1000 and then check new ones again
 
 -- :name get-unsent-palautteet! :? :*
 -- :doc Fetch palautteet with kyselylinkki but without sent messages.
@@ -57,7 +58,8 @@ where kyselytyyppi in (:v*:kyselytyypit)
 	and viestityyppi = :viestityyppi
   )
   and deleted_at is null
-order by hoks_id asc
+order by hoks_id desc  -- newest HOKSes first so old ones cannot block
+limit 1000             -- process at most 1000 and then check new ones again
 
 -- :name update-arvo-tunniste! :? :*
 -- :doc Update arvo-tunniste for palaute with given id.
