@@ -78,7 +78,7 @@
   [{:start (date/time->instant 6 0 0) :period (Period/ofDays 1)
     :action daily-actions!}
 
-   {:start (date/time->instant 1 0 0) :period (Duration/ofHours 1)
+   {:start (date/time->instant 1 15 0) :period (Duration/ofHours 1)
     :action hourly-actions!}
 
    {:start (date/time->instant 1 0 0) :period (Duration/ofHours 1)
