@@ -36,6 +36,7 @@
                                         :kyselytyyppi kyselytyyppi
                                         :kyselylinkki kyselylinkki})
         email-subject (v/palaute-message-subject ctx)]
+    (log/info "Sending" kyselytyyppi "invitation message to" recipient)
     (vvp/send-message! recipient email-subject email-body)))
 
 (defn vastausaika-loppunut?
@@ -87,6 +88,8 @@
 (defn record-palauteviesti!
   "Record in DB the palauteviesti that was (not) sent."
   [{:keys [existing-palaute hoks tx]} msg-state msg-id]
+  (log/info "Recording message for palaute" (:id existing-palaute)
+            "with state" msg-state "and identifier" msg-id)
   (insert! tx {:palaute-id (:id existing-palaute)
                :vastaanottaja (str (:sahkoposti hoks))
                :viestityyppi "email"
@@ -110,6 +113,7 @@
   herätepalvelu and then do the sync.  Currently only works for
   AMIS-kysely kyselytyypit."
   [{:keys [existing-palaute] :as ctx}]
+  (log/info "Syncing palaute" (:id existing-palaute) "to Herätepalvelu")
   (-> existing-palaute
       (handling/build-ctx!)
       (merge ctx)  ; because original context has e.g. tx and existing-viesti
@@ -201,6 +205,8 @@
     (palaute/update! tx (assoc voimassaolo :id (:id existing-palaute)))
     (palaute/update-tila! ctx :lahetetty :viesti-status
                           (assoc voimassaolo :viesti-status viesti-status))
+    (log/info "Updating Arvo for tunnus" (:arvo-tunniste existing-palaute)
+              "to tila lahetetty")
     (arvo/update-kyselytunnus!
       (:arvo-tunniste existing-palaute) "lahetetty" new-alkupvm new-loppupvm)
     (sync-to-heratepalvelu! ctx)))
