@@ -1,48 +1,65 @@
 digraph{
-  graph [fontname = "monospace", fontsize="10", color="grey", fontcolor="grey"];
+  graph [fontname = "monospace", fontsize="12"];
   node [fontname = "monospace", shape="box", style="filled"];
   edge [fontname = "monospace", color="blue", fontcolor="blue",fontsize="10"];
 
   subgraph clusterKoodipohja {
-    label="eHOKS Backend Koodipohja"
+    label="eHOKS Backend Koodipohja\nYhteinen repo ja .jar, jossa kaikki palvelut eri nimiavaruuksissa:\l"
+    "palaute-ns"
     "virkailija-ns"
     "oppija-ns"
     "tyopaikan-toimija-ns"
     "hoks-api-ns"
   }
 
+  subgraph clusterPalaute {
+    label="/ehoks-palaute-backend/
+    ECS-palvelu, joka tekee
+    palautteenkeruun ajastetut eräajot"
+    "schedule.clj" [label="\N\najastetut ajot"]
+    "palaute-api" [label="\N\najojen käynnistäminen käsin (OPH-ylläpito)"]
+  }
+
   subgraph clusterVirkailijaApi {
-    label="/ehoks-virkailija-backend/"
-    "virkailija-api"
-    "virkailija-ns"
-    "hoks-api"
+    label="/ehoks-virkailija-backend/
+    ECS-palvelu, joka palvelee
+    OPH:ta ja koulutuksenjärjestäjiä
+    (kaikki käyttäjät joilla käyttöoikeuksia eHOKSiin)"
+    "virkailija-api" [label="\N\nhenkilökäyttäjät"]
+    "hoks-api" [label="\N\njärjestelmäliitännät"]
   }
 
   subgraph clusterJulkinenApi {
-    label="/ehoks-oppija-backend/"
-    "oppija-api"
-    "tyopaikan-toimija-api"
+    label="/ehoks-oppija-backend/
+    ECS-palvelu, joka palvelee
+    oppijoita ja työharjoitteluohjaajia"
+    "oppija-api" [label="\N\nomat HOKS-tiedot"]
+    "tyopaikan-toimija-api" [label="\N\nharjoittelijoiden HOKS-tiedot"]
   }
 
   subgraph clusterEhoksUI {
-   label="eHOKS käyttöliittymät"
-   "ehoks-ui"
-   "ehoks-virkailija-ui"
-   "ehoks-tyopaikan-toimija-ui"
+   label="eHOKS-käyttöliittymät
+   ECS-palveluja, jotka toteuttavat
+   henkilökäyttäjien käyttöliittymät"
+   "/ehoks-ui/" [label="\N\noppijat"]
+   "/ehoks-virkailija-ui/" [label="\N\nkoulutuksenjärjestäjät ja OPH"]
+   "/ehoks-tyopaikantoimija-ui/" [label="\N\ntyöharjoitteluohjaajat"]
   }
 
-  "virkailija-ns" -> "virkailija-api"
-  "oppija-ns" -> "oppija-api"
-  "tyopaikan-toimija-ns" -> "tyopaikan-toimija-api"
-  "hoks-api-ns" -> "hoks-api"
+  "palaute-ns" -> "schedule.clj" [label="suorittaa koodin", dir=back]
+  "palaute-ns" -> "palaute-api" [label="suorittaa koodin", dir=back]
+  "virkailija-ns" -> "virkailija-api" [label="suorittaa koodin", dir=back]
+  "oppija-ns" -> "oppija-api" [label="suorittaa koodin", dir=back]
+  "tyopaikan-toimija-ns" -> "tyopaikan-toimija-api" [label="suorittaa koodin", dir=back]
+  "hoks-api-ns" -> "hoks-api" [label="suorittaa koodin", dir=back]
 
+  "koulutuksenhallintajärjestelmät" [label="\N
+  kunkin koulutuksenjärjestäjän omat tietojärjestelmät"]
+  "vipunen" [label="\N\nOPM:n toiminnanohjaustietovarasto"]
 
-  "hoks-api" -> "ohj-ympäristöt"
-  "ohj-ympäristöt" -> "hoks-api"
-  "oppija-api" -> "ehoks-ui"
-  "ehoks-ui" -> "oppija-api"
-  "virkailija-api" -> "ehoks-virkailija-ui"
-  "ehoks-virkailija-ui" -> "virkailija-api"
-  "tyopaikan-toimija-api" -> "ehoks-tyopaikan-toimija-ui"
-  "ehoks-tyopaikan-toimija-ui" -> "tyopaikan-toimija-api"
+  "hoks-api" -> "koulutuksenhallintajärjestelmät" [label="kutsuu", dir=back]
+  "hoks-api" -> "vipunen" [label="kutsuu", dir=back]
+  "oppija-api" -> "/ehoks-ui/" [label="kutsuu", dir=back]
+  "virkailija-api" -> "/ehoks-virkailija-ui/" [label="kutsuu", dir=back]
+  "tyopaikan-toimija-api" -> "/ehoks-tyopaikantoimija-ui/" [label="kutsuu", dir=back]
 }
