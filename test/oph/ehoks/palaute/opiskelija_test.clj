@@ -544,9 +544,12 @@
                     :oppilaitosmuotoinenkoulutus
                     ["tutkinnonosat_300270" "tutkinnonosat_300268"]}))
             (is (= ((juxt :koulutustoimija_oid :kyselyn_tyyppi :tutkintotunnus
-                          :tutkinnon_suorituskieli :toimipiste_oid) @saved-req)
+                          :tutkinnon_suorituskieli :toimipiste_oid
+                          (comp :tila :metatiedot))
+                     @saved-req)
                    ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
-                    "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
+                    "351407" "fi" "1.2.246.562.10.12312312312"
+                    "odottaa_lahetysta"]))))))))
 
 (def arvo-error-body
   "{\"error\": \"required-fields-missing\", \"msg\": \"Huonosti menee\"}")
@@ -711,15 +714,17 @@
     (let [ctx {:hoks hoks-test/hoks-4 :opiskeluoikeus oo-test/opiskeluoikeus-1}
           hoks (hoks-handler/save-hoks-and-initiate-all-palautteet! ctx)
           vastauslinkki-counter (atom 0)
+          arvo-requests (atom [])
           [aloituskysely paattokysely]
           (palaute/get-by-hoks-id-and-kyselytyypit!
             db/spec
             {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "handle-amis-palautteet-on-heratepvm!"
         (client/set-post!
-          (fn [^String url _]
+          (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (swap! vastauslinkki-counter inc)
+              (swap! arvo-requests conj (:form-params options))
               {:status 200
                :body {:tunnus (str "bar" @vastauslinkki-counter)
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/bar"
@@ -727,6 +732,8 @@
                       :voimassa_loppupvm "2024-10-10"}})))
         (is (= ["bar1" "bar2"]
                (vt/handle-amis-palautteet-on-heratepvm! {})))
+        (is (= ["ei_kuulu_lahetettavien_perusjoukkoon" "odottaa_lahetysta"]
+               (map (comp :tila :metatiedot) @arvo-requests)))
         (is (= [["kysely_muodostettu" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
