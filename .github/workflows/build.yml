@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           git clone https://github.com/Opetushallitus/ci-tools.git
-          lein deps
+          https_proxy=http://nexus.ops.testiopintopolku.fi:8081 lein deps
 
       - name: Run Databases
         shell: bash
