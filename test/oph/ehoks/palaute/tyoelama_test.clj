@@ -651,6 +651,7 @@
                        #(= (:jakson-yksiloiva-tunniste %) "1") palautteet)
         create-jaksotunnus-counter (atom 0)
         arvo-tunnukset (atom [])
+        arvo-requests (atom [])
         check-current-state-is-same-as-initial-state
         (fn []
           (is (= (hoks-utils/palautteet) initial-palautteet))
@@ -664,13 +665,15 @@
                   koski/get-opiskeluoikeus-info-raw
                   hoks-utils/mock-get-opiskeluoikeus!
                   arvo/create-jaksotunnus!
-                  (fn [_] (let [tunnus (str (UUID/randomUUID))]
-                            (swap! arvo-tunnukset #(conj % tunnus))
-                            (swap! create-jaksotunnus-counter inc)
-                            {:tunnus tunnus}))
+                  (fn [body]
+                    (let [tunnus (str (UUID/randomUUID))]
+                      (swap! arvo-tunnukset conj tunnus)
+                      (swap! arvo-requests conj body)
+                      (swap! create-jaksotunnus-counter inc)
+                      {:tunnus tunnus}))
                   arvo/delete-jaksotunnus
                   (fn [tunnus] (swap! arvo-tunnukset #(remove #{tunnus} %)))
-                  date/now #(LocalDate/of 2024 6 30)]
+                  date/now #(LocalDate/of 2024 2 20)]
       (testing (str "Everything (palaute-backend DB and DynamoDB tables) rolls "
                     "back to its initial state (before the function call) when")
         (testing "Arvo call for vastaajatunnus creation fails."
@@ -730,6 +733,12 @@
           (is (= 2 @create-jaksotunnus-counter))
           (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
+          (is (= [["2024-02-20" "2024-03-05"]
+                  ["2024-02-20" "2024-03-05"]
+                  ["2024-02-20" "2024-03-05"]]
+                 (map (juxt (comp str :vastaamisajan_alkupvm)
+                            (comp str :vastaamisajan_loppupvm))
+                      @arvo-requests)))
           (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
           (is (= "heratepalvelussa"
