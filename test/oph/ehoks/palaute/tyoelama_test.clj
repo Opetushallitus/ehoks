@@ -739,6 +739,11 @@
                  (map (juxt (comp str :vastaamisajan_alkupvm)
                             (comp str :vastaamisajan_loppupvm))
                       @arvo-requests)))
+          (is (= [["Testiosa" ["12345" "23456"] "123456"]
+                  ["Testiosa" ["12345" "23456"] "123456"]
+                  ["Testiosa" ["12345" "23456"] "123456"]]
+                 (map (juxt :paikallinen_tutkinnon_osa :tutkintonimike
+                            :tutkintotunnus) @arvo-requests)))
           (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
           (is (= "heratepalvelussa"
