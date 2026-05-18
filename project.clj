@@ -123,7 +123,7 @@
             [lein-cloverage "1.2.4"]
             [lein-eftest "0.6.0"]
             [lein-environ "1.2.0"]]
-  :repositories [["github" {:url "https://maven.pkg.github.com/Opetushallitus/packages"
+  :repositories [["github" {:url "https://maven.pkg.github.com/orgs/Opetushallitus/packages"
                             :username "private-token"
                             :password :env/GITHUB_TOKEN}]
                  ["oph-releases" "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"]
