@@ -1,6 +1,7 @@
 (ns oph.ehoks.virkailija.handler
   (:require [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
+            [cheshire.core :as cheshire]
             [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
@@ -225,6 +226,10 @@
   ; (super user vs. oppilaitos virkailija).
   (let [user       (get-in request [:session :virkailija-user])
         oppilaitos (organisaatio/get-organisaatio! oppilaitos-oid)]
+    (try (cheshire/parse-string tutkinto)
+         (catch com.fasterxml.jackson.core.JsonParseException _
+           (response/bad-request!
+             {:error "`tutkinto` must be a JSON object."})))
     (assoc
       (cond
         (user/oph-super-user? user)
