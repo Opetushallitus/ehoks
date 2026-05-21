@@ -127,7 +127,10 @@
   ;; taken away if maven-central-proxy goes away, or Maven Central does
   ;; not break builds anymore with 429 responses
   :repositories ^:replace
-  [["maven-central-proxy" "https://artifactory.opintopolku.fi/artifactory/repository/maven-central"]
+  [["maven-central-proxy"
+    {:url "https://artifactory.opintopolku.fi/artifactory/repository/maven-central"
+     :username :env/ARTIFACTORY_USERNAME
+     :password :env/ARTIFACTORY_PASSWORD}]
    ["clojars" "https://repo.clojars.org/"]
    ["github" {:url "https://maven.pkg.github.com/orgs/Opetushallitus/packages"
               :username "private-token"
