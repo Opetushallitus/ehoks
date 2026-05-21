@@ -733,11 +733,13 @@
           (is (= 2 @create-jaksotunnus-counter))
           (vt/create-vastaajatunnus! tep-palaute)
           (is (= 3 @create-jaksotunnus-counter))
-          (is (= [["2024-02-20" "2024-03-05"]
-                  ["2024-02-20" "2024-03-05"]
-                  ["2024-02-20" "2024-03-05"]]
+          (is (= [["2024-02-20" "2024-03-05" false]
+                  ["2024-02-20" "2024-03-05" false]
+                  ["2024-02-20" "2024-03-05" false]]
                  (map (juxt (comp str :vastaamisajan_alkupvm)
-                            (comp str :vastaamisajan_loppupvm))
+                            (comp str :vastaamisajan_loppupvm)
+                            (comp :ei_kuulu_lahetettavien_perusjoukkoon
+                                  :metatiedot))
                       @arvo-requests)))
           (is (= [["Testiosa" ["12345" "23456"] "123456"]
                   ["Testiosa" ["12345" "23456"] "123456"]

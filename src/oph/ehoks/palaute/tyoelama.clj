@@ -212,8 +212,10 @@
   (let [tjk (:tyopaikalla-jarjestettava-koulutus jakso)
         t-nimi (:tyopaikan-nimi tjk)
         heratepvm (:heratepvm existing-palaute)
-        alkupvm (greatest heratepvm (date/now))
-        loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)]
+        today (date/now)
+        alkupvm (greatest heratepvm today)
+        loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+        e-k-l-p (date/is-after today loppupvm)]
     {:koulutustoimija_oid       koulutustoimija
      :tyonantaja                (:tyopaikan-y-tunnus tjk)
      :tyopaikka                 t-nimi
@@ -234,6 +236,7 @@
                                   (:oppisopimuksen-perusta-koodi-uri jakso))
      :vastaamisajan_alkupvm     alkupvm
      :vastaamisajan_loppupvm    loppupvm
+     :metatiedot                {:ei_kuulu_lahetettavien_perusjoukkoon e-k-l-p}
      :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
      :toimipiste_oid            toimipiste
      :request_id                request-id}))
