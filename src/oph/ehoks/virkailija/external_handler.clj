@@ -6,7 +6,6 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.external.amosaa :as amosaa]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
 
@@ -53,29 +52,6 @@
         (restful/ok (koodisto/get-koodi-latest-versiot koodi-uri))))
 
     (c-api/context "/eperusteet" []
-      (c-api/GET "/tutkinnonosat/:id/viitteet" []
-        :path-params [id :- Long]
-        :summary "Tutkinnon osan viitteet."
-        :return (restful/response [s/Any])
-        (try
-          (restful/ok (eperusteet/get-tutkinnon-osa-viitteet id))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 400)
-              (response/not-found
-                {:message "Tutkinnon osa not found"})
-              (throw e)))))
-
-      (c-api/GET "/tutkinnonosat/:id/osaalueet" []
-        :path-params [id :- Long]
-        :summary "Yhteisen tutkinnon osan osa-alueet."
-        :return (restful/response [s/Any])
-        (try
-          (restful/ok (eperusteet/get-tutkinnon-osan-osa-alueet id))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 400)
-              (response/not-found
-                {:message "Tutkinnon osan osa-alue not found"})
-              (throw e)))))
 
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
@@ -116,13 +92,4 @@
         :path-params [koodi-uri :- s/Str]
         :return (restful/response [s/Any])
         (restful/with-not-found-handling
-          (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))
-
-    (c-api/context "/eperusteet-amosaa" []
-      (c-api/GET "/koodi/:koodi" []
-        :path-params [koodi :- String]
-        :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
-                 Koodiin täydennetään automaattisesti
-                 'paikallinen_tutkinnonosa'"
-        :return (restful/response [s/Any])
-        (restful/ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))
+          (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))))
