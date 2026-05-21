@@ -734,6 +734,9 @@
                (vt/handle-amis-palautteet-on-heratepvm! {})))
         (is (= ["ei_kuulu_lahetettavien_perusjoukkoon" "odottaa_lahetysta"]
                (map (comp :tila :metatiedot) @arvo-requests)))
+        (is (= [true false]
+               (map (comp :ei_kuulu_lahetettavien_perusjoukkoon :metatiedot)
+                    @arvo-requests)))
         (is (= [["kysely_muodostettu" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
