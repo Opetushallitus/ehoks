@@ -1,7 +1,7 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [medley.core :refer [map-vals]]
+            [medley.core :refer [map-vals greatest]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as dynamodb]
@@ -205,13 +205,49 @@
        :viimeinen_vastauspvm (palaute/vastaamisajan-loppupvm
                                heratepvm vastaamisajan-alkupvm)})))
 
+(defn build-jaksotunnus-request-body
+  "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
+  [{:keys [opiskeluoikeus existing-palaute jakso request-id
+           suoritus koulutustoimija toimipiste]}]
+  (let [tjk (:tyopaikalla-jarjestettava-koulutus jakso)
+        t-nimi (:tyopaikan-nimi tjk)
+        heratepvm (:heratepvm existing-palaute)
+        today (date/now)
+        alkupvm (greatest heratepvm today)
+        loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+        e-k-l-p (date/is-after today loppupvm)]
+    {:koulutustoimija_oid       koulutustoimija
+     :tyonantaja                (:tyopaikan-y-tunnus tjk)
+     :tyopaikka                 t-nimi
+     :tyopaikka_normalisoitu    (u-str/normalize t-nimi)
+     :tutkintotunnus            (suoritus/tutkintotunnus suoritus)
+     :tutkinnon_osa             (utils/koodi-uri->koodi
+                                  (:tutkinnon-osa-koodi-uri jakso))
+     :paikallinen_tutkinnon_osa (:nimi jakso)
+     :tutkintonimike            (map :koodiarvo (:tutkintonimike suoritus))
+     :osaamisala                (suoritus/get-osaamisalat suoritus heratepvm)
+     :tyopaikkajakson_alkupvm   (str (:alku jakso))
+     :tyopaikkajakson_loppupvm  (str (:loppu jakso))
+     :rahoituskausi_pvm         (str (:loppu jakso))
+     :osa_aikaisuus             (:osa-aikaisuustieto jakso)
+     :sopimustyyppi             (utils/koodi-uri->koodi
+                                  (:osaamisen-hankkimistapa-koodi-uri jakso))
+     :oppisopimuksen_perusta    (utils/koodi-uri->koodi
+                                  (:oppisopimuksen-perusta-koodi-uri jakso))
+     :vastaamisajan_alkupvm     alkupvm
+     :vastaamisajan_loppupvm    loppupvm
+     :metatiedot                {:ei_kuulu_lahetettavien_perusjoukkoon e-k-l-p}
+     :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
+     :toimipiste_oid            toimipiste
+     :request_id                request-id}))
+
 ;; these use vars (#') because otherwise with-redefs doesn't work on
 ;; them (the map has the original definition even if the function in
 ;; its namespace is redef'd)
 
 (def handlers
   {:check-palaute #'initial-palaute-state-and-reason
-   :arvo-builder #'arvo/build-jaksotunnus-request-body
+   :arvo-builder #'build-jaksotunnus-request-body
    :arvo-caller #'arvo/create-jaksotunnus!
    :heratepalvelu-builder #'build-jaksoherate-record-for-heratepalvelu
    :heratepalvelu-caller #'heratepalvelu/sync-jakso!
