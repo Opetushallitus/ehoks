@@ -7,7 +7,9 @@
   "Varmistaa, että suorituksen tyyppi on joko ammatillinen tutkinto tai
   osittainen ammatillinen tutkinto."
   [suoritus]
-  (some? (#{"ammatillinentutkinto" "ammatillinentutkintoosittainen"}
+  (some? (#{"ammatillinentutkinto"
+            "ammatillinentutkintoosittainen"
+            "ammatillinentutkintoosittainenuseastatutkinnosta"}
            (tyyppi suoritus))))
 
 (defn telma?
@@ -22,6 +24,18 @@
 (defn tutkintotunnus
   [suoritus]
   (get-in suoritus [:koulutusmoduuli :tunniste :koodiarvo]))
+
+(defn tutkinto-nimi
+  "Extract tutkinnon nimi from suoritus"
+  [suoritus]
+  (get-in suoritus [:koulutusmoduuli :tunniste :nimi] {:fi "" :sv ""}))
+
+(defn osaamisala-nimi
+  "Extract osaamisalan nimi from suoritus"
+  [suoritus]
+  (or (some #(or (get-in % [:nimi]) (get-in % [:osaamisala :nimi]))
+            (:osaamisala suoritus))
+      {:fi "" :sv ""}))
 
 (defn tutkintonimike
   "Palauttaa suoritukseen liittyvien tutkintonimikkeiden koodiarvot merkkijonona
