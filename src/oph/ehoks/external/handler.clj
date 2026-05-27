@@ -32,9 +32,12 @@
     (route-middleware
       [wrap-authorize]
       (c-api/GET "/koodistokoodi/:uri/:versio" []
-        :summary "Hakee koodisto koodin tietoja Koodisto-palvelusta"
+        :summary (str "Hakee koodisto koodin tietoja Koodisto-palvelusta. "
+                      "Vastauksen schema: KoodiVersio_Extended osoitteessa "
+                      "https://virkailija.opintopolku.fi/koodisto-service/"
+                      "swagger-ui/index.html")
         :path-params [uri :- s/Str, versio :- s/Int]
-        :return (rest/response schema/ExtendedKoodistoKoodi)
+        :return (rest/response s/Any)
         (utils/with-timeout
           (:service-timeout-ms config)
           (-> (koodisto/get-koodi-versio uri versio)
@@ -44,8 +47,12 @@
           (response/internal-server-error {:error "Service timeout exceeded"})))
 
       (c-api/GET "/koski/oppija" [:as request]
-        :summary "Hakee oppijan tietoja Koski-palvelusta"
-        :return (rest/response schema/KoskiOppija)
+        :summary (str "Hakee oppijan tietoja Koski-palvelusta. "
+                      "Vastauksen schema: "
+                      "https://koski.opintopolku.fi/koski/dokumentaatio/"
+                      "koski-oppija-schema.html?entity=henkil%C3%B6tiedotjaoid"
+                      "#henkil%C3%B6tiedotjaoid")
+        :return (rest/response s/Any)
         (utils/with-timeout
           (:service-timeout-ms config)
           (-> (get-in request [:session :user :oid])
