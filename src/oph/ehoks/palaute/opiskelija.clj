@@ -255,8 +255,11 @@
   "For the given palaute, create Arvo request for creating its kyselylinkki."
   [{:keys [existing-palaute hoks opiskeluoikeus suoritus request-id
            koulutustoimija toimipiste hk-toteuttaja]}]
-  (let [heratepvm (:heratepvm existing-palaute)
-        alkupvm (greatest heratepvm (date/now))]
+  (let [today (date/now)
+        heratepvm (:heratepvm existing-palaute)
+        alkupvm (greatest heratepvm today)
+        loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+        e-k-l-p (date/is-after today loppupvm)]
     {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
      :tutkinnon_suorituskieli (or (suoritus/kieli suoritus) "fi")
      :kyselyn_tyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))
@@ -265,7 +268,11 @@
      (osaamisen-hankkimistavat->tutkinnonosat-hankkimistavoittain
        (oht/osaamisen-hankkimistavat hoks))
      :vastaamisajan_alkupvm alkupvm
-     :vastaamisajan_loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+     :vastaamisajan_loppupvm loppupvm
+     :metatiedot {:tila (if e-k-l-p
+                          "ei_kuulu_lahetettavien_perusjoukkoon"
+                          "odottaa_lahetysta")
+                  :ei_kuulu_lahetettavien_perusjoukkoon e-k-l-p}
      :toimipiste_oid toimipiste
      :tutkintotunnus (str (suoritus/tutkintotunnus suoritus))
      :tutkinnon_osat (map transform-tutkinnon-osa-for-arvo
