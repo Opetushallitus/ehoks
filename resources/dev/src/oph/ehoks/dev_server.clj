@@ -95,8 +95,8 @@
   (m/migrate!)
   (log/infof "Starting %s development server..." app-name)
   (log/info "Not safe for production or public environments.")
-  (populate-oppijaindex)
   (when (= app-name "ehoks-palaute")
+    (populate-oppijaindex)
     (scheduler/run-schedulers! (Instant/now) (Duration/ofSeconds 60)))
   (jetty/run-jetty app
                    {:port (:port config)
