@@ -480,7 +480,8 @@
     [queries/select-hoks-oppijat-without-index-count]))
 
 (defn select-hoks-opiskeluoikeudet-without-index
-  "Hakee tietokannasta opiskeluoikeus OID:t, joilla ei ole tietoja."
+  "Hakee vuotta uudemmista HOKSeista opiskeluoikeus-OID:t, joilla ei
+  ole tietoja."
   []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index]))
