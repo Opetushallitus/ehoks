@@ -1,6 +1,7 @@
 (ns oph.ehoks.dev-server
   (:require [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.db.migrations :as m]
+            [oph.ehoks.main :as main]
             [oph.ehoks.config :refer [config] :as c]
             [oph.ehoks.mocked-routes.mock-routes :as mock]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -14,8 +15,7 @@
             [clojure.string :as c-str]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [oph.ehoks.dev-tools :as dev-tools])
-  (:import (java.time Instant Duration)))
+            [oph.ehoks.dev-tools :as dev-tools]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -75,34 +75,6 @@
       (wrap-cookies (wrap-reload #'dev-tools/routes))
       (wrap-reload #'ehoks-app/app))))
 
-(defn populate-oppijaindex []
-  (future
-    (log/info "Updating oppijaindex")
-    (oppijaindex/update-oppijat-without-index!)
-    (oppijaindex/update-opiskeluoikeudet-without-index!)
-    (log/info "Updating oppijaindex finished")))
-
-(defn start-app-server! [app app-name config-file]
-  (when (some? config-file)
-    (System/setProperty "config" config-file)
-    (require 'oph.ehoks.config :reload)
-    (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
-      (println "Using prod urls")
-      (System/setProperty
-        "services_file" "resources/prod/services-oph.properties"))
-    (require 'oph.ehoks.external.oph-url :reload))
-  (log/info "Running migrations")
-  (m/migrate!)
-  (log/infof "Starting %s development server..." app-name)
-  (log/info "Not safe for production or public environments.")
-  (when (= app-name "ehoks-palaute")
-    (populate-oppijaindex)
-    (scheduler/run-schedulers! (Instant/now) (Duration/ofSeconds 60)))
-  (jetty/run-jetty app
-                   {:port (:port config)
-                    :join? false
-                    :async? true}))
-
 (defn start [app-name config-file]
   (log/infof "Starting %s with config %s" app-name config-file)
   (let [app (wrap-dev-cors
@@ -110,7 +82,7 @@
                 (wrap-params (wrap-cookies mock/mock-routes))
                 dev-routes
                 (ehoks-app/create-app app-name)))]
-    (start-app-server! app app-name config-file)))
+    (main/start-app-server! app app-name config-file true)))
 
 (defn -main
   ([app-name config-file] (start app-name config-file))
