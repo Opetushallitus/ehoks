@@ -7,7 +7,6 @@
             [ring.util.http-response :as response]
             [schema.core :as s]
             [compojure.api.sweet :as c-api]
-            [oph.ehoks.external.amosaa :as amosaa]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koodisto :as koodisto]))
 
@@ -23,22 +22,6 @@
         (rest/ok (koodisto/get-koodi koodi-uri))))
 
     (c-api/context "/eperusteet" []
-      (c-api/GET "/tutkinnonosat/:id/viitteet" [id]
-        :path-params [id :- Long]
-        :summary "Tutkinnon osan viitteet."
-        :return (rest/response [s/Any])
-        (rest/ok (eperusteet/get-tutkinnon-osa-viitteet id)))
-
-      (c-api/GET "/tutkinnonosat/:id/osaalueet" []
-        :path-params [id :- Long]
-        :summary "Yhteisen tutkinnon osan osa-alueet."
-        :return (rest/response [s/Any])
-        (try (rest/ok (eperusteet/get-tutkinnon-osan-osa-alueet id))
-             (catch Exception e
-               (if (= (:status (ex-data e)) 400)
-                 (response/not-found
-                   {:message "Tutkinnon osan osa-alue not found"})
-                 (throw e)))))
 
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
@@ -73,15 +56,6 @@
         :return (rest/response  [s/Any])
         (rest/with-not-found-handling
           (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))
-
-    (c-api/context "/eperusteet-amosaa" []
-      (c-api/GET "/koodi/:koodi" []
-        :path-params [koodi :- String]
-        :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
-                 Koodiin täydennetään automaattisesti
-                 'paikallinen_tutkinnonosa'"
-        :return (rest/response [s/Any])
-        (rest/ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))
 
     (c-api/context "/organisaatio" []
       (c-api/GET "/:oid" []

@@ -66,17 +66,6 @@
                           :sivu 0}})]
       (is (= (ep/find-tutkinnon-osat "tutkinnonosat_404") [])))))
 
-(deftest get-tutkinnon-osa-vitteet-not-found
-  (testing "Not getting any tutkinnon osa viitteet items"
-    (client/with-mock-responses
-      [(fn [_ __] (throw (ex-info
-                           "HTTP Exception"
-                           {:status 400
-                            :body {:koodi 400
-                                   :syy "tutkinnon-osaa-ei-ole"}})))]
-      (is (thrown? clojure.lang.ExceptionInfo
-                   (ep/get-tutkinnon-osa-viitteet 100000))))))
-
 (deftest get-koulutuksenOsa-by-koodiUri-not-found
   (testing "Not getting koulutuksenOsa by koodiUri items"
     (client/with-mock-responses
