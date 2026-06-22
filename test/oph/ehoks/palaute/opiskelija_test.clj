@@ -711,7 +711,21 @@
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila
                                #(update (:lisatiedot %) :request-id count))))))
-        (client/reset-functions!)))))
+        (client/reset-functions!))
+      (testing "ei-laheteta when heratepvm disappears from HOKS"
+        (with-redefs [handling/get-hoks-by-id!
+                      (fn [id] (dissoc (hoks/get-by-id id)
+                                       :ensikertainen-hyvaksyminen))]
+          (->> heratteet
+               (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
+               (vt/create-vastaajatunnus!))
+          (is (= [["odottaa_kasittelya" "odottaa_kasittelya"]
+                  ["odottaa_kasittelya" "odottaa_kasittelya"]
+                  ["odottaa_kasittelya" "ei_laheteta"]
+                  ["odottaa_kasittelya" "ei_laheteta"]]
+                 (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                      (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec)
+                      (map (juxt :vanha-tila :uusi-tila))))))))))
 
 (deftest test-handle-amis-palautteet-on-heratepvm!
   (with-redefs [date/now (constantly (LocalDate/of 2024 12 18))

@@ -106,11 +106,19 @@
               "because of" reason "in" field)
     (if state
       (if (= :odottaa-kasittelya state)
+        ;; case 'everything is OK, proceed'
         (-> ctx
             (create-and-save-tunnus! handlers)
             (sync-to-heratepalvelu! handlers))
+        ;; case 'something is wrong, mark'
         (palaute/update-tila! ctx state reason lisatiedot))
-      (tapahtuma/build-and-insert! ctx reason lisatiedot))))
+      (if (palaute/unhandled? existing-palaute)
+        ;; case 'palaute shouldn't have been formed so prevent handling
+        ;; until next HOKS update'
+        (palaute/update-tila! ctx :ei-laheteta reason lisatiedot)
+        ;; case 'palaute shouldn't have been formed but we need to keep
+        ;; record of it'
+        (tapahtuma/build-and-insert! ctx reason lisatiedot)))))
 
 (defn create-vastaajatunnus!
   "Check that palaute is part of kohderyhmä and create and save

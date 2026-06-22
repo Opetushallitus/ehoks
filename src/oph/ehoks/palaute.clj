@@ -144,6 +144,8 @@
 (defn update-tila!
   "Update palaute (given in :existing-palaute in ctx) to state tila."
   [{:keys [existing-palaute tx] :as ctx} tila reason lisatiedot]
+  (log/info "Updating palaute" (:id existing-palaute) "to state" tila
+            "because of" reason "and" lisatiedot)
   (if (not tx)
     (jdbc/with-db-transaction
       [tx db/spec]
