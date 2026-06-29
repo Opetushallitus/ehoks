@@ -8,7 +8,7 @@
   [id]
   (db-ops/query
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
-    {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
+    {:row-fn h/remove-hoks-id}))
 
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot!
   "Lisää opiskeluvalmiuksia tukevat opinnot"
