@@ -24,4 +24,5 @@ join palautteet p on (pt.palaute_id = p.id)
 where p.hoks_id = :hoks-id
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and p.deleted_at is null
+order by created_at asc
 
