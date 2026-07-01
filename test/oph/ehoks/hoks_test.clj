@@ -12,6 +12,16 @@
    :osaamisen-saavuttamisen-pvm (LocalDate/of 2024 02 05)
    :sahkoposti                  "testi.testaaja@testidomain.testi"
    :puhelinnumero               "0123456789"
+   :oppimisen-tuki
+   [{:oppimisen-tuen-tyyppi-koodi-uri
+     "ammatillinenkoulutusoppimisentuentyyppi_01"
+     :alku (LocalDate/of 2023 12 1)
+     :loppu (LocalDate/of 2023 12 5)
+     :tutkinnon-osan-tyyppi-koodi-uri "ammatillisentutkinnonosanryhma_1"}
+    {:oppimisen-tuen-tyyppi-koodi-uri
+     "ammatillinenkoulutusoppimisentuentyyppi_02"}
+    {:oppimisen-tuen-tyyppi-koodi-uri
+     "ammatillinenkoulutusoppimisentuentyyppi_03"}]
    :hankittavat-ammat-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
      :tutkinnon-osa-koodi-versio 1

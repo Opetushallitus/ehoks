@@ -154,6 +154,17 @@
       }
     }
   ],
+  "oppimisen-tuki": [
+    {
+      "oppimisen-tuen-tyyppi-koodi-uri": "ammatillinenkoulutusoppimisentuentyyppi_01",
+      "alku": "2023-12-01",
+      "loppu": "2023-12-05",
+      "tutkinnon-osan-tyyppi-koodi-uri": "ammatillisentutkinnonosanryhma_1"
+    },
+    {
+      "oppimisen-tuen-tyyppi-koodi-uri": "ammatillinenkoulutusoppimisentuentyyppi_03"
+    }
+  ],
   "opiskeluvalmiuksia-tukevat-opinnot": [
     {
       "nimi": "Tietokoneen käyttövalmiudet",

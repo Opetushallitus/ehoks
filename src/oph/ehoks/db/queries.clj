@@ -98,6 +98,7 @@
      :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
+(defq select-oppimisen-tuki-by-hoks-id nil)
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id nil)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id nil)
 (defq select-hankittavat-koulutuksen-osat-by-hoks-id nil)

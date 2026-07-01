@@ -103,6 +103,14 @@
    :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
    :versio 4
    :sahkoposti "testi@gmail.com"
+   :oppimisen-tuki
+   [{:oppimisen-tuen-tyyppi-koodi-uri
+     "ammatillinenkoulutusoppimisentuentyyppi_01"
+     :alku "2023-12-01"
+     :loppu "2023-12-05"
+     :tutkinnon-osan-tyyppi-koodi-uri "ammatillisentutkinnonosanryhma_1"}
+    {:oppimisen-tuen-tyyppi-koodi-uri
+     "ammatillinenkoulutusoppimisentuentyyppi_02"}]
    :opiskeluvalmiuksia-tukevat-opinnot [parts-test-data/oto-data]
    :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]

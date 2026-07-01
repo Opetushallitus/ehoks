@@ -30,6 +30,8 @@ DELETE FROM muut_oppimisymparistot;
 DELETE FROM keskeytymisajanjaksot;
 DELETE FROM nayttoymparistot;
 DELETE FROM opiskeluoikeudet;
+DELETE FROM oppimisen_tuki;
+ALTER SEQUENCE oppimisen_tuki_id_seq RESTART WITH 1;
 DELETE FROM opiskeluvalmiuksia_tukevat_opinnot;
 ALTER SEQUENCE opiskeluvalmiuksia_tukevat_opinnot_id_seq RESTART WITH 1;
 DELETE FROM oppijat;

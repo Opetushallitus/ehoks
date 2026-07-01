@@ -33,13 +33,14 @@
                 :aiemmin-hankitut-yhteiset-tutkinnon-osat
                 :hankittavat-ammat-tutkinnon-osat
                 :hankittavat-yhteiset-tutkinnon-osat
+                :hankittavat-paikalliset-tutkinnon-osat
                 :hankittavat-koulutuksen-osat
-                :opiskeluvalmiuksia-tukevat-opinnot
-                :hankittavat-paikalliset-tutkinnon-osat]}))
+                :oppimisen-tuki
+                :opiskeluvalmiuksia-tukevat-opinnot]}))
 
-(defn aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
-  "Muuttaa tietokannasta haetun aiemmin hankitun ammatillisen tutkinnon osan sen
-  mukaiseksi, mitä odotetaan palvelussa."
+(defn remove-hoks-id
+  "Muuttaa tietokannasta haetun rivin niin,
+  ettei siinä ole (redundanttia) hoks-id:tä"
   [m]
   (db-ops/from-sql m {:removals [:hoks_id]}))
 
@@ -274,12 +275,6 @@
   mukaiseksi, mitä odotetaan palvelussa."
   [m]
   (db-ops/from-sql m))
-
-(defn opiskeluvalmiuksia-tukevat-opinnot-from-sql
-  "Muuttaa tietokannasta haetut opiskeluvalmiuksia tukevat opinnot sen
-  mukaisiksi, mitä odotetaan palvelussa."
-  [m]
-  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-yhteinen-tutkinnon-osa-from-sql
   "Muuttaa tietokannasta haetun hankittavan yhteisen tutkinnon osan sen
