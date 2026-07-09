@@ -69,7 +69,7 @@
 (def TutkinnonOsanRyhmaKoodiUri
   "Koodi-URI sille, millainen tutkinnonosa
   (yhteinen/ammatillinen/paikallinen) on kyseessä"
-  #"^ammatillisentutkinnonosanryhma_\d$")
+  #"^ammatillisentutkinnonosanryhma_[12]$")
 
 (defn- calculate-y-tunnus-checksum
   "Laskee Y-tunnuksen tarkistusnumeron tunnuksen 7 ensimmäisen numeron
@@ -751,31 +751,34 @@
   OppimisenTuki
   (s/constrained
     (describe
-      (str "Oppimisen tuen toimi: tukiopetus tai muu tuki ja ohjaus.  "
-           "Muun tuen ja ohjauksen suhteen käytetään yhtä tietuettä koko "
-           "opiskeluoikeuden aikana, mutta tukiopetuksesta tehdään tietue "
-           "erikseen jokaiselle tutkinnonosalle, "
-           "johon on annettu tukiopetusta.  "
-           "Tiedot lisätään jälkikäteen toteuman mukaan.")
+      ""
       :oppimisen-tuen-tyyppi-koodi-uri OppimisenTuenTyyppiKoodiUri
-      (str "Oppimisen tuen tyyppi, katso koodisto: "
+      (str "Opiskelijalle annetun oppimisen tuen tyyppi. "
+           "Tallennetaan koodistokoodina: "
            "https://virkailija.opintopolku.fi/koodisto-service/rest/json/"
            "ammatillinenkoulutusoppimisentuentyyppi/koodi")
       (s/optional-key :alku) LocalDate
-      (str "Tukitoimen alkupäivä.  Vastaa tutkinnonosan alkupäivää, "
-           "jolle tukea on annettu, jos kyseessä on tukiopetus.  "
-           "Muuten ei täytetä.")
+      (str "Oppimisen tuen ajoittumisen alkupäivämäärä. "
+           "Opettajan antamassa tukiopetuksessa tutkinnon osan "
+           "osaamisen hankkimisen alkupäivämäärä. "
+           "Opettajan ja muun opetus- ja ohjaushenkilöstön antamassa "
+           "tuessa ja ohjauksessa opiskeluoikeuden alkamispäivämäärä. "
+           "Sallittu tieto vain opettajan antamassa tukiopetuksessa.")
       (s/optional-key :loppu) LocalDate
-      (str "Tukitoimen loppupäivä.  Vastaa tutkinnonosan loppupäivää, "
-           "jolle tukea on annettu, jos kyseessä on tukiopetus.  "
-           "Muuten ei täytetä.")
+      (str "Oppimisen tuen ajoittumisen loppupäivämäärä. "
+           "Opettajan antamassa tukiopetuksessa tutkinnon osan "
+           "osaamisen hankkimisen päättymispäivä. "
+           "Opettajan ja muun opetus- ja ohjaushenkilöstön antamassa "
+           "tuessa ja ohjauksessa opiskeluoikeuden päättymispäivä. "
+           "Sallittu tieto vain opettajan antamassa tukiopetuksessa.")
       (s/optional-key :tutkinnon-osan-tyyppi-koodi-uri)
       TutkinnonOsanRyhmaKoodiUri
-      (str "Millaiselle tutkinnon osalle on annettu tukiopetusta.  "
-           "Käytössä vain tukiopetukselle ja vain arvot 1 (ammatillinen) "
-           "ja 2 (yhteinen).  Katso koodisto: "
+      (str "tieto siitä, onko oppimisen tukea annettu "
+           "ammatilliseen tutkinnon osaan vai yhteiseen tutkinnon osaan. "
+           "Tallennetaan koodistokoodina: "
            "https://virkailija.opintopolku.fi/koodisto-service/rest/json/"
-           "ammatillisentutkinnonosanryhma/koodi"))
+           "ammatillisentutkinnonosanryhma/koodi "
+           "Sallittu tieto vain opettajan antamassa tukiopetuksessa."))
     has-dates-only-if-tukiopetus?
     "Määritä alku- ja loppupvm jos ja vain jos kyseessä on tukiopetus."))
 
@@ -1124,7 +1127,8 @@
    :oppimisen-tuki
    {:methods {:any :optional :patch :excluded}
     :types {:any [OppimisenTuki]}
-    :description "Oppimisen tuen toimet. Lisätään jälkikäteen toteuman mukaan."}
+    :description (str "Opiskelijalle annettu oppimisen tuki. "
+                      "Voimassa 1.8.2026 alkaen.")}
    :hankittavat-ammat-tutkinnon-osat
    {:methods {:any :optional :patch :excluded}
     :types {:any [HankittavaAmmatillinenTutkinnonOsa-template]}
