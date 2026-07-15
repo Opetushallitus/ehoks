@@ -92,7 +92,7 @@
   (= (calculate-y-tunnus-checksum y-tunnus)
      (Character/getNumericValue ^char (last y-tunnus))))
 
-(defn has-dates-only-if-tukiopetus?
+(defn has-other-fields-only-if-tukiopetus?
   "Tarkistaa oppimisen tuen tyypin perusteella, onko sillä kyseisen
   tyyppisen tuen vaatimat päivämääräkentät."
   [oppimisen-tuki]
@@ -779,8 +779,9 @@
            "https://virkailija.opintopolku.fi/koodisto-service/rest/json/"
            "ammatillisentutkinnonosanryhma/koodi "
            "Sallittu tieto vain opettajan antamassa tukiopetuksessa."))
-    has-dates-only-if-tukiopetus?
-    "Määritä alku- ja loppupvm jos ja vain jos kyseessä on tukiopetus."))
+    has-other-fields-only-if-tukiopetus?
+    (str "Määritä alku- ja loppupvm sekä tutkinnonosan tyyppi jos "
+         "ja vain jos kyseessä on tukiopetus.")))
 
 (def HankittavaAmmatillinenTutkinnonOsa-template
   ^{:doc "Hankittavan ammatillisen tutkinnon osan schema."
