@@ -76,7 +76,7 @@
   (mapv #(dissoc % :id)
         (extract-arvioijat-and-osoittamiset
           (db/select-all-ahatos-for-hoks hoks-id)
-          db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
+          db-hoks/remove-hoks-id
           ahato-fields)))
 
 (def ahpto-fields

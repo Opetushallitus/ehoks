@@ -42,6 +42,8 @@
       (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat hoks-id)
       :hankittavat-ammat-tutkinnon-osat
       (ha/get-hankittavat-ammat-tutkinnon-osat hoks-id)
+      :oppimisen-tuki
+      (ot/get-oppimisen-tuki hoks-id)
       :opiskeluvalmiuksia-tukevat-opinnot
       (ot/get-opiskeluvalmiuksia-tukevat-opinnot hoks-id)
       :hankittavat-yhteiset-tutkinnon-osat
@@ -88,6 +90,11 @@
     (ha/save-hankittavat-ammat-tutkinnon-osat!
       (:id hoks)
       (:hankittavat-ammat-tutkinnon-osat hoks)
+      conn)
+    :oppimisen-tuki
+    (ot/save-oppimisen-tuki!
+      (:id hoks)
+      (:oppimisen-tuki hoks)
       conn)
     :opiskeluvalmiuksia-tukevat-opinnot
     (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
@@ -145,8 +152,15 @@
   (db-hoks/update-hoks-by-id!
     hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
+(defn replace-ot!
+  "Korvaa vanhat oppimisen tukitoimet uusilla arvoilla."
+  [hoks-id new-ot-values db-conn]
+  (db-ot/delete-oppimisen-tuki-by-hoks-id hoks-id db-conn)
+  (when new-ot-values
+    (ot/save-oppimisen-tuki! hoks-id new-ot-values db-conn)))
+
 (defn replace-oto!
-  "Korvaa vanhat opiskeluvalmiuksia tukevat opinnot annetuilla arviolla."
+  "Korvaa vanhat opiskeluvalmiuksia tukevat opinnot annetuilla arvoilla."
   [hoks-id new-oto-values db-conn]
   (db-ot/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
     hoks-id db-conn)
@@ -229,6 +243,7 @@
 
 (defn- replace-parts!
   [hoks conn]
+  (replace-ot! (:id hoks) (:oppimisen-tuki hoks) conn)
   (replace-oto! (:id hoks)
                 (:opiskeluvalmiuksia-tukevat-opinnot hoks)
                 conn)

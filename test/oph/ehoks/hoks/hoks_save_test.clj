@@ -332,6 +332,17 @@
     :loppu (java.time.LocalDate/of 2022 2 19)
     :laajuus 5.5M}])
 
+(def oppimisen-tuki-data
+  [{:oppimisen-tuen-tyyppi-koodi-uri
+    "ammatillinenkoulutusoppimisentuentyyppi_01"
+    :alku (LocalDate/of 2023 12 1)
+    :loppu (LocalDate/of 2023 12 5)
+    :tutkinnon-osan-tyyppi-koodi-uri "ammatillisentutkinnonosanryhma_1"}
+   {:oppimisen-tuen-tyyppi-koodi-uri
+    "ammatillinenkoulutusoppimisentuentyyppi_02"}
+   {:oppimisen-tuen-tyyppi-koodi-uri
+    "ammatillinenkoulutusoppimisentuentyyppi_03"}])
+
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                 :oppija-oid "1.2.246.562.24.12312312319"
                 :ensikertainen-hyvaksyminen
@@ -345,6 +356,7 @@
                 :hankittavat-yhteiset-tutkinnon-osat hyto-data
                 :hankittavat-ammat-tutkinnon-osat hao-data
                 :hankittavat-koulutuksen-osat []
+                :oppimisen-tuki oppimisen-tuki-data
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
@@ -483,6 +495,7 @@
                               :hankittavat-paikalliset-tutkinnon-osat []
                               :aiemmin-hankitut-yhteiset-tutkinnon-osat []
                               :hankittavat-ammat-tutkinnon-osat []
+                              :oppimisen-tuki []
                               :opiskeluvalmiuksia-tukevat-opinnot []
                               :hankittavat-yhteiset-tutkinnon-osat []
                               :hankittavat-koulutuksen-osat []}))))

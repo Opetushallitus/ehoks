@@ -62,6 +62,15 @@
   "Koulutuksen osan (TUVA) koodi-URI:n regex."
   #"^koulutuksenosattuva_\d{3}$")
 
+(def OppimisenTuenTyyppiKoodiUri
+  "Oppimisen tuen kategorisoinnin koodi-URI"
+  #"^ammatillinenkoulutusoppimisentuentyyppi_\d{2}$")
+
+(def TutkinnonOsanRyhmaKoodiUri
+  "Koodi-URI sille, millainen tutkinnonosa
+  (yhteinen/ammatillinen/paikallinen) on kyseessä"
+  #"^ammatillisentutkinnonosanryhma_[12]$")
+
 (defn- calculate-y-tunnus-checksum
   "Laskee Y-tunnuksen tarkistusnumeron tunnuksen 7 ensimmäisen numeron
   perusteella."
@@ -82,6 +91,22 @@
   [^String y-tunnus]
   (= (calculate-y-tunnus-checksum y-tunnus)
      (Character/getNumericValue ^char (last y-tunnus))))
+
+(defn has-other-fields-only-if-tukiopetus?
+  "Tarkistaa oppimisen tuen tyypin perusteella, onko sillä kyseisen
+  tyyppisen tuen vaatimat päivämääräkentät."
+  [oppimisen-tuki]
+  (or (and (= (:oppimisen-tuen-tyyppi-koodi-uri oppimisen-tuki)
+              "ammatillinenkoulutusoppimisentuentyyppi_01")
+           (some? (:alku oppimisen-tuki))
+           (some? (:loppu oppimisen-tuki))
+           (some? (:tutkinnon-osan-tyyppi-koodi-uri oppimisen-tuki)))
+      (and (contains? #{"ammatillinenkoulutusoppimisentuentyyppi_02"
+                        "ammatillinenkoulutusoppimisentuentyyppi_03"}
+                      (:oppimisen-tuen-tyyppi-koodi-uri oppimisen-tuki))
+           (nil? (:alku oppimisen-tuki))
+           (nil? (:loppu oppimisen-tuki))
+           (nil? (:tutkinnon-osan-tyyppi-koodi-uri oppimisen-tuki)))))
 
 (s/defschema
   Y-tunnus
@@ -722,6 +747,42 @@
 (s/defschema OpiskeluvalmiuksiaTukevatOpinnot
              (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :get))
 
+(s/defschema
+  OppimisenTuki
+  (s/constrained
+    (describe
+      ""
+      :oppimisen-tuen-tyyppi-koodi-uri OppimisenTuenTyyppiKoodiUri
+      (str "Opiskelijalle annetun oppimisen tuen tyyppi. "
+           "Tallennetaan koodistokoodina: "
+           "https://virkailija.opintopolku.fi/koodisto-service/rest/json/"
+           "ammatillinenkoulutusoppimisentuentyyppi/koodi")
+      (s/optional-key :alku) LocalDate
+      (str "Oppimisen tuen ajoittumisen alkupäivämäärä. "
+           "Opettajan antamassa tukiopetuksessa tutkinnon osan "
+           "osaamisen hankkimisen alkupäivämäärä. "
+           "Opettajan ja muun opetus- ja ohjaushenkilöstön antamassa "
+           "tuessa ja ohjauksessa opiskeluoikeuden alkamispäivämäärä. "
+           "Sallittu tieto vain opettajan antamassa tukiopetuksessa.")
+      (s/optional-key :loppu) LocalDate
+      (str "Oppimisen tuen ajoittumisen loppupäivämäärä. "
+           "Opettajan antamassa tukiopetuksessa tutkinnon osan "
+           "osaamisen hankkimisen päättymispäivä. "
+           "Opettajan ja muun opetus- ja ohjaushenkilöstön antamassa "
+           "tuessa ja ohjauksessa opiskeluoikeuden päättymispäivä. "
+           "Sallittu tieto vain opettajan antamassa tukiopetuksessa.")
+      (s/optional-key :tutkinnon-osan-tyyppi-koodi-uri)
+      TutkinnonOsanRyhmaKoodiUri
+      (str "tieto siitä, onko oppimisen tukea annettu "
+           "ammatilliseen tutkinnon osaan vai yhteiseen tutkinnon osaan. "
+           "Tallennetaan koodistokoodina: "
+           "https://virkailija.opintopolku.fi/koodisto-service/rest/json/"
+           "ammatillisentutkinnonosanryhma/koodi "
+           "Sallittu tieto vain opettajan antamassa tukiopetuksessa."))
+    has-other-fields-only-if-tukiopetus?
+    (str "Määritä alku- ja loppupvm sekä tutkinnonosan tyyppi jos "
+         "ja vain jos kyseessä on tukiopetus.")))
+
 (def HankittavaAmmatillinenTutkinnonOsa-template
   ^{:doc "Hankittavan ammatillisen tutkinnon osan schema."
     :constraints
@@ -939,12 +1000,12 @@
   {:methods {:any :optional :patch :excluded}
    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
    :description (str "Opiskeluvalmiuksia tukevat opinnot. Ei sallittu "
-                     "TUVA-HOKSilla.")})
+                     "TUVA-HOKSilla.  Poistuu käytöstä ja korvautuu "
+                     "oppimisen tuen toimilla.")})
 
 (def ^:private hankittava-koulutuksen-osa
   "TUVA HOKSin hankittava koulutuksen osa."
-  {:methods {:any :optional
-             :patch :excluded}
+  {:methods {:any :optional :patch :excluded}
    :types {:any [HankittavaKoulutuksenOsa]}
    :description "Hankittava koulutuksen osa. Sallittu vain TUVA-HOKSilla."})
 
@@ -1064,14 +1125,18 @@
     :description (str "Aiemmin hankittu paikallinen tutkinnon osa. Ei sallittu "
                       "TUVA-HOKSilla.")}
    :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
+   :oppimisen-tuki
+   {:methods {:any :optional :patch :excluded}
+    :types {:any [OppimisenTuki]}
+    :description (str "Opiskelijalle annettu oppimisen tuki. "
+                      "Voimassa 1.8.2026 alkaen.")}
    :hankittavat-ammat-tutkinnon-osat
    {:methods {:any :optional :patch :excluded}
     :types {:any [HankittavaAmmatillinenTutkinnonOsa-template]}
     :description (str "Hankittavan ammatillisen osaamisen hankkimisen "
                       "tiedot. Ei sallittu TUVA-HOKSilla.")}
    :hankittavat-yhteiset-tutkinnon-osat
-   {:methods {:any :optional
-              :patch :excluded}
+   {:methods {:any :optional :patch :excluded}
     :types {:any [HankittavaYhteinenTutkinnonOsa-template]}
     :description (str "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot. "
                       "Ei sallittu TUVA-HOKSilla.")}

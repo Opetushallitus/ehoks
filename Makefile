@@ -109,6 +109,11 @@ check-pom-xml: pom.xml
 	exit 1; \
 	fi
 
+.PHONY: repl
+repl: stamps/db-schema stamps/local-ddb-schema
+	AWS_REGION=eu-west-1 AWS_ENDPOINT_URL=http://localhost:18000 \
+		   AWS_ACCESS_KEY_ID=foo AWS_SECRET_KEY=bar lein repl
+
 .PHONY: psql
 psql: stamps/db-running
 	psql -h localhost -U postgres ehoks
