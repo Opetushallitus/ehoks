@@ -117,7 +117,7 @@
                          [org.clojure/tools.reader "1.5.0"]
                          [io.aviso/pretty "1.4.4"]
                          [instaparse "1.5.0"]]
-  :plugins [[lein-cljfmt "0.6.6" :exclusions [org.clojure/tools.cli]]
+  :plugins [[lein-cljfmt "0.6.6"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.7.0"]
             [lein-cloverage "1.2.4"]
@@ -166,7 +166,8 @@
                                    [ring/ring-devel]
                                    [plumula/diff "0.1.1"]
                                    [clj-kondo]]
-                    :plugins [[lein-bikeshed "0.5.2"]]
+                    :plugins [[lein-bikeshed "0.5.2"
+                               :exclusions [[org.clojure/tools.cli]]]]
                     :env {:config "oph-configuration/test.edn"
                           :aws-region "eu-west-1"
                           :aws-endpoint-url "http://localhost:18000"}}
