@@ -3,6 +3,7 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.schema :as schema]
+            [oph.ehoks.utils.date :as dateutil]
             [oph.ehoks.db.db-operations.shared-modules :as db]
             [ring.util.http-response :as response]
             [oph.ehoks.hoks.hankittavat :as h])
@@ -23,11 +24,11 @@
   "Check whether jakolinkki is still valid"
   [{:keys [voimassaolo-alku voimassaolo-loppu]}]
   (cond
-    (.isAfter ^LocalDate voimassaolo-alku (LocalDate/now))
+    (dateutil/is-after? voimassaolo-alku (LocalDate/now))
     (throw (ex-info "Shared link not yet active"
                     {:type             :shared-link-inactive
                      :voimassaolo-alku voimassaolo-alku}))
-    (.isBefore ^LocalDate voimassaolo-loppu (LocalDate/now))
+    (dateutil/is-after? (LocalDate/now) voimassaolo-loppu)
     (throw (ex-info "Shared link is expired"
                     {:type              :shared-link-expired
                      :voimassaolo-loppu voimassaolo-loppu}))))

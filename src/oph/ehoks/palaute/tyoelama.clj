@@ -61,7 +61,7 @@
                (date/is-same-or-before? (:alku k-jakso) (:loppu tyoelamajakso))
                (or (not (:loppu k-jakso))
                    (date/is-same-or-before? (:loppu tyoelamajakso)
-                                           (:loppu k-jakso)))))
+                                            (:loppu k-jakso)))))
         (:keskeytymisajanjaksot tyoelamajakso)))
 
 (defn initial-palaute-state-and-reason
