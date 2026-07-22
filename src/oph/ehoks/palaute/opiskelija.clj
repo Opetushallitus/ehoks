@@ -259,7 +259,7 @@
         heratepvm (:heratepvm existing-palaute)
         alkupvm (greatest heratepvm today)
         loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-        e-k-l-p (date/is-after today loppupvm)]
+        e-k-l-p (date/is-after? today loppupvm)]
     {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
      :tutkinnon_suorituskieli (or (suoritus/kieli suoritus) "fi")
      :kyselyn_tyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))

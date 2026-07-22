@@ -9,6 +9,7 @@
             [oph.ehoks.schema.oid :refer [OpiskeluoikeusOID
                                           OppijaOID
                                           OrganisaatioOID]]
+            [oph.ehoks.utils.date :as dateutil]
             [schema.coerce]
             [schema.core :as s])
   (:import (clojure.lang ExceptionInfo)
@@ -335,13 +336,14 @@
                          (LocalDate/parse))]
     (or (katsotaan-eronneeksi? oo)
         (not oo-loppu)
-        (not (.isAfter ^LocalDate (:loppu oht) oo-loppu)))))
+        (dateutil/is-same-or-before? (:loppu oht) oo-loppu))))
 
 (defn- duration-max-5-years?
   "Osaamisen hankkimistapa kestää enintään 5 vuotta"
   [oht]
-  (not (.isAfter ^LocalDate (:loppu oht)
-                 (.plusYears ^LocalDate (:alku oht) 5))))
+  (dateutil/is-same-or-before?
+    (:loppu oht)
+    (.plusYears ^LocalDate (:alku oht) 5)))
 
 (def OsaamisenHankkimistapa-template
   "Osaamisen hankkimistavan schema eri toiminnoille."
@@ -990,8 +992,8 @@
   "Aika, jonka saa kirjoittaa osaamisen-saavuttamisen-pvm-kenttään."
   (s/constrained
     LocalDate
-    #(and (.isAfter ^LocalDate % (LocalDate/of 2018 1 1))
-          (.isBefore ^LocalDate % (.plusDays (LocalDate/now) 15)))
+    #(and (dateutil/is-after? % (LocalDate/of 2018 1 1))
+          (dateutil/is-after? (.plusDays (LocalDate/now) 15) %))
     "Osaaminen voidaan merkitä saavutetuksi enintään kaksi viikkoa
     tulevaisuuteen ja vähintään vuodelle 2018."))
 
