@@ -40,6 +40,10 @@
                          [ring/ring-jetty-adapter "1.15.4"
                           :exclusions [org.slf4j/slf4j-api]]
                          [ring/ring-servlet "1.13.0"]
+                         [org.eclipse.jetty/jetty-server "12.1.10"]
+                         [org.eclipse.jetty.ee9/jetty-ee9-servlet "12.1.10"]
+                         [org.eclipse.jetty.ee9/jetty-ee9-security "12.1.10"]
+                         [org.eclipse.jetty/jetty-security "12.1.10"]
 
                          ;; http client
                          [clj-http "3.13.0"]
