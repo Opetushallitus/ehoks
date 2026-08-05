@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>8a1aa2297e6a6fff4b6393a132ea10b5e6a95b81</tag>
+    <tag>5f5e1c281eb29bd0ef4153bb499e966a952d1508</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -186,6 +186,26 @@
         <groupId>ring</groupId>
         <artifactId>ring-servlet</artifactId>
         <version>1.13.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-servlet</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-security</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+        <version>12.1.10</version>
       </dependency>
       <dependency>
         <groupId>clj-http</groupId>
