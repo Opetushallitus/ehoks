@@ -126,6 +126,11 @@ test: stamps/db-schema stamps/local-ddb-schema
 lint:
 	lein with-profile +test clj-kondo --lint src test
 
+.PHONY: trivy
+trivy:
+	docker run -it --rm -v .:/tmp docker.io/aquasec/trivy fs \
+	 --severity CRITICAL,HIGH --scanners vuln /tmp
+
 .PHONY: stop-server
 stop-server:
 	# Sadly, this usually fails to kill the server since lein trampolines
