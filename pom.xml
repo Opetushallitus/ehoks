@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>2d285b2d50333ce88e99699b8a7d6fc875499736</tag>
+    <tag>8a1aa2297e6a6fff4b6393a132ea10b5e6a95b81</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -225,47 +225,47 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http2</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-resolver</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-handler</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport-classes-epoll</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-buffer</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-common</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>cheshire</groupId>
