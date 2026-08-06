@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>1f07aea9ff32d91af37d308df59bd85da19c26f2</tag>
+    <tag>5bf5a00b92ca61979e3192c5e0dd7a1f6410918d</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -380,7 +380,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.11</version>
+        <version>42.7.13</version>
       </dependency>
       <dependency>
         <groupId>com.layerware</groupId>
