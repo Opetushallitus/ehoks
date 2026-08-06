@@ -130,18 +130,18 @@
   ;; ^:replace to ensure that maven central is not used directly; can be
   ;; taken away if maven-central-proxy goes away, or Maven Central does
   ;; not break builds anymore with 429 responses
-  :repositories ^:replace
-  [["maven-central-proxy"
-    {:url "https://artifactory.opintopolku.fi/artifactory/repository/maven-central"
-     :username :env/ARTIFACTORY_USERNAME
-     :password :env/ARTIFACTORY_PASSWORD}]
-   ["clojars" "https://repo.clojars.org/"]
-   ["github" {:url "https://maven.pkg.github.com/orgs/Opetushallitus/packages"
+  :repositories
+  [["github" {:url "https://maven.pkg.github.com/orgs/Opetushallitus/packages"
               :username "private-token"
               :password :env/GITHUB_TOKEN}]
+   ["upstream-maven-central" "https://repo1.maven.org/maven2/"]
    ["oph-releases" "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"]
    ["oph-snapshots" "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"]
    ["ext-snapshots" "https://artifactory.opintopolku.fi/artifactory/ext-snapshot-local"]]
+  :mirrors {"central" {:name "central"
+                       :url "https://artifactory.opintopolku.fi/artifactory/repository/maven-central"
+                       :username :env/ARTIFACTORY_USERNAME
+                       :password :env/ARTIFACTORY_PASSWORD}}
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
