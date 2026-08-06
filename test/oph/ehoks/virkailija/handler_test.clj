@@ -6,13 +6,17 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.postgresql.common]
+            [oph.ehoks.db.postgresql.common :as pc]
             [oph.ehoks.external.arvo]
             [oph.ehoks.external.aws-sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
+            [oph.ehoks.hoks.hoks-save-test :as hoks-save-test]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.user :as user]
@@ -1200,25 +1204,42 @@
           (t/is (= (:status put-response) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*Tanelin Paja")))))))
 
+(def kyselylinkki-data {:kyselylinkki "https://palaute.fi/foofaa"
+                        :alkupvm (LocalDate/now)
+                        :tyyppi "aloittaneet"
+                        :oppija-oid "1.2.246.562.24.12312312319"
+                        :hoks-id 1})
+
 (t/deftest test-delete-vastaajatunnus
-  (t/testing "DELETE vastaajatunnus is logged to auditlog"
+  (t/testing "DELETE vastaajatunnus is logged to auditlog and actually deletes"
     (logtest/with-log
-      (with-redefs [oph.ehoks.db.postgresql.common/select-kyselylinkit-by-tunnus
-                    (fn [_]
-                      [{:kyselylinkki "https://arvo-dev.csc.fi/x/foofaa"}])
-                    oph.ehoks.external.arvo/delete-kyselytunnus identity
-                    oph.ehoks.db.postgresql.common/delete-kyselylinkki-by-tunnus
-                    identity
-                    oph.ehoks.external.aws-sqs/send-delete-tunnus-message
-                    identity]
-        (let [response (with-test-virkailija
-                         (mock/request
-                           :delete
-                           (str "/ehoks-virkailija-backend/api/v1/virkailija"
-                                "/vastaajatunnus/foofaa"))
-                         virkailija-for-test)]
-          (t/is (= 200 (:status response)))
-          (t/is (logtest/logged? "audit" :info #"delete.*foofaa")))))))
+      (test-utils/with-db
+        (with-redefs [k/get-opiskeluoikeus-info-raw
+                      test-utils/mock-get-opiskeluoikeus-info-raw
+                      k/get-oppija-opiskeluoikeudet
+                      test-utils/mock-get-oppija-opiskeluoikeudet
+                      organisaatio/get-organisaatio!
+                      organisaatio-test/mock-get-organisaatio!]
+          (hoks/save! hoks-save-test/hoks-data))
+        (kyselylinkki/insert! kyselylinkki-data)
+        (t/is (= (pc/select-kyselylinkit-by-tunnus "foofaa")
+                 [(assoc kyselylinkki-data
+                         :opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                         :hoks-id-2 1
+                         :arvo-tunniste "foofaa")]))
+        (with-redefs [oph.ehoks.external.arvo/delete-kyselytunnus identity
+                      oph.ehoks.external.aws-sqs/send-delete-tunnus-message
+                      identity]
+          (let [response
+                (with-test-virkailija
+                  (mock/request
+                    :delete
+                    (str "/ehoks-virkailija-backend/api/v1/virkailija"
+                         "/vastaajatunnus/foofaa"))
+                  virkailija-for-test)]
+            (t/is (= 200 (:status response)))
+            (t/is (= (pc/select-kyselylinkit-by-tunnus "foofaa") []))
+            (t/is (logtest/logged? "audit" :info #"delete.*foofaa"))))))))
 
 (t/deftest test-put-prevent-updating-opiskeluoikeus
   (t/testing "PUT hoks virkailija"
