@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>2d285b2d50333ce88e99699b8a7d6fc875499736</tag>
+    <tag>7bf94000c1abb706b96cd3b2438ae8e1e1d5c3db</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -69,10 +69,10 @@
   </build>
   <repositories>
     <repository>
-      <id>maven-central-proxy</id>
-      <url>https://artifactory.opintopolku.fi/artifactory/repository/maven-central</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
       <releases>
         <enabled>true</enabled>
@@ -91,6 +91,16 @@
     <repository>
       <id>github</id>
       <url>https://maven.pkg.github.com/orgs/Opetushallitus/packages</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>upstream-maven-central</id>
+      <url>https://repo1.maven.org/maven2/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
