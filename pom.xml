@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>5bf5a00b92ca61979e3192c5e0dd7a1f6410918d</tag>
+    <tag>978245c91a6bf94fe669c059cff0ce33143d883f</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
