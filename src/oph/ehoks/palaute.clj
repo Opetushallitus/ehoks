@@ -39,7 +39,7 @@
   "onko herätteen päivämäärä aikaisintaan kuluvan rahoituskauden alkupvm
   (1.7.)?"
   [^LocalDate herate-date]
-  (not (.isAfter (current-rahoituskausi-alkupvm) herate-date)))
+  (date/is-same-or-before? (current-rahoituskausi-alkupvm) herate-date))
 
 (defn koulutustoimija-oid!
   "Hakee koulutustoimijan OID:n opiskeluoikeudesta, tai organisaatiopalvelusta
