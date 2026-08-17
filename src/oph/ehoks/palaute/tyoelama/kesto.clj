@@ -1,11 +1,12 @@
 (ns oph.ehoks.palaute.tyoelama.kesto
   (:require [clojure.tools.logging :as log]
+            [medley.core :refer [map-vals]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.utils.date :as dateutil])
   (:import (java.lang Math)
            (java.time LocalDate)))
 
-(defn round-vals [m] (reduce-kv #(assoc %1 %2 (Math/round ^Double %3)) {} m))
+(def round-vals (partial map-vals Math/round))
 
 (defn ids
   "Returns an array-map of identifiers (HOKS ID & yksiloiva tunniste) that
@@ -16,10 +17,9 @@
 (defn not-in-keskeytymisajanjakso?
   "Varmistaa, että annettu päivämäärä ei kuulu keskeytymisajanjaksoon."
   [^LocalDate date keskeytymisajanjaksot]
-  (or (empty? keskeytymisajanjaksot)
-      (every? #(or (and (:alku %) (.isBefore date (:alku %)))
-                   (and (:loppu %) (.isAfter date (:loppu %))))
-              keskeytymisajanjaksot)))
+  (every? #(or (and (:alku %) (.isBefore date (:alku %)))
+               (and (:loppu %) (.isAfter date (:loppu %))))
+          keskeytymisajanjaksot))
 
 (defn osa-aikaisuuskerroin
   "Hakee osa-aikaisuustiedon jaksosta ja varmistaa että se on validi (ts.
@@ -84,8 +84,8 @@
   Palauttaa `true` jos päivämäärä sisältyy jaksoon, muuten `false`."
   [^LocalDate pvm jakso]
   (let [alku (:alku jakso) loppu (:loppu jakso)]
-    (and (or (.isAfter pvm alku) (.isEqual pvm alku))
-         (or (nil? loppu) (.isBefore pvm loppu) (.isEqual pvm loppu)))))
+    (and (dateutil/is-same-or-before alku pvm)
+         (or (nil? loppu) (dateutil/is-same-or-before pvm loppu)))))
 
 (defn jakso-active?
   "Tarkistaa, onko `jakso` aktiivinen päivämääränä `pvm`. Ts. funktiossa
@@ -186,21 +186,16 @@
   tarvitsee hakea Koskesta vain kerran. Näin vältetään turhia GET-pyyntöjä
   Koskeen."
   [jaksot]
-  (reduce
-    (fn [memoized-opiskeluoikeudet jakso]
-      (let [hoks-id (:hoks_id jakso)
-            yksiloiva-tunniste (:yksiloiva_tunniste jakso)
-            oo-oid (:opiskeluoikeus_oid jakso)]
-        (if (contains? memoized-opiskeluoikeudet oo-oid)
-          memoized-opiskeluoikeudet
-          (if-let [opiskeluoikeus (koski/get-opiskeluoikeus! oo-oid)]
-            (conj memoized-opiskeluoikeudet [oo-oid opiskeluoikeus])
-            (do (log/warnf (str "Opiskeluoikeutta `%s` ei saatu Koskesta. "
-                                "Jakson (HOKS `%d`, yksilöivä tunniste `%s`) "
-                                "kestoksi asetetaan nolla.")
-                           oo-oid
-                           hoks-id
-                           yksiloiva-tunniste)
-                memoized-opiskeluoikeudet)))))
-    {}
-    jaksot))
+  (->> (map :opiskeluoikeus_oid jaksot)
+       (set)
+       (keep #(if-let [opiskeluoikeus (koski/get-opiskeluoikeus! %)]
+                [% opiskeluoikeus]
+                (let [affected-jaksot
+                      (keep (fn [jakso] (and (= % (:opiskeluoikeus_oid jakso))
+                                             [(:hoks_id jakso)
+                                              (:yksiloiva_tunniste jakso)]))
+                            jaksot)]
+                  (log/warn "Opiskeluoikeutta `" % "` ei saatu Koskesta."
+                            "Jaksoille" affected-jaksot
+                            "kestoksi asetetaan nolla."))))
+       (into {})))
