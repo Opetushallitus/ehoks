@@ -48,3 +48,20 @@
   "Käännetty .isAfter"
   [^LocalDate one-date ^LocalDate other-date]
   (not (is-after one-date other-date)))
+
+(defn alku-and-loppu-to-localdate
+  "Muuntaa parametrina annetun hashmapin :alku ja :loppu -avaimien
+  merkkijonomuotoiset päivämäärät LocalDate:iksi."
+  [jakso]
+  (cond-> jakso
+    (:alku jakso)  (update :alku  #(LocalDate/parse %))
+    (:loppu jakso) (update :loppu #(LocalDate/parse %))))
+
+(defn date-range
+  "Rakentaa laiskan sekvenssin päivämääristä alkupäivämäärän `start` ja
+  loppupäivämäärän `end` perusteella. `start` ja `end` kuuluvat mukaan
+  sekvenssiin."
+  [start end]
+  (let [end+1 (.plusDays ^LocalDate end 1)]
+    (take-while #(.isBefore ^LocalDate % end+1)
+                (iterate #(.plusDays ^LocalDate % 1) start))))
