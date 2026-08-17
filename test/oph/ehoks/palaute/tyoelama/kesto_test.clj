@@ -1,18 +1,11 @@
 (ns oph.ehoks.palaute.tyoelama.kesto-test
   (:require [clojure.test :refer [are deftest is testing]]
-            [clojure.tools.logging.test :refer [with-log logged?]]
+            [clojure.tools.logging.test :refer [with-log logged? the-log]]
             [oph.ehoks.external.koski :as koski]
             [medley.core :refer [map-keys filter-vals]]
+            [oph.ehoks.utils.date :refer [alku-and-loppu-to-localdate]]
             [oph.ehoks.palaute.tyoelama.kesto :as nh])
   (:import (java.time LocalDate)))
-
-(defn alku-and-loppu-to-localdate
-  "Muuntaa parametrina annetun hashmapin :alku ja :loppu -avaimien
-  merkkijonomuotoiset päivämäärät LocalDate:iksi."
-  [jakso]
-  (cond-> jakso
-    (:alku jakso)  (update :alku  #(LocalDate/parse %))
-    (:loppu jakso) (update :loppu #(LocalDate/parse %))))
 
 (def jakso-1 {:opiskeluoikeus_oid "1.2.3.8"
               :oppija_oid "4.4.4.4"
@@ -342,7 +335,8 @@
         (is (= @mock-get-opiskeluoikeus-catch-404-count 3))
         (is (logged? 'oph.ehoks.palaute.tyoelama.kesto
                      :warn
-                     #"Opiskeluoikeutta `1.2.3.4.ei.loydy` ei saatu "))))))
+                     #"Opiskeluoikeutta ` 1.2.3.4.ei.loydy ` ei saatu ")
+            (the-log))))))
 
 (deftest test-get-opiskeluoikeusjaksot
   (testing "Funktio hakee onnistuneesti opiskeluoikeuden opiskeluoikeusjaksot."
