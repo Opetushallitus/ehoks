@@ -50,23 +50,23 @@
           :else (/ osa-aikaisuus 100.0))
         0)))
 
-(defn add-loppu-to-jaksot
+(defn add-loppu-to-tilajaksot
   "Lisää jokaiseen paitsi viimeiseen jaksoon kentän :loppu, joka on päivää
   ennen kuin seuraavan :alku"
-  [jaksot]
+  [tilajaksot]
   (conj (mapv (fn [current next]
                 (let [^LocalDate next-starts (:alku next)]
                   (assoc current :loppu (.minusDays next-starts 1))))
-              jaksot
-              (rest jaksot))
-        (last jaksot)))
+              tilajaksot
+              (rest tilajaksot))
+        (last tilajaksot)))
 
 (defn get-opiskeluoikeusjaksot
   [opiskeluoikeus]
   (->> (:opiskeluoikeusjaksot (:tila opiskeluoikeus))
        (map dateutil/alku-and-loppu-to-localdate)
        (sort-by :alku)
-       add-loppu-to-jaksot))
+       add-loppu-to-tilajaksot))
 
 (defn keskeytymisajanjaksot
   [jakso opiskeluoikeus]
