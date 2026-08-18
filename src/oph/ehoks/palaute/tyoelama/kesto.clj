@@ -180,7 +180,7 @@
                          (last  (sort (map :loppu jaksot))))))
           (zipmap ids (map osa-aikaisuuskerroin jaksot)))))))
 
-(defn get-and-memoize-opiskeluoikeudet!
+(defn jaksojen-opiskeluoikeudet!
   "Funktio hakee `jaksot` listan jaksojen opiskeluoikeuksia Koskesta.
   Opiskeluoikeudet tallennetaan muistiin hakujen välillä, joten jos listassa on
   jaksoja jotka jakavat saman opiskeluoikeuden, näiden opiskeluoikeudet
@@ -229,7 +229,7 @@
               (let [concurrent-jaksot
                     (get-concurrent-jaksot-from-hokses! oppijan-jaksot)
                     opiskeluoikeudet
-                    (get-and-memoize-opiskeluoikeudet! concurrent-jaksot)]
+                    (jaksojen-opiskeluoikeudet! concurrent-jaksot)]
                 (oppijan-jaksojen-kestot concurrent-jaksot opiskeluoikeudet))))
        ; Yhdistetään eri oppijoiden jaksoille lasketut kestot yhdeksi
        ; hashmapiksi:
