@@ -538,16 +538,16 @@
       [jakso-2 jakso-4 jakso-8] [35 104 23]
       [jakso-1 jakso-4 jakso-9 jakso-16] [1 109 28 119])))
 
-(deftest test-get-and-memoize-opiskeluoikeudet
+(deftest test-jaksojen-opiskeluoikeudet!
   (with-log
     (with-redefs [koski/get-opiskeluoikeus! mock-get-opiskeluoikeus-catch-404]
       (testing
        (str "Funktio pitää entuudestaan haetut opiskeluoikeudet muistitssa, "
             "eikä hae niitä toistamiseen. Funktio lokitaa varoituksen, jos "
             "opiskeluoikeutta ei saada koskesta")
-        (is (= (nh/get-and-memoize-opiskeluoikeudet! []) {}))
+        (is (= (nh/jaksojen-opiskeluoikeudet! []) {}))
         (reset! mock-get-opiskeluoikeus-catch-404-count 0)
-        (is (= (nh/get-and-memoize-opiskeluoikeudet!
+        (is (= (nh/jaksojen-opiskeluoikeudet!
                  [jakso-1   ; 1.2.3.8
                   jakso-2   ; 1.2.3.8
                   jakso-5   ; 1.2.3.7
