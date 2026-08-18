@@ -49,13 +49,21 @@
   [^LocalDate one-date ^LocalDate other-date]
   (not (is-after? one-date other-date)))
 
+(defn ->localdate
+  "Muuntaa merkkijonomuotoisen päivämäärän LocalDate:ksi. Palauttaa jo valmiin
+  LocalDate-arvon sellaisenaan (esim. tietokannasta luetut päivämäärät ovat jo
+  LocalDate-tyyppisiä)."
+  ^LocalDate [d]
+  (if (instance? LocalDate d) d (LocalDate/parse d)))
+
 (defn alku-and-loppu-to-localdate
   "Muuntaa parametrina annetun hashmapin :alku ja :loppu -avaimien
-  merkkijonomuotoiset päivämäärät LocalDate:iksi."
+  päivämäärät LocalDate:iksi. Sietää sekä merkkijono- että LocalDate-muotoiset
+  päivämäärät."
   [jakso]
   (cond-> jakso
-    (:alku jakso)  (update :alku  #(LocalDate/parse %))
-    (:loppu jakso) (update :loppu #(LocalDate/parse %))))
+    (:alku jakso)  (update :alku  ->localdate)
+    (:loppu jakso) (update :loppu ->localdate)))
 
 (defn date-range
   "Rakentaa laiskan sekvenssin päivämääristä alkupäivämäärän `start` ja
