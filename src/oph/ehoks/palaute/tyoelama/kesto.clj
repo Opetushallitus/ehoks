@@ -1,5 +1,6 @@
 (ns oph.ehoks.palaute.tyoelama.kesto
   (:require [clojure.tools.logging :as log]
+            [oph.ehoks.heratepalvelu :as hp]
             [medley.core :refer [map-vals]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.utils.date :as dateutil])
@@ -199,3 +200,39 @@
                             "Jaksoille" affected-jaksot
                             "kestoksi asetetaan nolla."))))
        (into {})))
+
+(defn get-concurrent-jaksot-from-hokses!
+  "Hakee kaikki `jaksot` listassa olevien jaksojen kanssa päällekäin olevat
+  saman oppijan jaksot eHOKSista."
+  [jaksot]
+  (hp/select-tyoelamajaksot-active-between
+    (:oppija_oid (first jaksot))
+    (first (sort (map :jakso_alkupvm jaksot)))
+    (last  (sort (map :jakso_loppupvm jaksot)))))
+
+(defn jaksojen-kestot!
+  "Laskee kestot kaikille `jaksot` listan jaksoille. Lista jaksoista `jaksot`
+  voi pitää sisällään useamman oppijan työpaikkajaksoja: Kestonlaskenta tehdään
+  varsinaisesti aina saman oppijan jaksoille (kts. `oppijan-jaksojen-kestot`),
+  mutta tässä funktiossa `jaksot` ryhmitellään oppija oid:n mukaan ennen
+  `oppijan-jaksojen-kestot`-funktion tekemää kestojen laskemista.
+
+  Palauttaa hashmapin, joka sisältää `jaksot` listan jaksoille lasketut kestot.
+  Hashmapin avaimina jaksojen id:t (HOKS id + yksiloiva tunniste) ja arvoina
+  kestot kokonaislukuina."
+  [jaksot]
+  (->> (group-by :oppija_oid jaksot) ; Ryhmitellään jaksot oppijan perusteella
+       vals
+       ; Haetaan kunkin jakson tapauksessa päällekäiset jaksot eHOKSista
+       ; sekä viimeisin opiskeluoikeustieto Koskesta:
+       (map (fn [oppijan-jaksot]
+              (let [concurrent-jaksot
+                    (get-concurrent-jaksot-from-hokses! oppijan-jaksot)
+                    opiskeluoikeudet
+                    (get-and-memoize-opiskeluoikeudet! concurrent-jaksot)]
+                (oppijan-jaksojen-kestot concurrent-jaksot opiskeluoikeudet))))
+       ; Yhdistetään eri oppijoiden jaksoille lasketut kestot yhdeksi
+       ; hashmapiksi:
+       (apply merge)
+       ; Palautetaan vain niiden jaksojen kestot, jotka ovat `jaksot` listassa:
+       (#(select-keys % (map ids jaksot)))))

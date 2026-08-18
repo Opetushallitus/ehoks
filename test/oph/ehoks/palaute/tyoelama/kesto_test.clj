@@ -2,7 +2,8 @@
   (:require [clojure.test :refer [are deftest is testing]]
             [clojure.tools.logging.test :refer [with-log logged? the-log]]
             [oph.ehoks.external.koski :as koski]
-            [medley.core :refer [map-keys filter-vals]]
+            [oph.ehoks.heratepalvelu :as hp]
+            [medley.core :refer [map-keys map-vals filter-vals]]
             [oph.ehoks.utils.date :refer [alku-and-loppu-to-localdate]]
             [oph.ehoks.palaute.tyoelama.kesto :as nh])
   (:import (java.time LocalDate)))
@@ -301,42 +302,14 @@
       (is (false? (nh/not-in-keskeytymisajanjakso? (LocalDate/of 2022 4 10)
                                                    kjaksot))))))
 
-(def mock-get-opiskeluoikeus-catch-404-count (atom 0))
+(def do-rounding (partial map-vals #(/ (Math/round (* % 100.0)) 100.0)))
 
-(defn- do-rounding [values]
-  (reduce-kv #(assoc %1 %2 (/ (Math/round (* %3 100.0)) 100.0)) {} values))
+(def mock-get-opiskeluoikeus-catch-404-count (atom 0))
 
 (defn- mock-get-opiskeluoikeus-catch-404 [oo-oid]
   (assert oo-oid "Opiskeluoikeus OID `oo-oid` puuttuu")
   (swap! mock-get-opiskeluoikeus-catch-404-count inc)
   (get opiskeluoikeudet oo-oid))
-
-(deftest test-get-and-memoize-opiskeluoikeudet
-  (with-log
-    (with-redefs [koski/get-opiskeluoikeus! mock-get-opiskeluoikeus-catch-404]
-      (testing
-       (str "Funktio pitää entuudestaan haetut opiskeluoikeudet muistitssa, "
-            "eikä hae niitä toistamiseen. Funktio lokitaa varoituksen, jos "
-            "opiskeluoikeutta ei saada koskesta")
-        (is (= (nh/get-and-memoize-opiskeluoikeudet! []) {}))
-        (reset! mock-get-opiskeluoikeus-catch-404-count 0)
-        (is (= (nh/get-and-memoize-opiskeluoikeudet!
-                 [jakso-1   ; 1.2.3.8
-                  jakso-2   ; 1.2.3.8
-                  jakso-5   ; 1.2.3.7
-                  jakso-6   ; 1.2.3.8
-                  jakso-10  ; 1.2.3.7
-                  {:hoks_id 1
-                   :yksiloiva_tunniste "123"
-                   :hankkimistapa_id 123
-                   :opiskeluoikeus_oid "1.2.3.4.ei.loydy"}])
-               {"1.2.3.7" (get opiskeluoikeudet "1.2.3.7")
-                "1.2.3.8" (get opiskeluoikeudet "1.2.3.8")}))
-        (is (= @mock-get-opiskeluoikeus-catch-404-count 3))
-        (is (logged? 'oph.ehoks.palaute.tyoelama.kesto
-                     :warn
-                     #"Opiskeluoikeutta ` 1.2.3.4.ei.loydy ` ei saatu ")
-            (the-log))))))
 
 (deftest test-get-opiskeluoikeusjaksot
   (testing "Funktio hakee onnistuneesti opiskeluoikeuden opiskeluoikeusjaksot."
@@ -564,3 +537,81 @@
       [jakso-2 jakso-3] [74 5]
       [jakso-2 jakso-4 jakso-8] [35 104 23]
       [jakso-1 jakso-4 jakso-9 jakso-16] [1 109 28 119])))
+
+(deftest test-get-and-memoize-opiskeluoikeudet
+  (with-log
+    (with-redefs [koski/get-opiskeluoikeus! mock-get-opiskeluoikeus-catch-404]
+      (testing
+       (str "Funktio pitää entuudestaan haetut opiskeluoikeudet muistitssa, "
+            "eikä hae niitä toistamiseen. Funktio lokitaa varoituksen, jos "
+            "opiskeluoikeutta ei saada koskesta")
+        (is (= (nh/get-and-memoize-opiskeluoikeudet! []) {}))
+        (reset! mock-get-opiskeluoikeus-catch-404-count 0)
+        (is (= (nh/get-and-memoize-opiskeluoikeudet!
+                 [jakso-1   ; 1.2.3.8
+                  jakso-2   ; 1.2.3.8
+                  jakso-5   ; 1.2.3.7
+                  jakso-6   ; 1.2.3.8
+                  jakso-10  ; 1.2.3.7
+                  {:hoks_id 1
+                   :yksiloiva_tunniste "123"
+                   :hankkimistapa_id 123
+                   :opiskeluoikeus_oid "1.2.3.4.ei.loydy"}])
+               {"1.2.3.7" (get opiskeluoikeudet "1.2.3.7")
+                "1.2.3.8" (get opiskeluoikeudet "1.2.3.8")}))
+        (is (= @mock-get-opiskeluoikeus-catch-404-count 3))
+        (is (logged? 'oph.ehoks.palaute.tyoelama.kesto
+                     :warn
+                     #"Opiskeluoikeutta ` 1.2.3.4.ei.loydy ` ei saatu ")
+            (the-log))))))
+
+(defn- mock-get-tyoelamajaksot-active-between!
+  [oppija-oid start end]
+  (assert oppija-oid "oppija-oid puuttuu")
+  (assert start "aikavälin alkupäivämäärä `start` puuttuu")
+  (assert end "aikavälin päättymispäivämäärä `end` puuttuu")
+  (filter #(and (= (:oppija_oid %) oppija-oid)
+                (<= (compare (:jakso_alkupvm %) end) 0)
+                (>= (compare (:jakso_loppupvm %) start) 0))
+          jaksot-1-25))
+
+(deftest test-jaksojen-kestot!
+  (with-redefs
+   [hp/select-tyoelamajaksot-active-between
+    mock-get-tyoelamajaksot-active-between!
+    koski/get-opiskeluoikeus! mock-get-opiskeluoikeus-catch-404]
+    (testing "Funktio laskee kestot oikein"
+      (are [kestot] (= (nh/jaksojen-kestot! (keys kestot))
+                       (map-keys nh/ids kestot))
+        {jakso-2 12}
+        {jakso-9 18}
+        {jakso-21 16}
+        {jakso-1 0 jakso-4 37}
+        {jakso-9 18 jakso-21 16}
+        {jakso-1 0  jakso-2 12 jakso-3 1 jakso-4 37 jakso-5 215 jakso-6 1
+         jakso-7 85 jakso-8 9  jakso-9 18 jakso-10 4 jakso-11 4 jakso-12 4
+         jakso-13 5 jakso-14 725 jakso-15 2 jakso-16 62 jakso-17 0
+         jakso-21 16 jakso-22 25 jakso-23 0 jakso-24 14 jakso-25 13}))
+    (testing (str "Lopputulos on sama kuin kestot laskettaisiin kunkin oppijan "
+                  "jaksoille erikseen. Ts. funktio erottelee eri oppijoiden "
+                  "jaksot kestoja laskiessaan.")
+      (are [jaksot] (= (nh/jaksojen-kestot! jaksot)
+                       (zipmap (map nh/ids jaksot)
+                               (map #(get (nh/jaksojen-kestot! [%])
+                                          (nh/ids %))
+                                    jaksot)))
+        [jakso-9 jakso-23]
+        [jakso-3 jakso-6 jakso-15 jakso-22 jakso-23]
+        jaksot-1-17
+        jaksot-21-25
+        jaksot-1-25))
+    (testing (str "Funktio palauttaa tyhjän listan, jos eHOKSista ei saada "
+                  "`get-tyoelamajaksot-active-between!`-kutsulla.")
+      (with-redefs
+       [hp/select-tyoelamajaksot-active-between (constantly {})]
+        (is (= (nh/jaksojen-kestot! jaksot-1-25) {}))))
+    (testing "Kestot ovat nollia, jos Koskesta ei saada opiskeluoikeuksia."
+      (with-redefs
+       [koski/get-opiskeluoikeus! (constantly nil)]
+        (is (= (nh/jaksojen-kestot! jaksot-1-25)
+               (zipmap (map nh/ids jaksot-1-25) (repeat 0))))))))
