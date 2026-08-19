@@ -85,8 +85,8 @@
   Palauttaa `true` jos päivämäärä sisältyy jaksoon, muuten `false`."
   [^LocalDate pvm jakso]
   (let [alku (:alku jakso) loppu (:loppu jakso)]
-    (and (dateutil/is-same-or-before alku pvm)
-         (or (nil? loppu) (dateutil/is-same-or-before pvm loppu)))))
+    (and (dateutil/is-same-or-before? alku pvm)
+         (or (nil? loppu) (dateutil/is-same-or-before? pvm loppu)))))
 
 (defn jakso-active?
   "Tarkistaa, onko `jakso` aktiivinen päivämääränä `pvm`. Ts. funktiossa
