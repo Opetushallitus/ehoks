@@ -120,6 +120,10 @@
                   data (:data (test-utils/parse-body (:body resp)))]
               (is (= (:status resp) 200) data)
               (is (not (empty? (:vastaajatunnukset data))))
+              (is (= ((juxt :osa_aikaisuus :tyopaikkajakson_alkupvm
+                            :tyopaikkajakson_kesto :tyopaikkajakson_loppupvm)
+                       (hoks-utils/last-arvo-jaksotunnus))
+                     [80 "2024-04-01" 4 "2024-04-05"]))
               ;; TODO: test here that the palaute is synced to DDB with
               ;; hankkimistapa-id
               (is (= (count (hoks-utils/palautteet-joissa-vastaajatunnus)) 1))))
