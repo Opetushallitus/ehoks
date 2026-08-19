@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>2d285b2d50333ce88e99699b8a7d6fc875499736</tag>
+    <tag>3194c106f6b47eb370c1a57bead424406433e095</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -69,10 +69,10 @@
   </build>
   <repositories>
     <repository>
-      <id>maven-central-proxy</id>
-      <url>https://artifactory.opintopolku.fi/artifactory/repository/maven-central</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
       <releases>
         <enabled>true</enabled>
@@ -91,6 +91,16 @@
     <repository>
       <id>github</id>
       <url>https://maven.pkg.github.com/orgs/Opetushallitus/packages</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>upstream-maven-central</id>
+      <url>https://repo1.maven.org/maven2/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -188,6 +198,26 @@
         <version>1.13.0</version>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-servlet</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-security</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
         <groupId>clj-http</groupId>
         <artifactId>clj-http</artifactId>
         <version>3.13.0</version>
@@ -225,47 +255,47 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http2</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-resolver</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-handler</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport-classes-epoll</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-buffer</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-common</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>cheshire</groupId>
@@ -350,7 +380,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.11</version>
+        <version>42.7.13</version>
       </dependency>
       <dependency>
         <groupId>com.layerware</groupId>
