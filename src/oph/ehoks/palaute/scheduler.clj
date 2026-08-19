@@ -71,7 +71,7 @@
     (catch Exception e
       (log/error e "Unhandled exception in"
                  "handle-palautteet-waiting-for-sending-status!")))
-  (log/info "Done palaute hourly actions.")
+  (log/info "Done palaute continuous actions.")
   true)
 
 (def schedules
