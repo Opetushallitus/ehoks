@@ -143,5 +143,13 @@
 (defn mock-get-organisaatio! [oid]
   {:oid oid :tyypit #{"organisaatiotyyppi_03"}})
 
-(defn mock-create-jaksotunnus [_]
+(def mock-jaksotunnukset (atom []))
+
+(defn reset-arvo-requests! [] (reset! mock-jaksotunnukset []))
+(defn last-arvo-jaksotunnus [] (last @mock-jaksotunnukset))
+(defn created-jaksotunnukset [] @mock-jaksotunnukset)
+
+(defn mock-create-jaksotunnus
+  [request]
+  (swap! mock-jaksotunnukset conj request)
   {:tunnus (str (UUID/randomUUID))})

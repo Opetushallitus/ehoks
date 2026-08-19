@@ -630,16 +630,28 @@
                   arvo/create-jaksotunnus! hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
+      (hoks-utils/reset-arvo-requests!)
       (vt/handle-tep-palautteet-on-heratepvm! {})
       (let [palautteet (hoks-utils/palautteet-joissa-vastaajatunnus)
             ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
             ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
+            arvo-requests (hoks-utils/created-jaksotunnukset)
             tapahtumat (db-helpers/query
                          [(str "select * from palaute_tapahtumat "
                                "where uusi_tila = "
                                "'vastaajatunnus_muodostettu'")])]
+        (is (= (count arvo-requests) 5))
         (is (= (count palautteet) 5))
         (is (= (count ddb-jaksot) 5))
+        (is (= (select-keys
+                 (first arvo-requests)
+                 [:tyopaikkajakson_kesto :tyopaikkajakson_alkupvm
+                  :tyopaikkajakson_loppupvm :tutkintonimike :metatiedot])
+               {:tyopaikkajakson_kesto 5,
+                :tyopaikkajakson_alkupvm "2023-12-01",
+                :tyopaikkajakson_loppupvm "2023-12-05",
+                :tutkintonimike '("12345" "23456"),
+                :metatiedot {:ei_kuulu_lahetettavien_perusjoukkoon true}}))
         (test-utils/eq
           (sort-by :yksiloiva_tunniste
                    (map #(dissoc % :tunnus :request_id :hankkimistapa_id)
