@@ -26,7 +26,7 @@
   [kyselylinkki]
   (not (or (:vastattu kyselylinkki)
            (some->> (:voimassa-loppupvm kyselylinkki)
-                    (date/is-after (date/now))))))
+                    (date/is-after? (date/now))))))
 
 (defn update-status!
   "Fetch the latest status (mainly, `:vastattu` and `voimassa-loppupvm`) of

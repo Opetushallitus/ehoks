@@ -58,10 +58,10 @@
   [tyoelamajakso]
   (some (fn [k-jakso]
           (and (:loppu tyoelamajakso)
-               (date/is-same-or-before (:alku k-jakso) (:loppu tyoelamajakso))
+               (date/is-same-or-before? (:alku k-jakso) (:loppu tyoelamajakso))
                (or (not (:loppu k-jakso))
-                   (date/is-same-or-before (:loppu tyoelamajakso)
-                                           (:loppu k-jakso)))))
+                   (date/is-same-or-before? (:loppu tyoelamajakso)
+                                            (:loppu k-jakso)))))
         (:keskeytymisajanjaksot tyoelamajakso)))
 
 (defn initial-palaute-state-and-reason
@@ -215,7 +215,7 @@
         today (date/now)
         alkupvm (greatest heratepvm today)
         loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-        e-k-l-p (date/is-after today loppupvm)]
+        e-k-l-p (date/is-after? today loppupvm)]
     {:koulutustoimija_oid       koulutustoimija
      :tyonantaja                (:tyopaikan-y-tunnus tjk)
      :tyopaikka                 t-nimi
