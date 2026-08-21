@@ -7,7 +7,15 @@
   (:import (java.lang Math)
            (java.time LocalDate)))
 
-(def round-vals (partial map-vals Math/round))
+(defn round-with-reasons
+  "Pyöristää numeron, mutta säilyttää syyt sille, miksi arvoa ei ole,
+  ja lisäksi tunnistaa kaksi lisäsyytä nollakestoille"
+  [kesto]
+  (if (keyword? kesto) kesto
+      (let [kesto-rounded (Math/round kesto)]
+        (cond (zero? kesto) :kesto-tasan-nolla
+              (zero? kesto-rounded) :kesto-pyoristyy-nollaan
+              :else kesto-rounded))))
 
 (defn ids
   "Returns an array-map of identifiers (HOKS ID & yksiloiva tunniste) that
@@ -49,7 +57,7 @@
             yksiloiva-tunniste
             osa-aikaisuus)
           :else (/ osa-aikaisuus 100.0))
-        0)))
+        :virheellinen-osa-aikaisuus)))
 
 (defn add-loppu-to-tilajaksot
   "Lisää jokaiseen paitsi viimeiseen jaksoon kentän :loppu, joka on päivää
@@ -120,16 +128,16 @@
   {1 0.333... 2 0.333... 4 0.333...}. Keskeytyneen jakson nollakesto ei ole
   siis mukana palautettavassa hashmapissa."
   [jaksot opiskeluoikeudet pvm]
-  (let [active-jakso-ids ; Päivänä `pvm` aktiivisena olevien jaksojen id:t
-        (map ids
-             (filter #(jakso-active? %
-                                     (get opiskeluoikeudet
-                                          (:opiskeluoikeus_oid %))
-                                     pvm)
-                     jaksot))
-        num-of-active-jaksos (count active-jakso-ids)
-        kesto (/ 1.0 num-of-active-jaksos)] ; Jyvitys
-    (zipmap active-jakso-ids (repeat kesto))))
+  (let [active-jaksot ; Päivänä `pvm` aktiivisena olevien jaksojen id:t
+        (filter #(jakso-active?
+                   % (get opiskeluoikeudet (:opiskeluoikeus_oid %)) pvm)
+                jaksot)
+        missing-oo-jaksot
+        (filter #(not (get opiskeluoikeudet (:opiskeluoikeus_oid %))) jaksot)
+        kesto (/ 1.0 (count active-jaksot))] ; Jyvitys
+    (merge (zipmap (map ids active-jaksot) (repeat kesto))
+           (zipmap (map ids missing-oo-jaksot)
+                   (repeat :opiskeluoikeus-puuttuu)))))
 
 (defn harmonize-date-keys
   "Harmonisoi jakson alku- ja loppupäivämääriä vastaavat avaimet, jotta
@@ -145,6 +153,24 @@
   päivämäärät myös LocalDate-objekteiksi."
   [jakso]
   (dateutil/alku-and-loppu-to-localdate (harmonize-date-keys jakso)))
+
+(defn multiply-propagate-errors
+  "Kerrotaan jyvitetty kesto osa-aikaisuudella, mutta jos jompikumpi on
+  virheellinen, säilytetään virhe"
+  [kesto osa-aikaisuus]
+  (cond (keyword? osa-aikaisuus) osa-aikaisuus
+        (keyword? kesto) kesto
+        :else (* kesto osa-aikaisuus)))
+
+(defn sum-override-errors
+  "Ynnätään yksittäisten päivien kestot, mutta jos kesto
+  on virheellinen, kohdellaan sitä nollana.  Jos molemmat ovat
+  virheellisiä, säilytetään toinen virhe."
+  [kesto1 kesto2]
+  (cond (and (keyword? kesto1) (keyword? kesto2)) kesto2
+        (keyword? kesto1) kesto2
+        (keyword? kesto2) kesto1
+        :else (+ kesto1 kesto2)))
 
 (defn oppijan-jaksojen-kestot
   "Laskee kestot jaksoille `jaksot`. Funktio olettaa, että `jaksot` pitävät
@@ -166,12 +192,13 @@
   (when (not-empty oppijan-jaksot)
     (let [jaksot (map harmonize-alku-and-loppu-dates oppijan-jaksot)
           ids    (map ids jaksot)]
-      (round-vals ; Pyöristetään kestot lähimpään kokonaislukuun.
+      (map-vals
+        round-with-reasons ; Pyöristetään lähimpään kokonaislukuun
         (merge-with
-          * ; Kerrotaan kestot osa-aikaisuuskertoimilla
-          (reduce (partial merge-with +) ; Summataan yksittäisten päivien kestot
+          multiply-propagate-errors ; Kerrotaan kestot osa-aikaisuuskertoimilla
+          (reduce (partial merge-with sum-override-errors)
                   ; Alustetaan alla kaikki kestot nollaksi:
-                  (zipmap ids (repeat 0))
+                  (zipmap ids (repeat :ei-aktiivisia-paivia-jaksolla))
                   (map (partial oppijan-jaksojen-yhden-paivan-kestot
                                 jaksot
                                 opiskeluoikeudet)
@@ -235,4 +262,6 @@
        ; hashmapiksi:
        (apply merge)
        ; Palautetaan vain niiden jaksojen kestot, jotka ovat `jaksot` listassa:
-       (#(select-keys % (map ids jaksot)))))
+       (#(select-keys % (map ids jaksot)))
+       ; Lisätään vielä muille jaksoille virhekoodi
+       (merge (zipmap (map ids jaksot) (repeat :jakso-puuttuu)))))
