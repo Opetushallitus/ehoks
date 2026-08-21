@@ -226,6 +226,8 @@
   (let [kesto-jakso (build-tyoelamajakso-for-kesto ctx)
         result (get (kesto/jaksojen-kestot! [kesto-jakso])
                     (kesto/ids kesto-jakso))]
+    (tapahtuma/build-and-insert!
+      ctx :kestonlaskenta {:kestonlaskennan-tulos result})
     (if (keyword? result) 0 result)))
 
 (defn build-jaksotunnus-request-body
