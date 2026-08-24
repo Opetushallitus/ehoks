@@ -44,7 +44,7 @@
   [status]
   (when-let [loppupvm (:voimassa-loppupvm status)]
     (let [enddate (LocalDate/parse (first (str/split loppupvm #"T")))]
-      (dateutil/is-after (dateutil/now) enddate))))
+      (dateutil/is-after? (dateutil/now) enddate))))
 
 (defn vastattu?
   "Onko kyselylinkin arvo-statuksessa kysely merkitty vastatuksi?"
