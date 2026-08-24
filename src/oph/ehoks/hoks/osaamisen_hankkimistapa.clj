@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.osaamisen-hankkimistapa
   (:require [medley.core :refer [find-first]]
             [oph.ehoks.utils :refer [get-in-and-propagate-fields]]
+            [oph.ehoks.utils.date :as dateutil]
             [hugsql.core :as hugsql])
   (:import [java.time LocalDate]))
 
@@ -47,7 +48,7 @@
 (defn- should-check-hankkimistapa-y-tunnus?
   "Tarkistaa, loppuuko osaamisen hankkimistapa käyttöönottopäivämäärän jälkeen."
   [oh]
-  (.isAfter ^LocalDate (:loppu oh) (LocalDate/of 2021 8 25)))
+  (dateutil/is-after? (:loppu oh) (LocalDate/of 2021 8 25)))
 
 (defn y-tunnus-missing?
   "Puuttuuko Y-tunnus osaamisen hankkimistavasta, vaikka pitäisi olla?"
@@ -61,7 +62,7 @@
   "Onko jaksossa osa-aikaisuustieto, jos pitäisi olla?"
   [oht]
   (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)]
-    (or (not (.isAfter ^LocalDate (:loppu oht) (LocalDate/of 2023 6 30)))
+    (or (not (dateutil/is-after? (:loppu oht) (LocalDate/of 2023 6 30)))
         (not (tyopaikkajakso? oht))
         (and (some? osa-aikaisuustieto)
              (<= 1 osa-aikaisuustieto 100)))))
