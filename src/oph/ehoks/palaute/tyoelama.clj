@@ -220,12 +220,15 @@
    :jakso_loppupvm     (:loppu jakso)
    :osa_aikaisuus      (:osa-aikaisuustieto jakso)})
 
-(defn context->kesto
+(defn calculate-and-log-kesto!
   "Laskee jakson jyvitetyn keston käsittelykontekstista"
   [ctx]
-  (let [kesto-jakso (build-tyoelamajakso-for-kesto ctx)]
-    (get (kesto/jaksojen-kestot! [kesto-jakso])
-         (kesto/ids kesto-jakso))))
+  (let [kesto-jakso (build-tyoelamajakso-for-kesto ctx)
+        result (get (kesto/jaksojen-kestot! [kesto-jakso])
+                    (kesto/ids kesto-jakso))]
+    (tapahtuma/build-and-insert!
+      ctx :kestonlaskenta {:kestonlaskennan-tulos result})
+    (if (keyword? result) 0 result)))
 
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
@@ -250,7 +253,7 @@
      :osaamisala                (suoritus/get-osaamisalat suoritus heratepvm)
      :tyopaikkajakson_alkupvm   (str (:alku jakso))
      :tyopaikkajakson_loppupvm  (str (:loppu jakso))
-     :tyopaikkajakson_kesto     (context->kesto ctx)
+     :tyopaikkajakson_kesto     (calculate-and-log-kesto! ctx)
      :rahoituskausi_pvm         (str (:loppu jakso))
      :osa_aikaisuus             (:osa-aikaisuustieto jakso)
      :sopimustyyppi             (utils/koodi-uri->koodi

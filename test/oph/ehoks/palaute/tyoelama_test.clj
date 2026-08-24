@@ -636,10 +636,14 @@
             ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
             ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
             arvo-requests (hoks-utils/created-jaksotunnukset)
-            tapahtumat (db-helpers/query
-                         [(str "select * from palaute_tapahtumat "
-                               "where uusi_tila = "
-                               "'vastaajatunnus_muodostettu'")])]
+            tapahtumat
+            (->> {:hoks-id (:hoks_id (first palautteet))
+                  :kyselytyypit ["tyopaikkajakson_suorittaneet"]}
+                 (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec))
+            tilatapahtumat
+            (filter #(= (:uusi-tila %) "vastaajatunnus_muodostettu") tapahtumat)
+            kesto-tapahtumat
+            (filter #(= (:syy %) "kestonlaskenta") tapahtumat)]
         (is (= (count arvo-requests) 5))
         (is (= (count palautteet) 5))
         (is (= (count ddb-jaksot) 5))
@@ -658,7 +662,19 @@
                         ddb-jaksot))
           (sort-by :yksiloiva_tunniste expected-ddb-jaksot))
         (is (= ddb-niput expected-ddb-niput))
-        (is (= (count tapahtumat) 5))
+        (is (= (count tilatapahtumat) 5))
+        (testing (str "kestonlaskenta result is logged into palaute_tapahtumat "
+                      "for every handled tyoelamajakso")
+          (is (= (count kesto-tapahtumat) 5))
+          (is (every? #(contains? (:lisatiedot %) :kestonlaskennan-tulos)
+                      kesto-tapahtumat))
+          ;; The logged result (with nollakesto reasons counted as 0) matches
+          ;; the kesto sent to Arvo, i.e. `calculate-and-log-kesto!`'s return.
+          (is (= (sort (map #(let [tulos (:kestonlaskennan-tulos
+                                           (:lisatiedot %))]
+                               (if (number? tulos) tulos 0))
+                            kesto-tapahtumat))
+                 (sort (map :tyopaikkajakson_kesto arvo-requests)))))
         (is (= (set (map :arvo_tunniste palautteet))
                (set (map :tunnus ddb-jaksot))))
         (doseq [jakso ddb-jaksot]

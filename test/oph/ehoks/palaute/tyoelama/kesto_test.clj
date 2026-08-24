@@ -3,7 +3,7 @@
             [clojure.tools.logging.test :refer [with-log logged? the-log]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as hp]
-            [medley.core :refer [map-keys map-vals filter-vals]]
+            [medley.core :refer [map-keys map-vals]]
             [oph.ehoks.utils.date :refer [alku-and-loppu-to-localdate]]
             [oph.ehoks.palaute.tyoelama.kesto :as nh])
   (:import (java.time LocalDate)))
@@ -401,7 +401,7 @@
       (is (= (nh/osa-aikaisuuskerroin {:hoks_id 1
                                        :yksiloiva_tunniste "123"
                                        :hankkimistapa_id 123})
-             0))
+             :virheellinen-osa-aikaisuus))
       (is (logged? 'oph.ehoks.palaute.tyoelama.kesto
                    :warn
                    #"Osa-aikaisuustieto puuttuu jakson \(HOKS `1`, ")))
@@ -412,7 +412,7 @@
                                              :yksiloiva_tunniste 123
                                              :hankkimistapa_id 123
                                              :osa_aikaisuus oa})
-                   0)
+                   :virheellinen-osa-aikaisuus)
                 (logged? 'oph.ehoks.palaute.tyoelama.kesto
                          :warn
                          #"osa-aikaisuus `[\"0-9.-]*` ei ole validi"))
@@ -464,34 +464,43 @@
         "jaksoille. Jos yksikään jaksoista ei ole aktiivinen, palautuu "
         "tyhjä taulu.")
     (are [y m d kestot]
-         (let [oos (map :opiskeluoikeus_oid (keys kestot))]
-           (= (do-rounding
-                (nh/oppijan-jaksojen-yhden-paivan-kestot
-                  (map nh/harmonize-alku-and-loppu-dates (keys kestot))
-                  (zipmap oos (map mock-get-opiskeluoikeus-catch-404 oos))
-                  (LocalDate/of y m d)))
-              (map-keys nh/ids (filter-vals #(not= % 0) kestot))))
-      2021 10 13  {jakso-3 0}  ; keskeytynyt (jakso)
-      2021 10 14  {jakso-6 0}  ; keskeytynyt (jakso)
-      2021 10 14  {jakso-10 0} ; keskeytynyt (jakso)
-      2022  2  2  {jakso-25 0} ; keskeytynyt (opiskeluoikeus)
+         (let [oos (map :opiskeluoikeus_oid (keys kestot))
+               paiva (LocalDate/of y m d)
+               paivan-kestot
+               (nh/oppijan-jaksojen-yhden-paivan-kestot
+                 (map nh/harmonize-alku-and-loppu-dates (keys kestot))
+                 (zipmap oos (map mock-get-opiskeluoikeus-catch-404 oos))
+                 paiva)
+               tulos (map-keys nh/ids kestot)]
+           (= (do-rounding paivan-kestot) tulos)
+           (str "laskennan tulos:" paivan-kestot
+                "piti olla:" tulos))
+      2021 10 13  {jakso-3 :ei-aktiivisia-paivia-jaksolla}
+      2021 10 14  {jakso-6 :ei-aktiivisia-paivia-jaksolla}
+      2021 10 14  {jakso-10 :ei-aktiivisia-paivia-jaksolla}
+      2022  2  2  {jakso-25 :ei-aktiivisia-paivia-jaksolla}
       2021 10 12  {jakso-3 1.0}
       2021  7 31  {jakso-9 1.0}
-      2021 10 13  {jakso-3 0 jakso-4 1.0}  ; 3 keskeytynyt
+      2021 10 13  {jakso-3 :ei-aktiivisia-paivia-jaksolla jakso-4 1.0}
       2021 10 12  {jakso-3 0.5 jakso-4 0.5}
       ; 2 keskeytynyt, 3 päättynyt:
-      2021 10 25  {jakso-1 0.5 jakso-2 0 jakso-3 0 jakso-4 0.5}
+      2021 10 25  {jakso-1 0.5 jakso-2 :ei-aktiivisia-paivia-jaksolla
+                   jakso-3 :ei-aktiivisia-paivia-jaksolla jakso-4 0.5}
       ; 1 ei vielä alkanut:
-      2021 10 21  {jakso-1 0 jakso-2 0.33 jakso-3 0.33 jakso-4 0.33}
+      2021 10 21  {jakso-1 :ei-aktiivisia-paivia-jaksolla
+                   jakso-2 0.33 jakso-3 0.33 jakso-4 0.33}
       ; 1 ei vielä alkanut, 11 ei vielä alkanut:
       2021  9  1
-      {jakso-1 0 jakso-5 0.33 jakso-10 0.33 jakso-11 0 jakso-14 0.33}
+      {jakso-1 :ei-aktiivisia-paivia-jaksolla jakso-5 0.33 jakso-10 0.33
+       jakso-11 :ei-aktiivisia-paivia-jaksolla jakso-14 0.33}
       ; 1 ei vielä alkanut
       2021  9  9
-      {jakso-1 0 jakso-5 0.25 jakso-10 0.25 jakso-11 0.25 jakso-14 0.25}
+      {jakso-1 :ei-aktiivisia-paivia-jaksolla
+       jakso-5 0.25 jakso-10 0.25 jakso-11 0.25 jakso-14 0.25}
       ; 10 päättynyt, 11 päättynyt
       2021 10 22
-      {jakso-1 0.33 jakso-5 0.33 jakso-10 0 jakso-11 0 jakso-14 0.33})))
+      {jakso-1 0.33 jakso-5 0.33 jakso-10 :ei-aktiivisia-paivia-jaksolla
+       jakso-11 :ei-aktiivisia-paivia-jaksolla jakso-14 0.33})))
 
 (deftest test-oppijan-jaksojen-kestot
   (testing (str "Funktio palauttaa `nil`, jos jaksot sisältävässä HashMapissa "
@@ -504,14 +513,15 @@
                 (= (nh/oppijan-jaksojen-kestot
                      [(assoc jakso-2 :osa_aikaisuus oa)]
                      {oo-oid (get opiskeluoikeudet oo-oid)})
-                   {{:hoks_id 1 :yksiloiva_tunniste "2"} 0}))
+                   {{:hoks_id 1 :yksiloiva_tunniste "2"}
+                    :virheellinen-osa-aikaisuus}))
       nil -1 0 101 55.5 "merkkijono" true false {}))
   (testing (str "Funktio antaa jakson kestoksi nollan, mikäli jakson "
                 "opiskeluoikeus on `nil` tai sitä ei löydy "
                 "`opiskeluoikeudet` hashmapista.")
     (are [opiskeluoikeudet]
          (= (nh/oppijan-jaksojen-kestot [jakso-2] opiskeluoikeudet)
-            {{:hoks_id 1 :yksiloiva_tunniste "2"} 0})
+            {{:hoks_id 1 :yksiloiva_tunniste "2"} :opiskeluoikeus-puuttuu})
       {} {"1.2.3.8" nil}))
   (testing "Yhden jakson tapauksessa jakson kesto on jakson päivien
            yhteenlaskettu lukumäärä (pois lukien keskeytymisajanjakson päivät)
@@ -586,12 +596,15 @@
         {jakso-2 12}
         {jakso-9 18}
         {jakso-21 16}
-        {jakso-1 0 jakso-4 37}
+        {jakso-1 :kesto-pyoristyy-nollaan jakso-4 37}
         {jakso-9 18 jakso-21 16}
-        {jakso-1 0  jakso-2 12 jakso-3 1 jakso-4 37 jakso-5 215 jakso-6 1
+        {jakso-1 :kesto-pyoristyy-nollaan
+         jakso-2 12 jakso-3 1 jakso-4 37 jakso-5 215 jakso-6 1
          jakso-7 85 jakso-8 9  jakso-9 18 jakso-10 4 jakso-11 4 jakso-12 4
-         jakso-13 5 jakso-14 725 jakso-15 2 jakso-16 62 jakso-17 0
-         jakso-21 16 jakso-22 25 jakso-23 0 jakso-24 14 jakso-25 13}))
+         jakso-13 5 jakso-14 725 jakso-15 2 jakso-16 62
+         jakso-17 :opiskeluoikeus-puuttuu
+         jakso-21 16 jakso-22 25 jakso-23 :opiskeluoikeus-puuttuu
+         jakso-24 14 jakso-25 13}))
     (testing (str "Lopputulos on sama kuin kestot laskettaisiin kunkin oppijan "
                   "jaksoille erikseen. Ts. funktio erottelee eri oppijoiden "
                   "jaksot kestoja laskiessaan.")
@@ -605,13 +618,16 @@
         jaksot-1-17
         jaksot-21-25
         jaksot-1-25))
-    (testing (str "Funktio palauttaa tyhjän listan, jos eHOKSista ei saada "
+    (testing (str "Kestot ovat nollia, jos eHOKSista ei saada kyseistä jaksoa"
                   "`get-tyoelamajaksot-active-between!`-kutsulla.")
       (with-redefs
        [hp/select-tyoelamajaksot-active-between (constantly {})]
-        (is (= (nh/jaksojen-kestot! jaksot-1-25) {}))))
+        (is (= (nh/jaksojen-kestot! jaksot-1-25)
+               (zipmap (map nh/ids jaksot-1-25)
+                       (repeat :jakso-puuttuu))))))
     (testing "Kestot ovat nollia, jos Koskesta ei saada opiskeluoikeuksia."
       (with-redefs
        [koski/get-opiskeluoikeus! (constantly nil)]
         (is (= (nh/jaksojen-kestot! jaksot-1-25)
-               (zipmap (map nh/ids jaksot-1-25) (repeat 0))))))))
+               (zipmap (map nh/ids jaksot-1-25)
+                       (repeat :opiskeluoikeus-puuttuu))))))))
