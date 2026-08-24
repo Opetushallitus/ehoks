@@ -161,7 +161,8 @@
 (defn delete-kyselylinkki-by-tunnus
   "Poistaa kyselylinkin tietokannasta tunnuksen perusteella."
   [tunnus]
-  (db-ops/delete! :kyselylinkit ["kyselylinkki LIKE ?" (str "%/" tunnus)]))
+  (db-ops/delete!
+    :kyselylinkit ["split_part(kyselylinkki, '/', -1) = ?" tunnus]))
 
 (defn select-oht-by-tutkinto-and-oppilaitos-between
   "Hakee osaamisen hankkimistapoja tutkinnon ja koulutuksen järjestäjän
