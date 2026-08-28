@@ -267,6 +267,25 @@
     (is (= (map :yksiloiva-tunniste (tep/tyopaikkajaksot hoks-test/hoks-1))
            '("1" "3" "4" "7" "9")))))
 
+(deftest test-build-tyoelamajakso-for-kesto
+  (testing (str "The function converts jaksotunnus request context into the "
+                "underscore-keyed jakso format expected by "
+                "`kesto/jaksojen-kestot!`.")
+    (let [ctx {:hoks             hoks-test/hoks-1
+               :jakso            test-jakso
+               :existing-palaute {:hoks-id                   42
+                                  :jakson-yksiloiva-tunniste "1"
+                                  :hankkimistapa-id          2}}]
+      (is (= (tep/build-tyoelamajakso-for-kesto ctx)
+             {:oppija_oid         (:oppija-oid hoks-test/hoks-1)
+              :opiskeluoikeus_oid (:opiskeluoikeus-oid hoks-test/hoks-1)
+              :hoks_id            42
+              :yksiloiva_tunniste "1"
+              :hankkimistapa_id   2
+              :jakso_alkupvm      (:alku test-jakso)
+              :jakso_loppupvm     (:loppu test-jakso)
+              :osa_aikaisuus      (:osa-aikaisuustieto test-jakso)})))))
+
 (deftest test-initial-palaute-state-and-reason
   (testing "On HOKS creation or update"
     (with-redefs [date/now #(LocalDate/of 2023 7 1)]
@@ -611,23 +630,51 @@
                   arvo/create-jaksotunnus! hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
+      (hoks-utils/reset-arvo-requests!)
       (vt/handle-tep-palautteet-on-heratepvm! {})
       (let [palautteet (hoks-utils/palautteet-joissa-vastaajatunnus)
             ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
             ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
-            tapahtumat (db-helpers/query
-                         [(str "select * from palaute_tapahtumat "
-                               "where uusi_tila = "
-                               "'vastaajatunnus_muodostettu'")])]
+            arvo-requests (hoks-utils/created-jaksotunnukset)
+            tapahtumat
+            (->> {:hoks-id (:hoks_id (first palautteet))
+                  :kyselytyypit ["tyopaikkajakson_suorittaneet"]}
+                 (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec))
+            tilatapahtumat
+            (filter #(= (:uusi-tila %) "vastaajatunnus_muodostettu") tapahtumat)
+            kesto-tapahtumat
+            (filter #(= (:syy %) "kestonlaskenta") tapahtumat)]
+        (is (= (count arvo-requests) 5))
         (is (= (count palautteet) 5))
         (is (= (count ddb-jaksot) 5))
+        (is (= (select-keys
+                 (first arvo-requests)
+                 [:tyopaikkajakson_kesto :tyopaikkajakson_alkupvm
+                  :tyopaikkajakson_loppupvm :tutkintonimike :metatiedot])
+               {:tyopaikkajakson_kesto 5,
+                :tyopaikkajakson_alkupvm "2023-12-01",
+                :tyopaikkajakson_loppupvm "2023-12-05",
+                :tutkintonimike '("12345" "23456"),
+                :metatiedot {:ei_kuulu_lahetettavien_perusjoukkoon true}}))
         (test-utils/eq
           (sort-by :yksiloiva_tunniste
                    (map #(dissoc % :tunnus :request_id :hankkimistapa_id)
                         ddb-jaksot))
           (sort-by :yksiloiva_tunniste expected-ddb-jaksot))
         (is (= ddb-niput expected-ddb-niput))
-        (is (= (count tapahtumat) 5))
+        (is (= (count tilatapahtumat) 5))
+        (testing (str "kestonlaskenta result is logged into palaute_tapahtumat "
+                      "for every handled tyoelamajakso")
+          (is (= (count kesto-tapahtumat) 5))
+          (is (every? #(contains? (:lisatiedot %) :kestonlaskennan-tulos)
+                      kesto-tapahtumat))
+          ;; The logged result (with nollakesto reasons counted as 0) matches
+          ;; the kesto sent to Arvo, i.e. `calculate-and-log-kesto!`'s return.
+          (is (= (sort (map #(let [tulos (:kestonlaskennan-tulos
+                                           (:lisatiedot %))]
+                               (if (number? tulos) tulos 0))
+                            kesto-tapahtumat))
+                 (sort (map :tyopaikkajakson_kesto arvo-requests)))))
         (is (= (set (map :arvo_tunniste palautteet))
                (set (map :tunnus ddb-jaksot))))
         (doseq [jakso ddb-jaksot]

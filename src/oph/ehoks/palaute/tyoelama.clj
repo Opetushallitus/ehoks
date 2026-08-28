@@ -11,6 +11,7 @@
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
+            [oph.ehoks.palaute.tyoelama.kesto :as kesto]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]
@@ -205,10 +206,34 @@
        :viimeinen_vastauspvm (palaute/vastaamisajan-loppupvm
                                heratepvm vastaamisajan-alkupvm)})))
 
+(defn build-tyoelamajakso-for-kesto
+  "Muuntaa palautekäsittelyn kontekstin `ctx` herätepalvelu-tyyliseksi jaksoksi
+  jota `kesto/jaksojen-kestot!` odottaa syötteekseen.  Oikeasti kentistä
+  käytetään vain :oppija_oid, :jakso_alkupvm ja :jakso_loppupvm."
+  [{:keys [hoks jakso existing-palaute]}]
+  {:oppija_oid         (:oppija-oid hoks)
+   :opiskeluoikeus_oid (:opiskeluoikeus-oid hoks)
+   :hoks_id            (:hoks-id existing-palaute)
+   :yksiloiva_tunniste (:jakson-yksiloiva-tunniste existing-palaute)
+   :hankkimistapa_id   (:hankkimistapa-id existing-palaute)
+   :jakso_alkupvm      (:alku jakso)
+   :jakso_loppupvm     (:loppu jakso)
+   :osa_aikaisuus      (:osa-aikaisuustieto jakso)})
+
+(defn calculate-and-log-kesto!
+  "Laskee jakson jyvitetyn keston käsittelykontekstista"
+  [ctx]
+  (let [kesto-jakso (build-tyoelamajakso-for-kesto ctx)
+        result (get (kesto/jaksojen-kestot! [kesto-jakso])
+                    (kesto/ids kesto-jakso))]
+    (tapahtuma/build-and-insert!
+      ctx :kestonlaskenta {:kestonlaskennan-tulos result})
+    (if (keyword? result) 0 result)))
+
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
   [{:keys [opiskeluoikeus existing-palaute jakso request-id
-           suoritus koulutustoimija toimipiste]}]
+           suoritus koulutustoimija toimipiste] :as ctx}]
   (let [tjk (:tyopaikalla-jarjestettava-koulutus jakso)
         t-nimi (:tyopaikan-nimi tjk)
         heratepvm (:heratepvm existing-palaute)
@@ -228,6 +253,7 @@
      :osaamisala                (suoritus/get-osaamisalat suoritus heratepvm)
      :tyopaikkajakson_alkupvm   (str (:alku jakso))
      :tyopaikkajakson_loppupvm  (str (:loppu jakso))
+     :tyopaikkajakson_kesto     (calculate-and-log-kesto! ctx)
      :rahoituskausi_pvm         (str (:loppu jakso))
      :osa_aikaisuus             (:osa-aikaisuustieto jakso)
      :sopimustyyppi             (utils/koodi-uri->koodi
