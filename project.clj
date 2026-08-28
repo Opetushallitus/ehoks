@@ -40,6 +40,10 @@
                          [ring/ring-jetty-adapter "1.15.4"
                           :exclusions [org.slf4j/slf4j-api]]
                          [ring/ring-servlet "1.13.0"]
+                         [org.eclipse.jetty/jetty-server "12.1.10"]
+                         [org.eclipse.jetty.ee9/jetty-ee9-servlet "12.1.10"]
+                         [org.eclipse.jetty.ee9/jetty-ee9-security "12.1.10"]
+                         [org.eclipse.jetty/jetty-security "12.1.10"]
 
                          ;; http client
                          [clj-http "3.13.0"]
@@ -49,15 +53,15 @@
                          [org.apache.httpcomponents/httpcore "4.4.16"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.16"]
                          [org.apache.httpcomponents/httpmime "4.5.14"]
-                         [io.netty/netty-codec-http "4.1.133.Final"]
-                         [io.netty/netty-codec-http2 "4.1.133.Final"]
-                         [io.netty/netty-codec "4.1.133.Final"]
-                         [io.netty/netty-resolver "4.1.133.Final"]
-                         [io.netty/netty-handler "4.1.133.Final"]
-                         [io.netty/netty-transport-classes-epoll "4.1.133.Final"]
-                         [io.netty/netty-transport "4.1.133.Final"]
-                         [io.netty/netty-buffer "4.1.133.Final"]
-                         [io.netty/netty-common "4.1.133.Final"]
+                         [io.netty/netty-codec-http "4.1.136.Final"]
+                         [io.netty/netty-codec-http2 "4.1.136.Final"]
+                         [io.netty/netty-codec "4.1.136.Final"]
+                         [io.netty/netty-resolver "4.1.136.Final"]
+                         [io.netty/netty-handler "4.1.136.Final"]
+                         [io.netty/netty-transport-classes-epoll "4.1.136.Final"]
+                         [io.netty/netty-transport "4.1.136.Final"]
+                         [io.netty/netty-buffer "4.1.136.Final"]
+                         [io.netty/netty-common "4.1.136.Final"]
                          [cheshire "5.13.0"]
 
                          ;; logging
@@ -85,7 +89,7 @@
                          [org.clojure/java.jdbc "0.7.12"]
                          [org.flywaydb/flyway-core "11.20.3"]
                          [org.flywaydb/flyway-database-postgresql "11.20.3"]
-                         [org.postgresql/postgresql "42.7.11"]
+                         [org.postgresql/postgresql "42.7.13"]
                          [com.layerware/hugsql "0.5.3"]
 
                          ;; other

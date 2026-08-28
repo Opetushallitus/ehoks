@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>7bf94000c1abb706b96cd3b2438ae8e1e1d5c3db</tag>
+    <tag>978245c91a6bf94fe669c059cff0ce33143d883f</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -198,6 +198,26 @@
         <version>1.13.0</version>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-servlet</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-security</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+        <version>12.1.10</version>
+      </dependency>
+      <dependency>
         <groupId>clj-http</groupId>
         <artifactId>clj-http</artifactId>
         <version>3.13.0</version>
@@ -235,47 +255,47 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http2</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-resolver</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-handler</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport-classes-epoll</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-buffer</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-common</artifactId>
-        <version>4.1.133.Final</version>
+        <version>4.1.136.Final</version>
       </dependency>
       <dependency>
         <groupId>cheshire</groupId>
@@ -360,7 +380,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.11</version>
+        <version>42.7.13</version>
       </dependency>
       <dependency>
         <groupId>com.layerware</groupId>
