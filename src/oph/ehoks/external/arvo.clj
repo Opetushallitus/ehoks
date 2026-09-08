@@ -45,9 +45,11 @@
     (utils/to-dash-keys
       (call! :patch (str "/vastauslinkki/v1/" vastaajatunnus)
              {:content-type :json
-              :form-params {:metatiedot {:tila tila}
-                            :voimassa_alkupvm new-alkupvm
-                            :voimassa_loppupvm new-loppupvm}}))
+              :form-params (if (and new-alkupvm new-loppupvm)
+                             {:metatiedot {:tila tila}
+                              :voimassa_alkupvm new-alkupvm
+                              :voimassa_loppupvm new-loppupvm}
+                             {:metatiedot {:tila tila}})}))
     (catch ExceptionInfo e
       (when-not (= 404 (:status (ex-data e)))
         (throw e)))))

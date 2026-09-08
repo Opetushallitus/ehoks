@@ -226,7 +226,7 @@
 (defn update-delivery-status!
   "Päivittää lähetysstatuksen yhdelle viestille ja päivittää palautteen
   tiedot vastaavasti."
-  [{:keys [existing-viesti tx] :as ctx}]
+  [{:keys [existing-palaute existing-viesti tx] :as ctx}]
   (log/info "Updating delivery status for message" (:viesti-id existing-viesti)
             "(external id" (:ulkoinen-tunniste existing-viesti) ")")
   (let [status (vvp/message-state! (:ulkoinen-tunniste existing-viesti))
@@ -244,6 +244,11 @@
     ;; temporary fix until we also send SMS's: sync even failed
     ;; palautteet to herätepalvelu for trying to send SMS
     (when (= :lahetys-epaonnistunut viesti-tila)
+      ;; also temporary fix: Herätepalvelu doesn't ever report failed
+      ;; SMS's to Arvo, so we need to report the failed sending here
+      ;; already.
+      (arvo/update-kyselytunnus!
+        (:arvo-tunniste existing-palaute) "lahetys_epaonnistunut" nil nil)
       (sync-to-heratepalvelu! ctx))))
 
 (defn handle-palaute-waiting-for-sending-status!
