@@ -426,7 +426,8 @@
 
         (let [viestit (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
                            (l/get-by-tila-and-viestityypit! db/spec))
-              viesti (first viestit)]
+              viesti (first viestit)
+              arvo-lahetys (atom {})]
 
           (testing "päättökyselyn viesti was created"
             (is (= 1 (count viestit)))
@@ -440,9 +441,15 @@
                          url "/lahetykset/test-message-id-2/vastaanottajat")
                    {:status 200
                     :body {:vastaanottajat [{:tila "VIRHE"}]}}))
-               (fn [_ __] {})]
+               (fn [_ __] {})
+               (fn [url options]
+                 (when (s/ends-with? url "/vastauslinkki/v1/testivain2")
+                   (reset! arvo-lahetys (:form-params options))
+                   {:status 200
+                    :body (:form-params options)}))]
               (l/handle-palaute-waiting-for-sending-status! viesti))
 
+            (is (= {:metatiedot {:tila "lahetys_epaonnistunut"}} @arvo-lahetys))
             (is (= [["kysely_muodostettu" "valmistuneet"]]
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["valmistuneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
