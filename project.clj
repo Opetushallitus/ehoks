@@ -28,6 +28,7 @@
                  [software.amazon.awssdk/sqs]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
+  :bom {:import [[software.amazon.awssdk/bom "2.30.36"]]}
   :managed-dependencies [[org.clojure/clojure "1.12.0"]
 
                          ;; http server
@@ -121,7 +122,8 @@
                          [org.clojure/tools.reader "1.5.0"]
                          [io.aviso/pretty "1.4.4"]
                          [instaparse "1.5.0"]]
-  :plugins [[lein-cljfmt "0.6.6"]
+  :plugins [[lein-bom "0.2.0-SNAPSHOT"]
+            [lein-cljfmt "0.6.6"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.7.0"]
             [lein-cloverage "1.2.4"]
