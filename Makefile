@@ -128,7 +128,8 @@ lint:
 
 .PHONY: trivy
 trivy:
-	docker run -it --rm -v .:/tmp docker.io/aquasec/trivy fs \
+	docker run -it --rm -v .:/tmp -v $(MAVEN_REPO):/root/.m2/repository \
+	 docker.io/aquasec/trivy fs \
 	 --severity CRITICAL,HIGH --scanners vuln /tmp
 
 .PHONY: stop-server
