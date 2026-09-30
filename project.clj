@@ -28,7 +28,8 @@
                  [software.amazon.awssdk/sqs]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
-  :bom {:import [[software.amazon.awssdk/bom "2.30.36"]]}
+  :bom {:import [[software.amazon.awssdk/bom "2.30.36"]
+                 [io.netty/netty-bom "4.1.137.Final"]]}
   :managed-dependencies [[org.clojure/clojure "1.12.0"]
 
                          ;; http server
@@ -54,15 +55,6 @@
                          [org.apache.httpcomponents/httpcore "4.4.16"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.16"]
                          [org.apache.httpcomponents/httpmime "4.5.14"]
-                         [io.netty/netty-codec-http "4.1.137.Final"]
-                         [io.netty/netty-codec-http2 "4.1.137.Final"]
-                         [io.netty/netty-codec "4.1.137.Final"]
-                         [io.netty/netty-resolver "4.1.137.Final"]
-                         [io.netty/netty-handler "4.1.137.Final"]
-                         [io.netty/netty-transport-classes-epoll "4.1.137.Final"]
-                         [io.netty/netty-transport "4.1.137.Final"]
-                         [io.netty/netty-buffer "4.1.137.Final"]
-                         [io.netty/netty-common "4.1.137.Final"]
                          [cheshire "5.13.0"]
 
                          ;; logging
