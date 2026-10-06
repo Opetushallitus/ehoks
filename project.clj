@@ -28,6 +28,8 @@
                  [software.amazon.awssdk/sqs]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
+  :bom {:import [[software.amazon.awssdk/bom "2.30.36"]
+                 [io.netty/netty-bom "4.1.137.Final"]]}
   :managed-dependencies [[org.clojure/clojure "1.12.0"]
 
                          ;; http server
@@ -53,32 +55,23 @@
                          [org.apache.httpcomponents/httpcore "4.4.16"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.16"]
                          [org.apache.httpcomponents/httpmime "4.5.14"]
-                         [io.netty/netty-codec-http "4.1.136.Final"]
-                         [io.netty/netty-codec-http2 "4.1.136.Final"]
-                         [io.netty/netty-codec "4.1.136.Final"]
-                         [io.netty/netty-resolver "4.1.136.Final"]
-                         [io.netty/netty-handler "4.1.136.Final"]
-                         [io.netty/netty-transport-classes-epoll "4.1.136.Final"]
-                         [io.netty/netty-transport "4.1.136.Final"]
-                         [io.netty/netty-buffer "4.1.136.Final"]
-                         [io.netty/netty-common "4.1.136.Final"]
                          [cheshire "5.13.0"]
 
                          ;; logging
                          [org.clojure/tools.logging "1.3.0"]
-                         [org.apache.logging.log4j/log4j-api "2.25.4"]
-                         [org.apache.logging.log4j/log4j-core "2.25.4"]
+                         [org.apache.logging.log4j/log4j-api "2.25.5"]
+                         [org.apache.logging.log4j/log4j-core "2.25.5"]
                          ; pipes ring/jetty logging (slf4j) to log4j2
-                         [org.apache.logging.log4j/log4j-slf4j-impl "2.25.4"]
+                         [org.apache.logging.log4j/log4j-slf4j-impl "2.25.5"]
 
                          ;; date, time
                          [jarohen/chime "0.3.3"]
 
                          ;; json
-                         [com.fasterxml.jackson.core/jackson-annotations "2.18.9"]
-                         [com.fasterxml.jackson.core/jackson-core "2.18.9"]
-                         [com.fasterxml.jackson.core/jackson-databind "2.18.9"]
-                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.18.9"]
+                         [com.fasterxml.jackson.core/jackson-annotations "2.18.11"]
+                         [com.fasterxml.jackson.core/jackson-core "2.18.11"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.18.11"]
+                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.18.11"]
                          [org.clojure/data.json "2.5.0"]
                          [com.google.code.gson/gson "2.11.0"]
 
@@ -121,7 +114,8 @@
                          [org.clojure/tools.reader "1.5.0"]
                          [io.aviso/pretty "1.4.4"]
                          [instaparse "1.5.0"]]
-  :plugins [[lein-cljfmt "0.6.6"]
+  :plugins [[lein-bom "0.2.0-SNAPSHOT"]
+            [lein-cljfmt "0.6.6"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.7.0"]
             [lein-cloverage "1.2.4"]
