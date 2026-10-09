@@ -292,66 +292,6 @@
       (db-oo/update-opiskeluoikeus!
         (:opiskeluoikeus-oid old-hoks) {:oppija-oid new-oppija-oid}))))
 
-(defn check-for-update!
-  "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
-  [old-hoks new-hoks opiskeluoikeus]
-  (let [new-oppija-oid (:oppija-oid new-hoks)
-        old-oppija-oid (:oppija-oid old-hoks)
-        new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
-        old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
-    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
-      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active."
-                              new-opiskeluoikeus-oid)
-                      {:type               ::disallowed-update
-                       :opiskeluoikeus-oid new-opiskeluoikeus-oid})))
-    (when (and (some? new-opiskeluoikeus-oid)
-               (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
-      (throw (ex-info (format
-                        (str "Tried to update `opiskeluoikeus-oid` from `%s` "
-                             "to `%s` but updating `opiskeluoikeus-oid` in "
-                             "HOKS is not allowed!")
-                        old-opiskeluoikeus-oid
-                        new-opiskeluoikeus-oid)
-                      {:type                   ::disallowed-update
-                       :old-opiskeluoikeus-oid old-opiskeluoikeus-oid
-                       :new-opiskeluoikeus-oid new-opiskeluoikeus-oid})))
-    (when (oppija-oid-changed? new-oppija-oid old-oppija-oid)
-      (let [master-oid (-> (onr/get-master-of-slave-oppija-oid
-                             old-oppija-oid)
-                           :body
-                           :oidHenkilo)]
-        (when (not= master-oid new-oppija-oid)
-          (throw (ex-info
-                   (format
-                     (str "Tried to update `oppija-oid` from `%s` to `%s` but "
-                          "updating `oppija-oid` in HOKS is only allowed with "
-                          "latest master oppija oid!")
-                     old-oppija-oid
-                     new-oppija-oid)
-                   {:type           ::disallowed-update
-                    :old-oppija-oid old-oppija-oid
-                    :new-oppija-oid new-oppija-oid})))))))
-
-(defn check-for-create!
-  "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
-  jotain tarkistuksista."
-  [hoks opiskeluoikeus]
-  (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-        oppija-oid         (:oppija-oid hoks)]
-    (when (and (nil? opiskeluoikeus) (:enforce-opiskeluoikeus-match? config))
-      (-> (format "Opiskeluoikeus `%s` does not match any held by oppija `%s`"
-                  opiskeluoikeus-oid
-                  oppija-oid)
-          (ex-info {:type               ::disallowed-update
-                    :opiskeluoikeus-oid opiskeluoikeus-oid
-                    :oppija-oid         oppija-oid})
-          throw))
-    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
-      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
-                              opiskeluoikeus-oid)
-                      {:type               ::disallowed-update
-                       :opiskeluoikeus-oid opiskeluoikeus-oid})))))
-
 (defn tutkinnon-osat
   "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
   sections, with :type stored as metadata:
@@ -393,6 +333,85 @@
                      #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
                      osa-alueet))
                  (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+
+(defn validate-yksiloiva-tunniste! [hoks]
+  (let [duplicates
+        (->> (tutkinnon-osat hoks)
+             (mapcat :osaamisen-hankkimistavat)
+             (keep :yksiloiva-tunniste)
+             frequencies
+             (keep (fn [[tunniste count]]
+                     (when (> count 1)
+                       tunniste))))]
+    (when (seq duplicates)
+      (throw
+        (ex-info
+          (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
+               "joilla on sama yksilöivä tunniste")
+          {:type ::duplicate-yksiloiva-tunniste
+           :duplicates duplicates})))))
+
+(defn check-for-update!
+  "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
+  [old-hoks new-hoks opiskeluoikeus]
+  (let [new-oppija-oid (:oppija-oid new-hoks)
+        old-oppija-oid (:oppija-oid old-hoks)
+        new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
+        old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
+    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
+      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active."
+                              new-opiskeluoikeus-oid)
+                      {:type               ::disallowed-update
+                       :opiskeluoikeus-oid new-opiskeluoikeus-oid})))
+    (when (and (some? new-opiskeluoikeus-oid)
+               (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
+      (throw (ex-info (format
+                        (str "Tried to update `opiskeluoikeus-oid` from `%s` "
+                             "to `%s` but updating `opiskeluoikeus-oid` in "
+                             "HOKS is not allowed!")
+                        old-opiskeluoikeus-oid
+                        new-opiskeluoikeus-oid)
+                      {:type                   ::disallowed-update
+                       :old-opiskeluoikeus-oid old-opiskeluoikeus-oid
+                       :new-opiskeluoikeus-oid new-opiskeluoikeus-oid})))
+    (when (oppija-oid-changed? new-oppija-oid old-oppija-oid)
+      (let [master-oid (-> (onr/get-master-of-slave-oppija-oid
+                             old-oppija-oid)
+                           :body
+                           :oidHenkilo)]
+        (when (not= master-oid new-oppija-oid)
+          (throw (ex-info
+                   (format
+                     (str "Tried to update `oppija-oid` from `%s` to `%s` but "
+                          "updating `oppija-oid` in HOKS is only allowed with "
+                          "latest master oppija oid!")
+                     old-oppija-oid
+                     new-oppija-oid)
+                   {:type           ::disallowed-update
+                    :old-oppija-oid old-oppija-oid
+                    :new-oppija-oid new-oppija-oid}))))))
+  (validate-yksiloiva-tunniste! new-hoks))
+
+(defn check-for-create!
+  "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
+  jotain tarkistuksista."
+  [hoks opiskeluoikeus]
+  (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+        oppija-oid         (:oppija-oid hoks)]
+    (when (and (nil? opiskeluoikeus) (:enforce-opiskeluoikeus-match? config))
+      (-> (format "Opiskeluoikeus `%s` does not match any held by oppija `%s`"
+                  opiskeluoikeus-oid
+                  oppija-oid)
+          (ex-info {:type               ::disallowed-update
+                    :opiskeluoikeus-oid opiskeluoikeus-oid
+                    :oppija-oid         oppija-oid})
+          throw))
+    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
+      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
+                              opiskeluoikeus-oid)
+                      {:type               ::disallowed-update
+                       :opiskeluoikeus-oid opiskeluoikeus-oid}))))
+  (validate-yksiloiva-tunniste! hoks))
 
 (defn- ensure-yksiloiva-tunniste-in-ohts
   "If the given data structure has an :osaamisen-hankkimistavat key,
