@@ -323,16 +323,16 @@
   "
   [hoks]
   (concat
-   (map #(assoc % :type :ammatillinen)
-        (:hankittavat-ammat-tutkinnon-osat hoks))
-   (map #(assoc % :type :paikallinen)
-        (:hankittavat-paikalliset-tutkinnon-osat hoks))
-   (map #(assoc % :type :yhteisen-osa-alue)
-        (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
-                  (map
-                   #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
-                   osa-alueet))
-                (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+    (map #(assoc % :type :ammatillinen)
+         (:hankittavat-ammat-tutkinnon-osat hoks))
+    (map #(assoc % :type :paikallinen)
+         (:hankittavat-paikalliset-tutkinnon-osat hoks))
+    (map #(assoc % :type :yhteisen-osa-alue)
+         (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
+                   (map
+                     #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
+                     osa-alueet))
+                 (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
 
 (defn validate-yksiloiva-tunniste! [hoks]
   (let [duplicates
@@ -342,14 +342,13 @@
              frequencies
              (keep (fn [[tunniste count]]
                      (when (> count 1)
-                           tunniste))))]
+                       tunniste))))]
     (when (seq duplicates)
-          (throw
-            (ex-info "HOKSiin sisältyy osaamisen hankkimisen jaksoja,
+      (throw
+        (ex-info "HOKSiin sisältyy osaamisen hankkimisen jaksoja,
             joilla on sama yksilöivä tunniste"
-             {:type ::duplicate-yksiloiva-tunniste
-              :duplicates duplicates})))))
-
+                 {:type ::duplicate-yksiloiva-tunniste
+                  :duplicates duplicates})))))
 
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
