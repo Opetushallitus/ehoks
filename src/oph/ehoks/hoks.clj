@@ -345,10 +345,11 @@
                        tunniste))))]
     (when (seq duplicates)
       (throw
-        (ex-info "HOKSiin sisältyy osaamisen hankkimisen jaksoja,
-            joilla on sama yksilöivä tunniste"
-                 {:type ::duplicate-yksiloiva-tunniste
-                  :duplicates duplicates})))))
+        (ex-info
+          (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
+               "joilla on sama yksilöivä tunniste")
+          {:type ::duplicate-yksiloiva-tunniste
+           :duplicates duplicates})))))
 
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
