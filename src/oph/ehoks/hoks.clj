@@ -292,6 +292,65 @@
       (db-oo/update-opiskeluoikeus!
         (:opiskeluoikeus-oid old-hoks) {:oppija-oid new-oppija-oid}))))
 
+(defn tutkinnon-osat
+  "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
+  sections, with :type stored as metadata:
+   - :hankittavat-ammat-tutkinnon-osat => metadata {:type :ammatillinen}
+   - :hankittavat-paikalliset-tutkinnon-osat => metadata {:type :paikallinen}
+   - :hankittavat-yhteiset-tutkinnon-osat (collecting all :osa-alueet from
+     each entry) => metadata {:type :yhteisen-osa-alue}
+  Additionally, assocs :tutkinnon-osa-koodi-uri from yhteinen tutkinnon osa to
+  each osa-alue.
+
+  Example:
+   (tutkinnon-osat
+     {:hankittavat-ammat-tutkinnon-osat
+      [{:id 1 :tutkinnon-osa-koodi-uri \"tutkinnonosat_123456\"}]
+      :hankittavat-paikalliset-tutkinnon-osat [{:id 2}]
+      :hankittavat-yhteiset-tutkinnon-osat
+      [{:tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
+        :osa-alueet [{:id 3} {:id 4}]}]})
+   ;; => ({:id 1
+   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_123456\"
+   ;;      :type :ammatillinen}
+   ;;     {:id 2 :type :paikallinen}
+   ;;     {:id 3
+   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
+   ;;      :type :yhteisen-osa-alue}
+   ;;     {:id 4
+   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
+   ;;      :type :yhteisen-osa-alue})
+  "
+  [hoks]
+  (concat
+   (map #(assoc % :type :ammatillinen)
+        (:hankittavat-ammat-tutkinnon-osat hoks))
+   (map #(assoc % :type :paikallinen)
+        (:hankittavat-paikalliset-tutkinnon-osat hoks))
+   (map #(assoc % :type :yhteisen-osa-alue)
+        (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
+                  (map
+                   #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
+                   osa-alueet))
+                (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+
+(defn validate-yksiloiva-tunniste! [hoks]
+  (let [duplicates
+        (->> (tutkinnon-osat hoks)
+             (mapcat :osaamisen-hankkimistavat)
+             (keep :yksiloiva-tunniste)
+             frequencies
+             (keep (fn [[tunniste count]]
+                     (when (> count 1)
+                           tunniste))))]
+    (when (seq duplicates)
+          (throw
+            (ex-info "HOKSiin sisältyy osaamisen hankkimisen jaksoja,
+            joilla on sama yksilöivä tunniste"
+             {:type ::duplicate-yksiloiva-tunniste
+              :duplicates duplicates})))))
+
+
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
   [old-hoks new-hoks opiskeluoikeus]
@@ -330,7 +389,8 @@
                      new-oppija-oid)
                    {:type           ::disallowed-update
                     :old-oppija-oid old-oppija-oid
-                    :new-oppija-oid new-oppija-oid})))))))
+                    :new-oppija-oid new-oppija-oid}))))))
+  (validate-yksiloiva-tunniste! new-hoks))
 
 (defn check-for-create!
   "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
@@ -350,49 +410,8 @@
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)
                       {:type               ::disallowed-update
-                       :opiskeluoikeus-oid opiskeluoikeus-oid})))))
-
-(defn tutkinnon-osat
-  "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
-  sections, with :type stored as metadata:
-   - :hankittavat-ammat-tutkinnon-osat => metadata {:type :ammatillinen}
-   - :hankittavat-paikalliset-tutkinnon-osat => metadata {:type :paikallinen}
-   - :hankittavat-yhteiset-tutkinnon-osat (collecting all :osa-alueet from
-     each entry) => metadata {:type :yhteisen-osa-alue}
-  Additionally, assocs :tutkinnon-osa-koodi-uri from yhteinen tutkinnon osa to
-  each osa-alue.
-
-  Example:
-   (tutkinnon-osat
-     {:hankittavat-ammat-tutkinnon-osat
-      [{:id 1 :tutkinnon-osa-koodi-uri \"tutkinnonosat_123456\"}]
-      :hankittavat-paikalliset-tutkinnon-osat [{:id 2}]
-      :hankittavat-yhteiset-tutkinnon-osat
-      [{:tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
-        :osa-alueet [{:id 3} {:id 4}]}]})
-   ;; => ({:id 1
-   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_123456\"
-   ;;      :type :ammatillinen}
-   ;;     {:id 2 :type :paikallinen}
-   ;;     {:id 3
-   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
-   ;;      :type :yhteisen-osa-alue}
-   ;;     {:id 4
-   ;;      :tutkinnon-osa-koodi-uri \"tutkinnonosat_234567\"
-   ;;      :type :yhteisen-osa-alue})
-  "
-  [hoks]
-  (concat
-    (map #(assoc % :type :ammatillinen)
-         (:hankittavat-ammat-tutkinnon-osat hoks))
-    (map #(assoc % :type :paikallinen)
-         (:hankittavat-paikalliset-tutkinnon-osat hoks))
-    (map #(assoc % :type :yhteisen-osa-alue)
-         (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
-                   (map
-                     #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
-                     osa-alueet))
-                 (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+                       :opiskeluoikeus-oid opiskeluoikeus-oid}))))
+  (validate-yksiloiva-tunniste! hoks))
 
 (defn- ensure-yksiloiva-tunniste-in-ohts
   "If the given data structure has an :osaamisen-hankkimistavat key,

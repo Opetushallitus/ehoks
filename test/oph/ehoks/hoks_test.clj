@@ -226,3 +226,35 @@
       [{:id 1}]
       [{:id 1 :osa-alueet nil}]
       [{:id 1 :osa-alueet []}])))
+
+(deftest validate-yksiloiva-tunniste-test
+  (testing "allows unique identifiers"
+           (is (nil?
+                (hoks/validate-yksiloiva-tunniste!
+                 {:hankittavat-ammat-tutkinnon-osat
+                  [{:osaamisen-hankkimistavat
+                    [{:yksiloiva-tunniste "tunniste-1"}]}]
+
+                  :hankittavat-paikalliset-tutkinnon-osat
+                  [{:osaamisen-hankkimistavat
+                    [{:yksiloiva-tunniste "tunniste-2"}]}]
+
+                  :hankittavat-yhteiset-tutkinnon-osat
+                  []}))))
+
+  (testing "rejects duplicate identifiers"
+           (is (thrown-with-msg?
+                clojure.lang.ExceptionInfo
+                #"HOKSiin sisältyy osaamisen hankkimisen jaksoja,
+            joilla on sama yksilöivä tunniste"
+                (hoks/validate-yksiloiva-tunniste!
+                 {:hankittavat-ammat-tutkinnon-osat
+                  [{:osaamisen-hankkimistavat
+                    [{:yksiloiva-tunniste "tunniste-6"}]}]
+
+                  :hankittavat-paikalliset-tutkinnon-osat
+                  [{:osaamisen-hankkimistavat
+                    [{:yksiloiva-tunniste "tunniste-6"}]}]
+
+                  :hankittavat-yhteiset-tutkinnon-osat
+                  []})))))
