@@ -25,7 +25,7 @@ SELECT p.kyselylinkki      AS kyselylinkki,
        p.voimassa_alkupvm  AS alkupvm,
        h.sahkoposti        AS sahkoposti,
        pv.created_at::date AS lahetyspvm,
-       pv.tila::text       AS lahetystila,
+       COALESCE(pv.tila::text, p.tila::text) AS lahetystila,
        p.tila = 'vastattu' AS vastattu,
        p.voimassa_loppupvm AS voimassa_loppupvm
 FROM palautteet p
