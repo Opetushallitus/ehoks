@@ -245,7 +245,10 @@
   (testing "rejects duplicate identifiers"
     (is (thrown-with-msg?
           clojure.lang.ExceptionInfo
-          #"HOKSiin sisältyy osaamisen hankkimisen jaksoja, joilla on sama yksilöivä tunniste"
+          (re-pattern
+            (str
+              "HOKSiin sisältyy osaamisen hankkimisen jaksoja,"
+              " joilla on sama yksilöivä tunniste"))
           (hoks/validate-yksiloiva-tunniste!
             {:hankittavat-ammat-tutkinnon-osat
              [{:osaamisen-hankkimistavat
