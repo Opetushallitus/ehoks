@@ -402,16 +402,16 @@
   "
   [hoks]
   (concat
-   (map #(assoc % :type :ammatillinen)
-        (:hankittavat-ammat-tutkinnon-osat hoks))
-   (map #(assoc % :type :paikallinen)
-        (:hankittavat-paikalliset-tutkinnon-osat hoks))
-   (map #(assoc % :type :yhteisen-osa-alue)
-        (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
-                  (map
-                   #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
-                   osa-alueet))
-                (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+    (map #(assoc % :type :ammatillinen)
+         (:hankittavat-ammat-tutkinnon-osat hoks))
+    (map #(assoc % :type :paikallinen)
+         (:hankittavat-paikalliset-tutkinnon-osat hoks))
+    (map #(assoc % :type :yhteisen-osa-alue)
+         (mapcat (fn [{:keys [tutkinnon-osa-koodi-uri osa-alueet]}]
+                   (map
+                     #(assoc % :tutkinnon-osa-koodi-uri tutkinnon-osa-koodi-uri)
+                     osa-alueet))
+                 (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
 
 (defn- ensure-yksiloiva-tunniste-in-ohts
   "If the given data structure has an :osaamisen-hankkimistavat key,
