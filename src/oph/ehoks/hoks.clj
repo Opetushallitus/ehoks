@@ -348,7 +348,7 @@
                    {:type           ::disallowed-update
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid}))))))
-  (validate-yksiloiva-tunniste! new-hoks))
+  (validate-yksiloiva-tunniste-uniqueness! new-hoks))
 
 (defn check-for-create!
   "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
@@ -369,7 +369,7 @@
                               opiskeluoikeus-oid)
                       {:type               ::disallowed-update
                        :opiskeluoikeus-oid opiskeluoikeus-oid}))))
-  (validate-yksiloiva-tunniste! hoks))
+  (validate-yksiloiva-tunniste-uniqueness! hoks))
 
 (defn tutkinnon-osat
   "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
