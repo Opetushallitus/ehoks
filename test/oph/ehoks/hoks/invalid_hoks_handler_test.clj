@@ -373,13 +373,13 @@
                          :osaamisen-hankkimistavat 0
                          :loppu]
                         "2022-12-20"))]
-      (let [response
-            (hoks-utils/mock-st-post app base-url invalid-data)]
-        (is (= (:status response) 400))
-        (is (= (test-utils/parse-body (:body response))
-               {:error
-                (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
-                     "joilla on sama yksilöivä tunniste")}))))))
+      (let [response (hoks-utils/mock-st-post app base-url invalid-data)]
+        (is (= [400
+                {:error
+                 (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
+                      "joilla on sama yksilöivä tunniste")}]
+               [(:status response)
+                (test-utils/parse-body (:body response))]))))))
 
 (deftest prevent-osaamisen-saavuttaminen-out-of-range
   (testing "The allowed range of osaaminen-saavuttamisen-pvm is from 1.1.2018
