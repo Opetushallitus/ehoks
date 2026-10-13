@@ -378,8 +378,7 @@
         (is (= (:status response) 400))
         (is (= (test-utils/parse-body (:body response))
                {:error
-                (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
-                     "joilla on sama yksilöivä tunniste")}))))))
+                "HOKSiin sisältyy osaamisen hankkimisen jaksoja, joilla on sama yksilöivä tunniste"}))))))
 
 (deftest prevent-osaamisen-saavuttaminen-out-of-range
   (testing "The allowed range of osaaminen-saavuttamisen-pvm is from 1.1.2018
