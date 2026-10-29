@@ -248,7 +248,8 @@
           (re-pattern
             (str "HOKSiin sisältyy työpaikkajaksoja, "
                  "joilla on sama yksilöivä tunniste. "
-                 "Jokaisella työpaikkajaksolla täytyy olla oma uniikki yksilöivä "
+                 "Jokaisella työpaikkajaksolla täytyy olla oma "
+                 "uniikki yksilöivä "
                  "tunniste. Virheen korjaus: Ota yhteyttä "
                  "opintohallintojärjestelmän toimittajaan."))
           (hoks/validate-yksiloiva-tunniste-uniqueness!
