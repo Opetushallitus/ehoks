@@ -246,9 +246,11 @@
     (is (thrown-with-msg?
           clojure.lang.ExceptionInfo
           (re-pattern
-            (str
-              "HOKSiin sisältyy osaamisen hankkimisen jaksoja,"
-              " joilla on sama yksilöivä tunniste"))
+            (str "HOKSiin sisältyy työpaikkajaksoja, "
+                 "joilla on sama yksilöivä tunniste. "
+                 "Jokaisella työpaikkajaksolla täytyy olla oma uniikki yksilöivä "
+                 "tunniste. Virheen korjaus: Ota yhteyttä "
+                 "opintohallintojärjestelmän toimittajaan."))
           (hoks/validate-yksiloiva-tunniste-uniqueness!
             {:hankittavat-ammat-tutkinnon-osat
              [{:osaamisen-hankkimistavat

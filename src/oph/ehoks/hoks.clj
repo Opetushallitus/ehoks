@@ -304,8 +304,11 @@
     (when (seq duplicates)
       (throw
         (ex-info
-          (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
-               "joilla on sama yksilöivä tunniste")
+          (str "HOKSiin sisältyy työpaikkajaksoja, "
+               "joilla on sama yksilöivä tunniste. "
+               "Jokaisella työpaikkajaksolla täytyy olla oma uniikki yksilöivä "
+               "tunniste. Virheen korjaus: Ota yhteyttä "
+               "opintohallintojärjestelmän toimittajaan.")
           {:type ::duplicate-yksiloiva-tunniste
            :duplicates duplicates})))))
 
