@@ -357,6 +357,18 @@ Rajapinnan käyttö on suositeltavampi vaihtoehto koska `lein import` ohittaa
 skeemavalidoinnit ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei
 oikeasti hyväksyisi.
 
+Kun luot dataa scripteillä,
+lisää uusi opiskeluoikeus `/dev-routes` kansiossa
+olevaan koski_api_sure_oids_1.2.246.562.24.44651722625.json -tiedostoon
+oikein validoituvalla oidilla `oph/ehoks/schema/oid.clj` (valid-oid).
+Muuta `resources/dev/demo-data/hoksit.json`
+opiskeluoikeus-oid samaksi, mikä lisättiin
+koski_api_sure_oids_1.2.246.562.24.44651722625.json uuteen opiskeluoikeuteen.
+Tämän jälkeen voit ajaa komennolla:
+```
+sh ./scripts/upload-hoks.sh resources/dev/demo-data/hoksit.json
+```
+
 ## Skriptit
 
 Repositorioon on lisätty jonkin verran selvitystyötä ja testaamista helpottavia
