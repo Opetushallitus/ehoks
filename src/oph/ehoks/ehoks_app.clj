@@ -1,6 +1,7 @@
 (ns oph.ehoks.ehoks-app
-  (:require [oph.ehoks.common.api :as common-api]
-            [compojure.route :as compojure-route]
+  (:require [cheshire.core :as cheshire]
+            [compojure.api.routes :as routes]
+            [oph.ehoks.common.api :as common-api]
             [ring.util.http-response :as response]
             [oph.ehoks.db.session-store :as session-store]
             [oph.ehoks.oppija.handler :as oppija-handler]
@@ -49,17 +50,31 @@
                                      respond
                                      raise))))))))))
 
+(def all-route-templates
+  "Templates of all documented oppija, virkailija and palaute routes."
+  (->> [oppija-handler/app-routes
+        virkailija-handler/app-routes
+        palaute-handler/app-routes]
+       (mapcat routes/get-routes)
+       (remove (fn [[_ _ info]] (:no-doc info)))
+       (map first)))
+
+(defn not-found-handler
+  "Not-found response for requests that none of the apps handled."
+  [request]
+  (-> (common-api/route-not-found-response all-route-templates request)
+      (update :body cheshire/generate-string)
+      (response/content-type "application/json")))
+
 (def all-app-routes
   "App with all oppija, virkailija and palaute routes initialized."
   (app-union
     oppija-handler/app-routes
     virkailija-handler/app-routes
     palaute-handler/app-routes
-    (compojure-route/not-found
-      (-> (str "{\"reason\": \"Use APIs under /ehoks-virkailija-backend, "
-               "/ehoks-oppija-backend or /ehoks-palaute-backend\"}")
-          (response/not-found)
-          (response/content-type "application/json")))))
+    (fn
+      ([request] (not-found-handler request))
+      ([request respond _] (respond (not-found-handler request))))))
 
 (def all-app
   "Ready-to-call app with all-app-routes and session middleware.

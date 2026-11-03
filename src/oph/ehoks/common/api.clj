@@ -1,5 +1,6 @@
 (ns oph.ehoks.common.api
   (:require [compojure.api.exception :as c-ex]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.hoks :as hoks]
@@ -29,6 +30,54 @@
   "Käsittelee tapauksen, jossa reittiä ei löydy."
   [_ __ ___]
   (response/not-found {:reason "Route not found"}))
+
+(defn- path-segments [path] (remove empty? (str/split path #"/")))
+
+(defn- join-segments [segments] (str "/" (str/join "/" segments)))
+
+(defn- segment-matches?
+  "Pohjan polkuparametri (esim. `:hoks-id`) täsmää mihin tahansa osaan."
+  [segment template-segment]
+  (or (= segment template-segment) (str/starts-with? template-segment ":")))
+
+(defn- prefix-matches? [prefix template]
+  (and (<= (count prefix) (count template))
+       (every? true? (map segment-matches? prefix template))))
+
+(defn children-of-longest-prefix
+  "Etsii osoitteen `uri` pisimmän prefiksin, jonka alta löytyy vielä jokin
+  reittipohja `templates`-listasta, ja palauttaa sen suorat lapset."
+  [templates uri]
+  (let [templates (mapv (comp vec path-segments) templates)
+        prefixes-longest-first (->> (path-segments uri)
+                                    (reductions conj [])
+                                    reverse)]
+    (some (fn [prefix]
+            (let [child-depth (inc (count prefix))]
+              (some->> templates
+                       (filter #(prefix-matches? prefix %)) ; Matching routes
+                       (map #(join-segments (take child-depth %))) ; Take child routes
+                       distinct
+                       sort
+                       seq)))
+          prefixes-longest-first)))
+
+(defn route-not-found-response
+  "404-vastaus, jossa kerrotaan pyydettyä osoitetta lähellä olevat reitit."
+  [templates request]
+  (response/not-found
+    {:reason "Route not found"
+     :nearest-routes (children-of-longest-prefix templates (:uri request))}))
+
+(defn route-not-found-handler
+  "Handler api-reittien perään. Käyttää compojure-api:n pyyntöön
+  injektoimaa reittitaulua."
+  ([request]
+    (route-not-found-response
+      (-> request :compojure.api.request/paths :paths keys)
+      request))
+  ([request respond _]
+    (respond (route-not-found-handler request))))
 
 (defn unauthorized-handler
   "Käsittelee tapauksen, jossa ei (ole/saada tarkistettua) käyttöoikeuksia."
