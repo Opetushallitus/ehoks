@@ -56,7 +56,7 @@
             (let [child-depth (inc (count prefix))]
               (some->> templates
                        (filter #(prefix-matches? prefix %)) ; Matching routes
-                       (map #(join-segments (take child-depth %))) ; Take child routes
+                       (map #(join-segments (take child-depth %))) ; Children
                        distinct
                        sort
                        seq)))
