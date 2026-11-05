@@ -31,6 +31,17 @@
       (is (= (:status response) 200))
       (is (re-find #"^artifactId=" body)))))
 
+(deftest not-found
+  (testing "GET route which does not exist"
+    (let [app (common-api/create-app handler/app-routes)
+          response (app (mock/request
+                          :get (str base-url "/opiskelijapalaute-x")))
+          body (test-utils/parse-body (:body response))]
+      (is (= (:status response) 404))
+      (is (= "Route not found" (:reason body)))
+      (is (some #{(str base-url "/opiskelijapalaute")}
+                (:nearest-routes body))))))
+
 (defn post!
   [app uri]
   (-> (mock/request :post (str base-url uri))

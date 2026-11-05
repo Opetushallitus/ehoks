@@ -48,8 +48,13 @@
     (let [app (common-api/create-app handler/app-routes)
           response (app
                      (mock/request
-                       :get (str base-url "/non-existing-resource/")))]
-      (t/is (= (:status response) 404)))))
+                       :get (str base-url "/non-existing-resource/")))
+          body (test-utils/parse-body (:body response))]
+      (t/is (= (:status response) 404))
+      (t/is (= "Route not found" (:reason body)))
+      (t/is (seq (:nearest-routes body)))
+      (t/is (every? #(string/starts-with? % (str base-url "/"))
+                    (:nearest-routes body))))))
 
 (t/deftest healthcheck
   (t/testing "GET healthcheck"
