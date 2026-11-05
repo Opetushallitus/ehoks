@@ -8,7 +8,7 @@
   (let [response (ehoks-app/all-app-routes
                    (mock/body (mock/request :get uri) ""))]
     (is (= 404 (:status response)))
-    (cheshire/parse-string (:body response) true)))
+    (cheshire/parse-string (slurp (:body response)) true)))
 
 (deftest not-found
   (testing "Unknown top level path suggests the backends."

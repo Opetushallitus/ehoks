@@ -1,8 +1,7 @@
 (ns oph.ehoks.ehoks-app
-  (:require [cheshire.core :as cheshire]
-            [compojure.api.routes :as routes]
+  (:require [compojure.api.routes :as routes]
+            [compojure.api.sweet :as c-api]
             [oph.ehoks.common.api :as common-api]
-            [ring.util.http-response :as response]
             [oph.ehoks.db.session-store :as session-store]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
@@ -61,10 +60,10 @@
 
 (defn not-found-handler
   "Not-found response for requests that none of the apps handled."
-  [request]
-  (-> (common-api/route-not-found-response all-route-templates request)
-      (update :body cheshire/generate-string)
-      (response/content-type "application/json")))
+  ([request]
+    (common-api/route-not-found-response all-route-templates request))
+  ([request respond _]
+    (respond (not-found-handler request))))
 
 (def all-app-routes
   "App with all oppija, virkailija and palaute routes initialized."
@@ -72,9 +71,7 @@
     oppija-handler/app-routes
     virkailija-handler/app-routes
     palaute-handler/app-routes
-    (fn
-      ([request] (not-found-handler request))
-      ([request respond _] (respond (not-found-handler request))))))
+    (c-api/api (c-api/undocumented not-found-handler))))
 
 (def all-app
   "Ready-to-call app with all-app-routes and session middleware.
