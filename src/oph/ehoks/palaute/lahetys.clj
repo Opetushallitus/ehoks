@@ -70,7 +70,7 @@
     (empty? (:kyselylinkki existing-palaute))
     [nil :odottaa-kasittelya :kyselylinkki :ei-ole]
 
-    (not (dateutil/finnish-business-hours? (dateutil/now-with-time)))
+    (not (dateutil/palaute-lahetysaika? (dateutil/now-with-time)))
     [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
 
     (and arvo-status (empty? @arvo-status))

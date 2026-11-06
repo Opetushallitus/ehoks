@@ -7,8 +7,7 @@
             ZonedDateTime
             Instant
             ZoneId
-            LocalTime
-            DayOfWeek]))
+            LocalTime]))
 
 ;; these are mainly for overriding in tests
 (defn now ^LocalDate [] (LocalDate/now))
@@ -28,16 +27,15 @@
       (.adjustInto (ZonedDateTime/now ehoks-zone))
       (Instant/from)))
 
-(defn finnish-business-hours?
-  "Onko ajanhetki ns. toimistoaikaan Suomessa? Ei ota poikkeuspäiviä huomioon."
+(defn palaute-lahetysaika?
+  "Onko ajanhetki palautekyselyiden lähetysaikaa Suomessa (ma–su klo
+  08:00–20:00)?"
   [^Instant inst]
   (let [fin-inst (.adjustInto
                    inst
                    (ZonedDateTime/now (ZoneId/of "Europe/Helsinki")))
-        hour (.getHour fin-inst)
-        dow (.getDayOfWeek fin-inst)]
-    (and (not (#{DayOfWeek/SATURDAY DayOfWeek/SUNDAY} dow))
-         (<= 7 hour 17))))
+        hour (.getHour fin-inst)]
+    (<= 8 hour 20)))
 
 (defn is-after?
   "Wrapper .isAfter-metodin ympäri, jolla on tyyppianotaatiot."
