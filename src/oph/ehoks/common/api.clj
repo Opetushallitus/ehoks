@@ -110,6 +110,7 @@
                                            :error)
    ::organisaatio/organisation-not-found bad-request-handler
    ::hoks/disallowed-update              bad-request-handler
+   ::hoks/duplicate-yksiloiva-tunniste   bad-request-handler
    :opiskeluoikeus-already-exists        bad-request-handler
    ::koski/opiskeluoikeus-not-found      bad-request-handler
    ::onr/oppija-not-found                bad-request-handler
