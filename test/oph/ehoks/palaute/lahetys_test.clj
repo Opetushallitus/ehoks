@@ -19,6 +19,7 @@
             [oph.ehoks.utils.date :as date]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.lahetys :as l]
             [oph.ehoks.palaute.vastaajatunnus :as vt])
   (:import (java.time LocalDate ZonedDateTime ZoneId Instant)))
@@ -131,12 +132,11 @@
 (deftest test-handle-unsent-palaute!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 date/now-with-time (constantly business-hours-instant)
+                onr/get-oppija-raw! mock-get-oppija-raw!
                 koski/get-oppija-opiskeluoikeudet
                 koski-test/mock-get-oppija-opiskeluoikeudet
                 koski/get-opiskeluoikeus-info-raw
                 koski-test/mock-get-opiskeluoikeus-raw
-                onr/get-oppija-raw!
-                mock-get-oppija-raw!
                 organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!]
     (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
@@ -232,7 +232,11 @@
                      "https://arvovastaus.csc.fi/v/test"]]
                    (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                         (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
-                        (map (juxt :tila :kyselytyyppi :kyselylinkki))))))
+                        (map (juxt :tila :kyselytyyppi :kyselylinkki)))))
+            (is (= ["vastattu"]
+                   (->> "1.2.246.562.24.12312312319"
+                        (kyselylinkki/get-by-oppija-oid!)
+                        (map :lahetystila)))))
 
           (testing "with unsuccessful sending"
             (with-mock-responses

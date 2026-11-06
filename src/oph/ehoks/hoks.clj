@@ -17,7 +17,8 @@
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
-            [oph.ehoks.oppijaindex :as oppijaindex])
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as hankkimistapa])
   (:import [java.time LocalDate]
            [java.util UUID]))
 
@@ -292,6 +293,22 @@
       (db-oo/update-opiskeluoikeus!
         (:opiskeluoikeus-oid old-hoks) {:oppija-oid new-oppija-oid}))))
 
+(defn validate-yksiloiva-tunniste-uniqueness! [hoks]
+  (let [duplicates
+        (->> (hankkimistapa/osaamisen-hankkimistavat hoks)
+             (keep :yksiloiva-tunniste)
+             frequencies
+             (keep (fn [[tunniste count]]
+                     (when (> count 1)
+                       tunniste))))]
+    (when (seq duplicates)
+      (throw
+        (ex-info
+          (str "HOKSiin sisältyy osaamisen hankkimisen jaksoja, "
+               "joilla on sama yksilöivä tunniste")
+          {:type ::duplicate-yksiloiva-tunniste
+           :duplicates duplicates})))))
+
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
   [old-hoks new-hoks opiskeluoikeus]
@@ -330,7 +347,8 @@
                      new-oppija-oid)
                    {:type           ::disallowed-update
                     :old-oppija-oid old-oppija-oid
-                    :new-oppija-oid new-oppija-oid})))))))
+                    :new-oppija-oid new-oppija-oid}))))))
+  (validate-yksiloiva-tunniste-uniqueness! new-hoks))
 
 (defn check-for-create!
   "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
@@ -350,7 +368,8 @@
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)
                       {:type               ::disallowed-update
-                       :opiskeluoikeus-oid opiskeluoikeus-oid})))))
+                       :opiskeluoikeus-oid opiskeluoikeus-oid}))))
+  (validate-yksiloiva-tunniste-uniqueness! hoks))
 
 (defn tutkinnon-osat
   "Given a `hoks`, returns a sequence of all tutkinnon osat from the following
