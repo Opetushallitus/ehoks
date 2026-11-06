@@ -90,16 +90,20 @@
               (:body @req)
               "<p><a href=\\\"http:\\/\\/kysely?t=e\\\">"))))))
 
-(def business-hours-instant
+(def sending-hours-instant
   (Instant/from (ZonedDateTime/of 2026 4 14 10 0 0 0
                                   (ZoneId/of "Europe/Helsinki"))))
 
-(def non-business-hours-instant
+(def weekend-sending-hours-instant
   (Instant/from (ZonedDateTime/of 2026 4 19 10 0 0 0
                                   (ZoneId/of "Europe/Helsinki"))))
 
+(def non-sending-hours-instant
+  (Instant/from (ZonedDateTime/of 2026 4 19 21 0 0 0
+                                  (ZoneId/of "Europe/Helsinki"))))
+
 (deftest test-check-palaute-for-sending
-  (with-redefs [date/now-with-time (constantly business-hours-instant)]
+  (with-redefs [date/now-with-time (constantly sending-hours-instant)]
     (testing "returns go for example context"
       (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
              (l/check-palaute-for-sending esim-ctx))))
@@ -124,14 +128,18 @@
                (assoc esim-ctx :arvo-status
                       (delay {:vastattu true
                               :voimassa-loppupvm "2051-01-01T00:00:00Z"})))))))
-  (with-redefs [date/now-with-time (constantly non-business-hours-instant)]
-    (testing "no action outside Finnish business hours"
+  (with-redefs [date/now-with-time (constantly weekend-sending-hours-instant)]
+    (testing "messages are sent on weekends during sending hours"
+      (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+             (l/check-palaute-for-sending esim-ctx)))))
+  (with-redefs [date/now-with-time (constantly non-sending-hours-instant)]
+    (testing "no action outside sending hours"
       (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
              (l/check-palaute-for-sending esim-ctx))))))
 
 (deftest test-handle-unsent-palaute!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
-                date/now-with-time (constantly business-hours-instant)
+                date/now-with-time (constantly sending-hours-instant)
                 onr/get-oppija-raw! mock-get-oppija-raw!
                 koski/get-oppija-opiskeluoikeudet
                 koski-test/mock-get-oppija-opiskeluoikeudet
@@ -295,7 +303,7 @@
 
 (deftest test-update-delivery-status!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
-                date/now-with-time (constantly business-hours-instant)
+                date/now-with-time (constantly sending-hours-instant)
                 koski/get-oppija-opiskeluoikeudet
                 koski-test/mock-get-oppija-opiskeluoikeudet
                 koski/get-opiskeluoikeus-info-raw
@@ -476,7 +484,7 @@
 
 (deftest test-handle-palautteet-waiting-for-sending-status!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
-                date/now-with-time (constantly business-hours-instant)
+                date/now-with-time (constantly sending-hours-instant)
                 koski/get-oppija-opiskeluoikeudet
                 koski-test/mock-get-oppija-opiskeluoikeudet
                 koski/get-opiskeluoikeus-info-raw
@@ -568,7 +576,7 @@
     (let [initial-date (LocalDate/of 2023 4 18)
           sending-date (LocalDate/of 2023 4 21)]
       (with-redefs [date/now (constantly initial-date)
-                    date/now-with-time (constantly business-hours-instant)
+                    date/now-with-time (constantly sending-hours-instant)
                     koski/get-oppija-opiskeluoikeudet
                     koski-test/mock-get-oppija-opiskeluoikeudet
                     koski/get-opiskeluoikeus-info-raw
