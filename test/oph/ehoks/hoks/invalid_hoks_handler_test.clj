@@ -344,6 +344,45 @@
                        :osaamisen-hankkimistavat 0])
               (->> (re-find #"yksilöivä tunniste")))))))
 
+(deftest prevent-using-same-yksiloiva-oht-tunniste
+  (testing "Prevent POST HOKS with duplicate oht yksiloiva tunniste"
+    (let [app (hoks-utils/create-app nil)
+          invalid-data
+          (-> test-data/hoks-data
+              (assoc-in [:hankittavat-ammat-tutkinnon-osat 0
+                         :osaamisen-hankkimistavat 0
+                         :yksiloiva-tunniste]
+                        "tunniste-6")
+              (assoc-in [:hankittavat-paikalliset-tutkinnon-osat 0
+                         :osaamisen-hankkimistavat 0
+                         :yksiloiva-tunniste]
+                        "tunniste-6")
+              (assoc-in [:hankittavat-paikalliset-tutkinnon-osat 0
+                         :osaamisen-hankkimistavat 0
+                         :osaamisen-hankkimistapa-koodi-uri]
+                        "osaamisenhankkimistapa_koulutussopimus")
+              (assoc-in [:hankittavat-paikalliset-tutkinnon-osat 0
+                         :osaamisen-hankkimistavat 0
+                         :osaamisen-hankkimistapa-koodi-versio]
+                        1)
+              (assoc-in [:hankittavat-paikalliset-tutkinnon-osat 0
+                         :osaamisen-hankkimistavat 0
+                         :alku]
+                        "2022-12-12")
+              (assoc-in [:hankittavat-paikalliset-tutkinnon-osat 0
+                         :osaamisen-hankkimistavat 0
+                         :loppu]
+                        "2022-12-20"))
+          response (hoks-utils/mock-st-post app base-url invalid-data)]
+      (is (= (:status response) 400))
+      (is (= (test-utils/parse-body (:body response))
+             {:error (str "HOKSiin sisältyy työpaikkajaksoja, "
+                          "joilla on sama yksilöivä tunniste. "
+                          "Jokaisella työpaikkajaksolla täytyy olla oma "
+                          "uniikki yksilöivä "
+                          "tunniste. Virheen korjaus: Ota yhteyttä "
+                          "opintohallintojärjestelmän toimittajaan.")})))))
+
 (deftest prevent-osaamisen-saavuttaminen-out-of-range
   (testing "The allowed range of osaaminen-saavuttamisen-pvm is from 1.1.2018
            to two weeks in the future (from the time of saving the HOKS)."
