@@ -132,8 +132,13 @@
           (with-authentication
             app
             (mock/request
-              :get "/ehoks-oppija-backend/api/v1/non-existing-resource/"))]
-      (is (= (:status response) 404)))))
+              :get "/ehoks-oppija-backend/api/v1/non-existing-resource/"))
+          body (parse-body (:body response))]
+      (is (= (:status response) 404))
+      (is (= "Route not found" (:reason body)))
+      (is (seq (:nearest-routes body)))
+      (is (every? #(.startsWith ^String % "/ehoks-oppija-backend/api/v1/")
+                  (:nearest-routes body))))))
 
 (deftest healthcheck
   (testing "GET healthcheck"
