@@ -16,7 +16,7 @@ sh ./scripts/create-cas-tgt.sh username password
 
 Tämä tallentaa tgt-ticketin sisältämän urlin cas-tgt-url.txt -tiedostoon.
 
-Ennen kuin voidaan lähettää kutsuja rajapintaan, pitää luoda opiskeluoikeus saman organisaation alle, jolle järjestelmätunnuksella on käyttöoiekudet asetettu aikaisemmin.
+Ennen kuin voidaan lähettää kutsuja rajapintaan, pitää luoda opiskeluoikeus saman organisaation alle, jolle järjestelmätunnuksella on käyttöoikeudet asetettu aikaisemmin.
 
 Luodaan uusi opinto-oikeus Koskessa käyttöliittymän kautta
     (Onnistuu myös komentoriviltä)
