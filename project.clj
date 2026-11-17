@@ -28,7 +28,7 @@
                  [software.amazon.awssdk/sqs]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
-  :bom {:import [[software.amazon.awssdk/bom "2.41.30"]
+  :bom {:import [[software.amazon.awssdk/bom "2.30.36"]
                  [io.netty/netty-bom "4.1.137.Final"]]}
   :managed-dependencies [[org.clojure/clojure "1.12.0"]
 
