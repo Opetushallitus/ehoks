@@ -3,8 +3,7 @@
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log]
-            [oph.ehoks.logging.audit :as a])
+            [clojure.tools.logging :as log])
   (:import (java.time Instant)))
 
 (defonce grant-ticket
