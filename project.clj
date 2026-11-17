@@ -36,7 +36,7 @@
                          [javax.servlet/javax.servlet-api "4.0.1"]
                          [metosin/compojure-api "2.0.0-alpha31"
                           :exclusions [medley com.google.code.findbugs/jsr305]]
-                         [com.google.guava/guava "32.0.0-jre"]
+                         [com.google.guava/guava "33.7.1-jre"]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.13.0"]
                          [ring/ring-jetty-adapter "1.15.4"
