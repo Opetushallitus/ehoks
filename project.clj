@@ -28,7 +28,7 @@
                  [software.amazon.awssdk/sqs]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
-  :bom {:import [[software.amazon.awssdk/bom "2.30.36"]
+  :bom {:import [[software.amazon.awssdk/bom "2.41.30"]
                  [io.netty/netty-bom "4.1.137.Final"]]}
   :managed-dependencies [[org.clojure/clojure "1.12.0"]
 
@@ -97,7 +97,7 @@
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "1.5.0"]
                          [environ "1.2.0"]
-                         [software.amazon.awssdk/sqs "2.30.36"
+                         [software.amazon.awssdk/sqs "2.41.30"
                           :exclusions [org.slf4j/slf4j-api]]
                          [com.googlecode.libphonenumber/libphonenumber "8.13.49"]
                          [com.rpl/specter "1.1.4"]
