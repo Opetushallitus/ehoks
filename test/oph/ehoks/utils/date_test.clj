@@ -9,29 +9,27 @@
   (Instant/from (ZonedDateTime/of year month day hour 0 0 0
                                   (ZoneId/of "Europe/Helsinki"))))
 
-(deftest test-finnish-business-hours?
-  (testing "weekday within business hours is true"
+(deftest test-palaute-lahetysaika?
+  (testing "any day of week within sending hours is true"
     (are [year month day hour]
-         (date/finnish-business-hours? (inst year month day hour))
-      2026 4 13 7
+         (date/palaute-lahetysaika? (inst year month day hour))
+      2026 4 13 8
       2026 4 13 12
-      2026 4 13 17
+      2026 4 13 20
       2026 4 14 9
       2026 4 15 9
       2026 4 16 9
-      2026 4 17 9))
+      2026 4 17 9
+      2026 4 18 8
+      2026 4 18 20
+      2026 4 19 12))
 
-  (testing "weekday outside business hours is false"
+  (testing "outside sending hours is false regardless of day of week"
     (are [year month day hour]
-         (not (date/finnish-business-hours? (inst year month day hour)))
-      2026 4 13 6
-      2026 4 13 18
-      2026 4 14 0))
-
-  (testing "weekend is false regardless of hour"
-    (are [year month day hour]
-         (not (date/finnish-business-hours? (inst year month day hour)))
-      2026 4 18 9
-      2026 4 18 12
-      2026 4 19 9
-      2026 4 19 12)))
+         (not (date/palaute-lahetysaika? (inst year month day hour)))
+      2026 4 13 7
+      2026 4 13 21
+      2026 4 14 0
+      2026 4 18 7
+      2026 4 19 21
+      2026 4 19 23)))
