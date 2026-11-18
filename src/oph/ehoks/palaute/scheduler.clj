@@ -36,9 +36,9 @@
   (log/info "Done palaute hourly actions.")
   true)
 
-(defn business-hourly-actions!
+(defn lahetysaika-hourly-actions!
   [_]
-  (log/info "Commencing palaute hourly actions (only business hours).")
+  (log/info "Commencing palaute hourly actions (only during sending hours).")
   (try
     (log/info "Handling palautteet that we should send messages for.")
     (let [result (lahetys/handle-unsent-palautteet!
@@ -82,8 +82,8 @@
     :action hourly-actions!}
 
    {:start (date/time->instant 1 0 0) :period (Duration/ofHours 1)
-    :filter date/finnish-business-hours?
-    :action business-hourly-actions!}
+    :filter date/palaute-lahetysaika?
+    :action lahetysaika-hourly-actions!}
 
    {:start (date/time->instant 0 3 0) :period (Duration/ofMinutes 5)
     :action as-often-as-possible-actions!}])
