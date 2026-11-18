@@ -2,7 +2,6 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [compojure.core :refer [GET]]
-            [compojure.route :as compojure-route]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db :as db]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
@@ -122,6 +121,4 @@
      {:handlers common-api/handlers}}
 
     routes
-    (c-api/undocumented
-      (compojure-route/not-found
-        (response/not-found {:reason "Route not found"})))))
+    (c-api/undocumented common-api/route-not-found-handler)))
