@@ -151,25 +151,22 @@
         success (some?
                   (find-value response
                               [:serviceResponse :authenticationSuccess]))
-        using-valtuudet (using-valtuudet? response)]
-    (log/infof "Response: %s" response)
+        using-valtuudet (using-valtuudet? response)
+        user-oid (first (find-value
+                          response
+                          [:serviceResponse :authenticationSuccess :attributes
+                           (if using-valtuudet
+                             :impersonatorPersonOid
+                             :personOid)]))]
+    (log/infof "Oppija cas service ticket response: %s"
+               (if success {:user-oid user-oid :success true} response))
     {:success? success
      :error (when-not success
               (first
                 (find-value
                   response
                   [:serviceResponse :authenticationFailure])))
-     :user-oid (if-not using-valtuudet
-                 (first
-                   (find-value
-                     response
-                     [:serviceResponse :authenticationSuccess
-                      :attributes :personOid]))
-                 (first
-                   (find-value
-                     response
-                     [:serviceResponse :authenticationSuccess
-                      :attributes :impersonatorPersonOid])))
+     :user-oid user-oid
      :usingValtuudet using-valtuudet}))
 
 (defn validate-ticket
