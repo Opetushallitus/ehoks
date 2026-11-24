@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.handler-test
   (:require [clojure.test :refer [use-fixtures deftest testing is]]
             [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.config :as config]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.external.cas]
             [oph.ehoks.external.arvo :as arvo]
@@ -66,6 +67,36 @@
    :kayttajaTyyppi "PALVELU"
    :roles ["ROLE_APP_EHOKS_CRUD_1.2.246.562.10.00000000001"
            "ROLE_APP_EHOKS_OPHPAAKAYTTAJA_1.2.246.562.10.00000000001"]})
+
+(deftest test-opiskelijapalaute-kutsuviestit
+  (with-redefs [oph.ehoks.external.cas/service-ticket->user-details!
+                mock-get-ticket-user
+                oph.ehoks.external.cas/validate-ticket
+                mock-validate-ticket]
+    (let [palaute-app (common-api/create-app handler/app-routes)
+          kutsuviestit! (fn [query]
+                          (let [resp (post! palaute-app
+                                            (str "/opiskelijapalaute/"
+                                                 "kutsuviestit" query))]
+                            [(:status resp)
+                             (:data (test-utils/parse-body (:body resp)))]))]
+      (testing "SMS's are not sent unless eHOKS is responsible for them"
+        (is (= [200 {:lahetykset [] :sms-lahetykset nil}]
+               (kutsuviestit! ""))))
+      (with-redefs [config/config (update config/config
+                                          :heratepalvelu-responsibities
+                                          conj :send-initial-sms)]
+        (testing "both kinds of messages are sent by default"
+          (is (= [200 {:lahetykset [] :sms-lahetykset []}]
+                 (kutsuviestit! ""))))
+        (testing "only emails are sent with viestityyppi=email"
+          (is (= [200 {:lahetykset []}]
+                 (kutsuviestit! "?viestityyppi=email"))))
+        (testing "only SMS's are sent with viestityyppi=sms"
+          (is (= [200 {:sms-lahetykset []}]
+                 (kutsuviestit! "?viestityyppi=sms"))))
+        (testing "unknown viestityyppi is rejected"
+          (is (= 400 (first (kutsuviestit! "?viestityyppi=kirje")))))))))
 
 (deftest test-tyoelamapalaute
   (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
