@@ -2,7 +2,9 @@
   (:require [cheshire.core :refer [generate-string]]
             [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging.test :refer [logged? with-log]]
-            [oph.ehoks.external.elisa :as elisa])
+            [oph.ehoks.config]
+            [oph.ehoks.external.elisa :as elisa]
+            [oph.ehoks.external.http-client])
   (:import (clojure.lang ExceptionInfo)))
 
 (def mock-tep-msg-body
@@ -103,7 +105,7 @@
 
 (deftest test-valid-finnish-number?
   (testing
-    "Funktio valid-finnish-number? tunnistaa puhelinnumeroja oikein"
+   "Funktio valid-finnish-number? tunnistaa puhelinnumeroja oikein"
     (is (elisa/valid-finnish-number? "040 654 3210"))
     (is (elisa/valid-finnish-number? "+35840 654 3210"))
     (is (elisa/valid-finnish-number? "+35845 333 377"))
