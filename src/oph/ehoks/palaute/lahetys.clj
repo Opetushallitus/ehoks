@@ -448,5 +448,6 @@
     (log/info "handle-palautteet-without-sms!: configured to not send SMS")
     (do (log/info "Processing SMS messages for kyselytyypit" kyselytyypit)
         (doall (map send-sms-invitation!
-                    (palaute/get-palautteet-without-sms!
-                      db/spec {:kyselytyypit kyselytyypit}))))))
+                    (palaute/get-unsent-palautteet!
+                      db/spec {:kyselytyypit kyselytyypit
+                               :viestityyppi "sms"}))))))

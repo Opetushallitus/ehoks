@@ -834,8 +834,9 @@
              (vt/create-vastaajatunnus!)))
 
       (testing "SMS can be handled before email has been handled"
-        (is (= 1 (count (palaute/get-palautteet-without-sms!
-                          db/spec {:kyselytyypit ["valmistuneet"]})))))
+        (is (= 1 (count (palaute/get-unsent-palautteet!
+                          db/spec {:kyselytyypit ["valmistuneet"]
+                                   :viestityyppi "sms"})))))
 
       (let [palaute (first (palaute/get-unsent-palautteet!
                              db/spec {:kyselytyypit ["valmistuneet"]
@@ -875,8 +876,9 @@
             (is (nil? @arvo-lahetys)))
           (is (= "lahetys_epaonnistunut"
                  (:sms-lahetystila (valmistuneet-ddb-item))))
-          (is (empty? (palaute/get-palautteet-without-sms!
-                        db/spec {:kyselytyypit ["valmistuneet"]}))))
+          (is (empty? (palaute/get-unsent-palautteet!
+                        db/spec {:kyselytyypit ["valmistuneet"]
+                                 :viestityyppi "sms"}))))
 
         (testing "failure is reported to Arvo when email also fails"
           (with-mock-responses
@@ -909,5 +911,16 @@
           (is (= ["lahetetty"] (valmistuneet-tilat (:id hoks))))
           (is (= "lahetetty" (get-in @arvo-lahetys [:metatiedot :tila])))
           (is (= "lahetetty" (:sms-lahetystila (valmistuneet-ddb-item))))
-          (is (empty? (palaute/get-palautteet-without-sms!
-                        db/spec {:kyselytyypit ["valmistuneet"]}))))))))
+          (is (empty? (palaute/get-unsent-palautteet!
+                        db/spec {:kyselytyypit ["valmistuneet"]
+                                 :viestityyppi "sms"}))))
+
+        (db-ops/query
+          ["DELETE FROM palaute_viestit WHERE palaute_id=? AND viestityyppi='email'
+            RETURNING id" (:id palaute)])
+
+        (testing "palaute sent by SMS is still picked up for email"
+          (is (= [["lahetetty" (:id palaute)]]
+                 (->> {:kyselytyypit ["valmistuneet"] :viestityyppi "email"}
+                      (palaute/get-unsent-palautteet! db/spec)
+                      (map (juxt :tila :id))))))))))
