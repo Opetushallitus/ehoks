@@ -140,17 +140,31 @@
                           (delay {:vastattu true
                                   :voimassa-loppupvm "2051-01-01T00:00:00Z"}))
                    "email"))))
+        (testing "Herätepalvelu record doesn't matter after SMS handling"
+          (reset! viestit {"sms" "lahetetty"})
+          (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+                 (l/check-palaute-for-sending
+                   (assoc esim-ctx :existing-ddb-herate
+                          (delay {:toimija_oppija "foo/bar"}))
+                   "email"))))
         (testing "don't send the same message twice"
           (reset! viestit {"email" "odottaa_lahetysta"})
           (is (= [nil nil :viestityyppi :jo-kasitelty]
                  (l/check-palaute-for-sending esim-ctx "email")))))
 
       (testing "sms:"
-        (reset! viestit {"email" "odottaa_lahetysta"})
-        (testing "returns go after email has been handled"
+        (reset! viestit {})
+        (testing "returns go for example context"
           (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
                  (l/check-palaute-for-sending esim-sms-ctx "sms"))))
+        (testing "doesn't handle anything already in heratepalvelu"
+          (is (= [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
+                 (l/check-palaute-for-sending
+                   (assoc esim-sms-ctx :existing-ddb-herate
+                          (delay {:toimija_oppija "foo/bar"}))
+                   "sms"))))
         (testing "Herätepalvelu record doesn't matter after email handling"
+          (reset! viestit {"email" "odottaa_lahetysta"})
           (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
                  (l/check-palaute-for-sending
                    (assoc esim-sms-ctx :existing-ddb-herate
@@ -177,10 +191,6 @@
                           (delay {:vastattu false
                                   :voimassa-loppupvm "2021-01-01T00:00:00Z"}))
                    "sms"))))
-        (testing "no SMS before email has been handled"
-          (reset! viestit {})
-          (is (= [nil nil :sahkoposti :ei-kasitelty]
-                 (l/check-palaute-for-sending esim-sms-ctx "sms"))))
         (testing "don't send the same SMS twice"
           (reset! viestit {"email" "lahetetty" "sms" "lahetetty"})
           (is (= [nil nil :viestityyppi :jo-kasitelty]
@@ -190,16 +200,13 @@
             (is (= [nil nil :viestityyppi :ei-ehoksin-vastuulla]
                    (l/check-palaute-for-sending esim-sms-ctx "sms"))))))))
   (with-redefs [date/now-with-time (constantly non-business-hours-instant)
-                palaute/ehoks-sends-sms? (constantly true)]
+                palaute/ehoks-sends-sms? (constantly true)
+                l/palauteviesti-tila (constantly nil)]
     (testing "no action outside Finnish business hours"
-      (with-redefs [l/palauteviesti-tila (constantly nil)]
-        (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
-               (l/check-palaute-for-sending esim-ctx "email"))))
-      (with-redefs [l/palauteviesti-tila (fn [_ viestityyppi]
-                                           ({"email" "lahetetty"}
-                                             viestityyppi))]
-        (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
-               (l/check-palaute-for-sending esim-sms-ctx "sms")))))))
+      (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+             (l/check-palaute-for-sending esim-ctx "email")))
+      (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+             (l/check-palaute-for-sending esim-sms-ctx "sms"))))))
 
 (deftest test-handle-unsent-palaute!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -352,6 +359,12 @@
               (is (= 0 (:muistutukset ddb-item)))
               (is (= "lahetys_epaonnistunut" (:lahetystila ddb-item)))
               (is (= "ei_laheteta" (:sms-lahetystila ddb-item)))))
+
+          ;; a record in Herätepalvelu only matters if eHOKS hasn't
+          ;; handled any messages for the palaute
+          (db-ops/query
+            ["DELETE FROM palaute_viestit WHERE palaute_id=? RETURNING id"
+             (:id (first heratteet))])
 
           (testing "with a record already in Herätepalvelu"
             (ddb/sync-amis-herate!
@@ -820,9 +833,9 @@
              (first)
              (vt/create-vastaajatunnus!)))
 
-      (testing "SMS is not handled before email has been handled"
-        (is (empty? (palaute/get-palautteet-without-sms!
-                      db/spec {:kyselytyypit ["valmistuneet"]}))))
+      (testing "SMS can be handled before email has been handled"
+        (is (= 1 (count (palaute/get-palautteet-without-sms!
+                          db/spec {:kyselytyypit ["valmistuneet"]})))))
 
       (let [palaute (first (palaute/get-unsent-palautteet!
                              db/spec {:kyselytyypit ["valmistuneet"]

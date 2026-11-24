@@ -67,9 +67,7 @@
   viestin uusi tila (nil = ei tehdä viestiä),
   palautteen uusi tila (nil = ei muutu),
   kenttä jonka perusteella päätös tehty,
-  päätöksen syy -tagi.
-  Tekstiviesti lähetetään vasta, kun sähköpostiviesti on käsitelty
-  eHOKSissa; silloin palaute ei voi olla Herätepalvelun vastuulla."
+  päätöksen syy -tagi."
   [{:keys [hoks existing-palaute existing-ddb-herate arvo-status] :as ctx}
    viestityyppi]
   (let [sms? (= "sms" viestityyppi)
@@ -82,10 +80,11 @@
                                 (:kyselytyyppi existing-palaute))))
       [nil nil :kyselytyyppi :ei-tekstiviestia]
 
-      (and sms? (nil? (palauteviesti-tila ctx "email")))
-      [nil nil :sahkoposti :ei-kasitelty]
-
-      (and (not sms?) existing-ddb-herate (seq @existing-ddb-herate))
+      ;; eHOKS writes the palaute to Herätepalvelu only after it has
+      ;; handled some message for it, so a Herätepalvelu record means
+      ;; Herätepalvelu's responsibility only if there are no messages yet
+      (and existing-ddb-herate (seq @existing-ddb-herate)
+           (not-any? #(palauteviesti-tila ctx %) ["email" "sms"]))
       [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
 
       (some? (palauteviesti-tila ctx viestityyppi))
