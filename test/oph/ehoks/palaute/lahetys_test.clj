@@ -690,6 +690,17 @@
         (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
                (l/check-palaute-for-sms-sending sms-ctx)))))))
 
+(deftest test-handle-unsent-palaute!-sms-option
+  (with-redefs [l/send-invitation! (constantly "email-id")
+                l/send-sms-now? (constantly true)
+                l/send-sms-invitation! (constantly :lahetetty)]
+    (testing "SMS is sent along with email by default"
+      (is (= {:email "email-id" :sms :lahetetty}
+             (l/handle-unsent-palaute! {:id 1}))))
+    (testing "SMS is not sent with :sms? false"
+      (is (= {:email "email-id" :sms nil}
+             (l/handle-unsent-palaute! {:id 1} {:sms? false}))))))
+
 (defn- mock-arvo-status
   [url _]
   (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")

@@ -80,7 +80,8 @@
                       (assoc :lahetykset
                              (lahetys/handle-unsent-palautteet!
                                ["aloittaneet" "valmistuneet"
-                                "osia_suorittaneet"]))
+                                "osia_suorittaneet"]
+                               {:sms? (not= viestityyppi "email")}))
                       (not= viestityyppi "email")
                       (assoc :sms-lahetykset
                              (lahetys/handle-palautteet-without-sms!

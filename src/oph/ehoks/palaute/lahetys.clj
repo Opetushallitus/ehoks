@@ -197,25 +197,30 @@
 (defn handle-unsent-palaute!
   "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
   viestiä: lähettää sähköpostiviestin ja (jos aiheellista)
-  tekstiviestin.  Palauttaa kummankin lähetyksen tuloksen."
-  [palaute]
-  ;; TODO: also process viestinvalityspalvelu reports
-  (let [email-result (send-invitation! palaute)]
-    {:email email-result
-     :sms (when (send-sms-now? palaute)
-            (send-sms-invitation! palaute))}))
+  tekstiviestin.  Palauttaa kummankin lähetyksen tuloksen.  Jos
+  optiona annetaan :sms? false, lähetetään vain sähköpostiviesti."
+  ([palaute] (handle-unsent-palaute! palaute {}))
+  ([palaute {:keys [sms?] :or {sms? true}}]
+    ;; TODO: also process viestinvalityspalvelu reports
+    (let [email-result (send-invitation! palaute)]
+      {:email email-result
+       :sms (when (and sms? (send-sms-now? palaute))
+              (send-sms-invitation! palaute))})))
 
 (defn handle-unsent-palautteet!
   "Hakee ja lähettää viestit (kyselykutsut) kaikille palautteille
-  joilla on kyselylinkki mutta viestiä ei ole vielä lähetetty."
-  [kyselytyypit]
-  ;; tep-viestejä ei ole vielä toteutettu
-  (assert (not (contains? (set kyselytyypit) "tyopaikkajakson_suorittaneet")))
-  (log/info "Processing messages for kyselytyypit" kyselytyypit)
-  (doall (map handle-unsent-palaute!
-              (palaute/get-unsent-palautteet!
-                db/spec {:kyselytyypit kyselytyypit
-                         :viestityyppi "email"}))))
+  joilla on kyselylinkki mutta viestiä ei ole vielä lähetetty.
+  Optiot välitetään handle-unsent-palaute!:lle."
+  ([kyselytyypit] (handle-unsent-palautteet! kyselytyypit {}))
+  ([kyselytyypit opts]
+    ;; tep-viestejä ei ole vielä toteutettu
+    (assert (not (contains? (set kyselytyypit)
+                            "tyopaikkajakson_suorittaneet")))
+    (log/info "Processing messages for kyselytyypit" kyselytyypit)
+    (doall (map #(handle-unsent-palaute! % opts)
+                (palaute/get-unsent-palautteet!
+                  db/spec {:kyselytyypit kyselytyypit
+                           :viestityyppi "email"})))))
 
 (defn record-sending-to-db-hp-and-arvo!
   "Päivittää Arvoon ja tietokantaan palautteen tilan sekä vastaamisajan
