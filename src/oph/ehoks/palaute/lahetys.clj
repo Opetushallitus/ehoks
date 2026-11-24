@@ -176,12 +176,34 @@
   (handling/call-with-context-and-error-handling
     :lahetys palaute-check-send-and-save! palaute))
 
+(declare palauteviesti-tila send-sms-invitation!)
+
+(def sms-kyselytyypit
+  "Kyselytyypit, joista lähetetään myös tekstiviesti."
+  #{"valmistuneet" "osia_suorittaneet"})
+
+(defn send-sms-now?
+  "Lähetetäänkö palautteesta tekstiviesti heti sen jälkeen, kun sen
+  sähköpostiviesti on käsitelty?  Jos sähköpostiviestiä ei käsitelty
+  (esim. palaute on Herätepalvelun vastuulla tai kysely on jo
+  vastattu), ei tekstiviestiäkään lähetetä."
+  [palaute]
+  (let [ctx {:existing-palaute palaute}]
+    (and (palaute/ehoks-sends-sms?)
+         (contains? sms-kyselytyypit (:kyselytyyppi palaute))
+         (some? (palauteviesti-tila ctx "email"))
+         (nil? (palauteviesti-tila ctx "sms")))))
+
 (defn handle-unsent-palaute!
   "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
-  viestiä."
+  viestiä: lähettää sähköpostiviestin ja (jos aiheellista)
+  tekstiviestin.  Palauttaa kummankin lähetyksen tuloksen."
   [palaute]
   ;; TODO: also process viestinvalityspalvelu reports
-  (send-invitation! palaute))
+  (let [email-result (send-invitation! palaute)]
+    {:email email-result
+     :sms (when (send-sms-now? palaute)
+            (send-sms-invitation! palaute))}))
 
 (defn handle-unsent-palautteet!
   "Hakee ja lähettää viestit (kyselykutsut) kaikille palautteille
