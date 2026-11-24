@@ -101,36 +101,105 @@
   (Instant/from (ZonedDateTime/of 2026 4 19 10 0 0 0
                                   (ZoneId/of "Europe/Helsinki"))))
 
+(def esim-sms-ctx
+  (-> esim-ctx
+      (assoc-in [:hoks :puhelinnumero] "040 654 3210")
+      (assoc-in [:existing-palaute :kyselytyyppi] "valmistuneet")))
+
 (deftest test-check-palaute-for-sending
-  (with-redefs [date/now-with-time (constantly business-hours-instant)]
-    (testing "returns go for example context"
-      (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
-             (l/check-palaute-for-sending esim-ctx))))
-    (testing "doesn't handle anything already in heratepalvelu"
-      (is (= [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
-             (l/check-palaute-for-sending
-               (assoc esim-ctx :existing-ddb-herate
-                      (delay {:toimija_oppija "foo/bar"}))))))
-    (testing "no action if email is missing"
-      (is (= [:lahetys-epaonnistunut nil :sahkoposti :ei-ole]
-             (l/check-palaute-for-sending
-               (assoc-in esim-ctx [:hoks :sahkoposti] "")))))
-    (testing "don't send messages for overdue palautekysely"
-      (is (= [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
-             (l/check-palaute-for-sending
-               (assoc esim-ctx :arvo-status
-                      (delay {:vastattu false
-                              :voimassa-loppupvm "2021-01-01T00:00:00Z"}))))))
-    (testing "don't send messages for already answered palautekysely"
-      (is (= [nil :vastattu :heratepvm :arvo-paivitys]
-             (l/check-palaute-for-sending
-               (assoc esim-ctx :arvo-status
-                      (delay {:vastattu true
-                              :voimassa-loppupvm "2051-01-01T00:00:00Z"})))))))
-  (with-redefs [date/now-with-time (constantly non-business-hours-instant)]
+  (let [viestit (atom {})]
+    (with-redefs [date/now-with-time (constantly business-hours-instant)
+                  palaute/ehoks-sends-sms? (constantly true)
+                  l/palauteviesti-tila (fn [_ viestityyppi]
+                                         (get @viestit viestityyppi))]
+      (testing "email:"
+        (testing "returns go for example context"
+          (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+                 (l/check-palaute-for-sending esim-ctx "email"))))
+        (testing "doesn't handle anything already in heratepalvelu"
+          (is (= [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
+                 (l/check-palaute-for-sending
+                   (assoc esim-ctx :existing-ddb-herate
+                          (delay {:toimija_oppija "foo/bar"}))
+                   "email"))))
+        (testing "no action if email is missing"
+          (is (= [:lahetys-epaonnistunut nil :sahkoposti :ei-ole]
+                 (l/check-palaute-for-sending
+                   (assoc-in esim-ctx [:hoks :sahkoposti] "") "email"))))
+        (testing "don't send messages for overdue palautekysely"
+          (is (= [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
+                 (l/check-palaute-for-sending
+                   (assoc esim-ctx :arvo-status
+                          (delay {:vastattu false
+                                  :voimassa-loppupvm "2021-01-01T00:00:00Z"}))
+                   "email"))))
+        (testing "don't send messages for already answered palautekysely"
+          (is (= [nil :vastattu :heratepvm :arvo-paivitys]
+                 (l/check-palaute-for-sending
+                   (assoc esim-ctx :arvo-status
+                          (delay {:vastattu true
+                                  :voimassa-loppupvm "2051-01-01T00:00:00Z"}))
+                   "email"))))
+        (testing "don't send the same message twice"
+          (reset! viestit {"email" "odottaa_lahetysta"})
+          (is (= [nil nil :viestityyppi :jo-kasitelty]
+                 (l/check-palaute-for-sending esim-ctx "email")))))
+
+      (testing "sms:"
+        (reset! viestit {"email" "odottaa_lahetysta"})
+        (testing "returns go after email has been handled"
+          (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+                 (l/check-palaute-for-sending esim-sms-ctx "sms"))))
+        (testing "Herätepalvelu record doesn't matter after email handling"
+          (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+                 (l/check-palaute-for-sending
+                   (assoc esim-sms-ctx :existing-ddb-herate
+                          (delay {:toimija_oppija "foo/bar"}))
+                   "sms"))))
+        (testing "no SMS for kyselytyypit that don't get one"
+          (is (= [nil nil :kyselytyyppi :ei-tekstiviestia]
+                 (l/check-palaute-for-sending esim-ctx "sms"))))
+        (testing "fails if phone number is missing"
+          (is (= [:lahetys-epaonnistunut nil :puhelinnumero :ei-ole]
+                 (l/check-palaute-for-sending
+                   (assoc-in esim-sms-ctx [:hoks :puhelinnumero] nil)
+                   "sms"))))
+        (testing "fails if phone number is not a Finnish mobile number"
+          (is (= [:lahetys-epaonnistunut nil :puhelinnumero :virheellinen]
+                 (l/check-palaute-for-sending
+                   (assoc-in esim-sms-ctx [:hoks :puhelinnumero]
+                             "+1 517 987 5432")
+                   "sms"))))
+        (testing "don't send messages for overdue palautekysely"
+          (is (= [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
+                 (l/check-palaute-for-sending
+                   (assoc esim-sms-ctx :arvo-status
+                          (delay {:vastattu false
+                                  :voimassa-loppupvm "2021-01-01T00:00:00Z"}))
+                   "sms"))))
+        (testing "no SMS before email has been handled"
+          (reset! viestit {})
+          (is (= [nil nil :sahkoposti :ei-kasitelty]
+                 (l/check-palaute-for-sending esim-sms-ctx "sms"))))
+        (testing "don't send the same SMS twice"
+          (reset! viestit {"email" "lahetetty" "sms" "lahetetty"})
+          (is (= [nil nil :viestityyppi :jo-kasitelty]
+                 (l/check-palaute-for-sending esim-sms-ctx "sms"))))
+        (testing "no SMS unless eHOKS is responsible for them"
+          (with-redefs [palaute/ehoks-sends-sms? (constantly false)]
+            (is (= [nil nil :viestityyppi :ei-ehoksin-vastuulla]
+                   (l/check-palaute-for-sending esim-sms-ctx "sms"))))))))
+  (with-redefs [date/now-with-time (constantly non-business-hours-instant)
+                palaute/ehoks-sends-sms? (constantly true)]
     (testing "no action outside Finnish business hours"
-      (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
-             (l/check-palaute-for-sending esim-ctx))))))
+      (with-redefs [l/palauteviesti-tila (constantly nil)]
+        (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+               (l/check-palaute-for-sending esim-ctx "email"))))
+      (with-redefs [l/palauteviesti-tila (fn [_ viestityyppi]
+                                           ({"email" "lahetetty"}
+                                             viestityyppi))]
+        (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+               (l/check-palaute-for-sending esim-sms-ctx "sms")))))))
 
 (deftest test-handle-unsent-palaute!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -660,39 +729,9 @@
             (is (= (str (.plusDays sending-date 29))
                    (str (:voimassa-loppupvm palaute))))))))))
 
-(deftest test-check-palaute-for-sms-sending
-  (let [sms-ctx (assoc-in esim-ctx [:hoks :puhelinnumero] "040 654 3210")]
-    (with-redefs [date/now-with-time (constantly business-hours-instant)]
-      (testing "returns go for example context"
-        (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
-               (l/check-palaute-for-sms-sending sms-ctx))))
-      (testing "fails if phone number is missing"
-        (is (= [:lahetys-epaonnistunut nil :puhelinnumero :ei-ole]
-               (l/check-palaute-for-sms-sending esim-ctx))))
-      (testing "fails if phone number is not a Finnish mobile number"
-        (is (= [:lahetys-epaonnistunut nil :puhelinnumero :virheellinen]
-               (l/check-palaute-for-sms-sending
-                 (assoc-in sms-ctx [:hoks :puhelinnumero] "+1 517 987 5432")))))
-      (testing "don't send messages for overdue palautekysely"
-        (is (= [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
-               (l/check-palaute-for-sms-sending
-                 (assoc sms-ctx :arvo-status
-                        (delay {:vastattu false
-                                :voimassa-loppupvm "2021-01-01T00:00:00Z"}))))))
-      (testing "don't send messages for already answered palautekysely"
-        (is (= [nil :vastattu :heratepvm :arvo-paivitys]
-               (l/check-palaute-for-sms-sending
-                 (assoc sms-ctx :arvo-status
-                        (delay {:vastattu true
-                                :voimassa-loppupvm "2051-01-01T00:00:00Z"})))))))
-    (with-redefs [date/now-with-time (constantly non-business-hours-instant)]
-      (testing "no action outside Finnish business hours"
-        (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
-               (l/check-palaute-for-sms-sending sms-ctx)))))))
-
 (deftest test-handle-unsent-palaute!-sms-option
   (with-redefs [l/send-invitation! (constantly "email-id")
-                l/send-sms-now? (constantly true)
+                palaute/get-by-id! (constantly {:id 1})
                 l/send-sms-invitation! (constantly :lahetetty)]
     (testing "SMS is sent along with email by default"
       (is (= {:email "email-id" :sms :lahetetty}

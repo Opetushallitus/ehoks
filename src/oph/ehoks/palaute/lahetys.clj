@@ -53,39 +53,67 @@
   [status]
   (:vastattu status))
 
+(declare palauteviesti-tila sms-kyselytyypit)
+
+(def yhteystietokentta
+  "Mistä HOKSin kentästä kunkin viestityypin vastaanottaja löytyy."
+  {"email" :sahkoposti
+   "sms" :puhelinnumero})
+
 ;; this should be put into handlers if the logic is different for tep
 (defn check-palaute-for-sending
-  "Kertoo mihin tilaan palaute ja sen viesti menee tilanteen perusteella.
-  Palauttaa seuraavat tiedot:
+  "Kertoo mihin tilaan palaute ja sen viesti (viestityyppi \"email\" tai
+  \"sms\") menee tilanteen perusteella.  Palauttaa seuraavat tiedot:
   viestin uusi tila (nil = ei tehdä viestiä),
   palautteen uusi tila (nil = ei muutu),
   kenttä jonka perusteella päätös tehty,
-  päätöksen syy -tagi."
-  [{:keys [hoks existing-palaute existing-ddb-herate arvo-status]}]
-  (cond
-    (and existing-ddb-herate (seq @existing-ddb-herate))
-    [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
+  päätöksen syy -tagi.
+  Tekstiviesti lähetetään vasta, kun sähköpostiviesti on käsitelty
+  eHOKSissa; silloin palaute ei voi olla Herätepalvelun vastuulla."
+  [{:keys [hoks existing-palaute existing-ddb-herate arvo-status] :as ctx}
+   viestityyppi]
+  (let [sms? (= "sms" viestityyppi)
+        kentta (yhteystietokentta viestityyppi)]
+    (cond
+      (and sms? (not (palaute/ehoks-sends-sms?)))
+      [nil nil :viestityyppi :ei-ehoksin-vastuulla]
 
-    (empty? (:sahkoposti hoks))
-    [:lahetys-epaonnistunut nil :sahkoposti :ei-ole]
+      (and sms? (not (contains? sms-kyselytyypit
+                                (:kyselytyyppi existing-palaute))))
+      [nil nil :kyselytyyppi :ei-tekstiviestia]
 
-    (empty? (:kyselylinkki existing-palaute))
-    [nil :odottaa-kasittelya :kyselylinkki :ei-ole]
+      (and sms? (nil? (palauteviesti-tila ctx "email")))
+      [nil nil :sahkoposti :ei-kasitelty]
 
-    (not (dateutil/finnish-business-hours? (dateutil/now-with-time)))
-    [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+      (and (not sms?) existing-ddb-herate (seq @existing-ddb-herate))
+      [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
 
-    (and arvo-status (empty? @arvo-status))
-    [nil nil :kyselylinkki :ei-loydy]
+      (some? (palauteviesti-tila ctx viestityyppi))
+      [nil nil :viestityyppi :jo-kasitelty]
 
-    (and arvo-status (vastausaika-loppunut? @arvo-status))
-    [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
+      (empty? (get hoks kentta))
+      [:lahetys-epaonnistunut nil kentta :ei-ole]
 
-    (and arvo-status (vastattu? @arvo-status))
-    [nil :vastattu :heratepvm :arvo-paivitys]
+      (and sms? (not (elisa/valid-finnish-number? (get hoks kentta))))
+      [:lahetys-epaonnistunut nil kentta :virheellinen]
 
-    :else
-    [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]))
+      (empty? (:kyselylinkki existing-palaute))
+      [nil :odottaa-kasittelya :kyselylinkki :ei-ole]
+
+      (not (dateutil/finnish-business-hours? (dateutil/now-with-time)))
+      [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+
+      (and arvo-status (empty? @arvo-status))
+      [nil nil :kyselylinkki :ei-loydy]
+
+      (and arvo-status (vastausaika-loppunut? @arvo-status))
+      [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
+
+      (and arvo-status (vastattu? @arvo-status))
+      [nil :vastattu :heratepvm :arvo-paivitys]
+
+      :else
+      [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys])))
 
 (defn record-palauteviesti!
   "Record in DB the palauteviesti that was (not) sent."
@@ -129,7 +157,7 @@
 (defn palaute-check-send-and-save!
   "Tekee kaikki palautekutsun lähetyksen vaiheet"
   [{:keys [existing-palaute hoks] :as ctx} _] ; no handlers used yet
-  (let [[msg-state state field reason] (check-palaute-for-sending ctx)
+  (let [[msg-state state field reason] (check-palaute-for-sending ctx "email")
         reporting-msg-state (or msg-state :ei-laheteta)
         additional-info {field (str (get existing-palaute field))
                          :msg-state reporting-msg-state}]
@@ -176,23 +204,11 @@
   (handling/call-with-context-and-error-handling
     :lahetys palaute-check-send-and-save! palaute))
 
-(declare palauteviesti-tila send-sms-invitation!)
+(declare send-sms-invitation!)
 
 (def sms-kyselytyypit
   "Kyselytyypit, joista lähetetään myös tekstiviesti."
   #{"valmistuneet" "osia_suorittaneet"})
-
-(defn send-sms-now?
-  "Lähetetäänkö palautteesta tekstiviesti heti sen jälkeen, kun sen
-  sähköpostiviesti on käsitelty?  Jos sähköpostiviestiä ei käsitelty
-  (esim. palaute on Herätepalvelun vastuulla tai kysely on jo
-  vastattu), ei tekstiviestiäkään lähetetä."
-  [palaute]
-  (let [ctx {:existing-palaute palaute}]
-    (and (palaute/ehoks-sends-sms?)
-         (contains? sms-kyselytyypit (:kyselytyyppi palaute))
-         (some? (palauteviesti-tila ctx "email"))
-         (nil? (palauteviesti-tila ctx "sms")))))
 
 (defn handle-unsent-palaute!
   "Tekee kaiken mitä pitää tehdä palautteelle josta ei ole vielä lähetetty
@@ -204,8 +220,10 @@
     ;; TODO: also process viestinvalityspalvelu reports
     (let [email-result (send-invitation! palaute)]
       {:email email-result
-       :sms (when (and sms? (send-sms-now? palaute))
-              (send-sms-invitation! palaute))})))
+       ;; palaute is re-read because email handling may have changed it
+       :sms (when sms?
+              (send-sms-invitation!
+                (palaute/get-by-id! db/spec {:id (:id palaute)})))})))
 
 (defn handle-unsent-palautteet!
   "Hakee ja lähettää viestit (kyselykutsut) kaikille palautteille
@@ -338,35 +356,6 @@
                         {:type ::viestin-lahetys-epaonnistui
                          :body (:body resp)})))))
 
-(defn check-palaute-for-sms-sending
-  "Kertoo mihin tilaan palaute ja sen tekstiviesti menee tilanteen
-  perusteella.  Palauttaa samat tiedot kuin check-palaute-for-sending.
-  Herätepalvelun vastuulla olevia palautteita ei tarvitse tarkistaa
-  tässä, koska tekstiviestejä käsitellään vain palautteille, joiden
-  sähköpostiviesti on jo käsitelty eHOKSissa."
-  [{:keys [hoks arvo-status]}]
-  (cond
-    (empty? (:puhelinnumero hoks))
-    [:lahetys-epaonnistunut nil :puhelinnumero :ei-ole]
-
-    (not (elisa/valid-finnish-number? (:puhelinnumero hoks)))
-    [:lahetys-epaonnistunut nil :puhelinnumero :virheellinen]
-
-    (not (dateutil/finnish-business-hours? (dateutil/now-with-time)))
-    [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
-
-    (and arvo-status (empty? @arvo-status))
-    [nil nil :kyselylinkki :ei-loydy]
-
-    (and arvo-status (vastausaika-loppunut? @arvo-status))
-    [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
-
-    (and arvo-status (vastattu? @arvo-status))
-    [nil :vastattu :heratepvm :arvo-paivitys]
-
-    :else
-    [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]))
-
 (def elisa-status->viesti-tila
   "Elisa doesn't report delivery, only whether the message was accepted."
   {"CREATED" :lahetetty
@@ -395,7 +384,7 @@
 (defn sms-check-send-and-save!
   "Tekee kaikki palautekutsun tekstiviestilähetyksen vaiheet"
   [{:keys [existing-palaute hoks] :as ctx} _] ; no handlers used yet
-  (let [[msg-state state field reason] (check-palaute-for-sms-sending ctx)
+  (let [[msg-state state field reason] (check-palaute-for-sending ctx "sms")
         reporting-msg-state (or msg-state :ei-laheteta)
         additional-info {field (str (get existing-palaute field))
                          :msg-state reporting-msg-state
