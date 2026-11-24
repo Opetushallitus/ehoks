@@ -61,6 +61,31 @@ where kyselytyyppi in (:v*:kyselytyypit)
 order by hoks_id desc  -- newest HOKSes first so old ones cannot block
 limit 1000             -- process at most 1000 and then check new ones again
 
+-- :name get-palautteet-without-sms! :? :*
+-- :doc Fetch palautteet whose email message has already been handled
+-- by eHOKS but for which no SMS message has been handled yet.  Email
+-- handling decides whether the palaute is eHOKS' responsibility at all
+-- (and not Herätepalvelu's), so SMS handling comes after it.
+select * from palautteet p
+where kyselytyyppi in (:v*:kyselytyypit)
+  and kyselylinkki is not null
+  and tila in ('kysely_muodostettu', 'vastaajatunnus_muodostettu', 'lahetetty')
+  and exists (
+	select 1 from palaute_viestit pv
+	where pv.palaute_id = p.id
+	and pv.viestityyppi = 'email'
+	and pv.deleted_at is null
+  )
+  and not exists (
+	select 1 from palaute_viestit pv
+	where pv.palaute_id = p.id
+	and pv.viestityyppi = 'sms'
+	and pv.deleted_at is null
+  )
+  and deleted_at is null
+order by hoks_id desc  -- newest HOKSes first so old ones cannot block
+limit 1000             -- process at most 1000 and then check new ones again
+
 -- :name update-arvo-tunniste! :? :*
 -- :doc Update arvo-tunniste for palaute with given id.
 update	palautteet

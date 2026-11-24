@@ -64,6 +64,7 @@
               :arvo-username s/Str
               :arvo-url s/Str
               :arvo-responsibilities [s/Keyword]
+              (s/optional-key :elisa-sms-apikey) s/Str
               :enforce-opiskeluoikeus-match? s/Bool
               :prevent-finished-opiskeluoikeus-updates? s/Bool
               :heratepalvelu-resend-queue s/Str

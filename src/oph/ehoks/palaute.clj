@@ -3,6 +3,7 @@
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [assoc-some find-first]]
+            [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
@@ -17,6 +18,11 @@
 
 (declare update! insert!)
 (hugsql/def-db-fns "oph/ehoks/db/sql/palaute.sql")
+
+(defn ehoks-sends-sms?
+  "Lähettääkö eHOKS palautekyselyiden tekstiviestit (eikä Herätepalvelu)?"
+  []
+  (contains? (set (:heratepalvelu-responsibities config)) :send-initial-sms))
 
 (defn unhandled?
   [palaute]

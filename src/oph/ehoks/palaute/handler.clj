@@ -67,12 +67,26 @@
 
             (c-api/POST "/kutsuviestit" []
               :summary "Lähettää palautekutsut niille palautteille, jotka
-                       odottavat lähetystä."
-              (let [tulos (lahetys/handle-unsent-palautteet!
-                            ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
-                (-> {:lahetykset tulos}
+                       odottavat lähetystä.  Parametri viestityyppi
+                       rajaa lähetettävät viestit sähköposteihin (email)
+                       tai tekstiviesteihin (sms); oletuksena lähetetään
+                       molemmat.  Tekstiviestejä lähetetään vain, jos
+                       eHOKS on vastuussa niiden lähettämisestä."
+              :query-params [{viestityyppi :- (s/enum "email" "sms") nil}]
+              (let [tulos
+                    (cond-> {}
+                      (not= viestityyppi "sms")
+                      (assoc :lahetykset
+                             (lahetys/handle-unsent-palautteet!
+                               ["aloittaneet" "valmistuneet"
+                                "osia_suorittaneet"]))
+                      (not= viestityyppi "email")
+                      (assoc :sms-lahetykset
+                             (lahetys/handle-palautteet-without-sms!
+                               ["valmistuneet" "osia_suorittaneet"])))]
+                (-> tulos
                     (restful/ok)
-                    (assoc ::audit/target {:lahetykset tulos})))))
+                    (assoc ::audit/target tulos)))))
 
           (c-api/context "/tyoelamapalaute" []
             :tags ["tyoelamapalaute"]
