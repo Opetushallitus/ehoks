@@ -47,6 +47,14 @@
                 result))
     (catch Exception e
       (log/error e "Unhandled exception in handle-unsent-palautteet!")))
+  (try
+    (log/info "Handling palautteet that we should send SMS's for.")
+    (let [result (lahetys/handle-palautteet-without-sms!
+                   ["valmistuneet" "osia_suorittaneet"])]
+      (log/info "handle-palautteet-without-sms!: ended with result"
+                result))
+    (catch Exception e
+      (log/error e "Unhandled exception in handle-palautteet-without-sms!")))
   true)
 
 (defn as-often-as-possible-actions!

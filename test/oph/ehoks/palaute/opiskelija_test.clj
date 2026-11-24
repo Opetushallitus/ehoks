@@ -129,7 +129,18 @@
     :email "aloittaneet" "odottaa_kasittelya"   nil                     false
     "ei_lahetetty"
     :sms   "valmistuneet" "odottaa_kasittelya"  nil                     false
-    "ei_lahetetty"))
+    "ei_lahetetty")
+  (testing "when eHOKS sends SMS's, Herätepalvelu must not send them"
+    (with-redefs [palaute/ehoks-sends-sms? (constantly true)]
+      (is (= "odottaa_lahetysta"
+             (op/combine-tila :sms "valmistuneet" "kysely_muodostettu"
+                              nil false)))
+      (is (= "lahetetty"
+             (op/combine-tila :sms "valmistuneet" "kysely_muodostettu"
+                              "lahetetty" false)))
+      (is (= "ei_lahetetty"
+             (op/combine-tila :email "valmistuneet" "kysely_muodostettu"
+                              nil false))))))
 
 (defn test-not-initiated
   ([ctx reason]

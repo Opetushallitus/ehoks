@@ -298,6 +298,11 @@
 
     no-contact-info? "ei_laheteta"
 
+    ;; Herätepalvelu sends SMS's for herätteet in state ei_lahetetty,
+    ;; so this prevents it from sending SMS's that eHOKS will send
+    (and (= msg-type :sms) (palaute/ehoks-sends-sms?))
+    "odottaa_lahetysta"
+
     :else "ei_lahetetty"))
 
 (defn build-amisherate-record-for-heratepalvelu

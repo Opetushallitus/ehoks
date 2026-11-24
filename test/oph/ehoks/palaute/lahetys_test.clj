@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.lahetys-test
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.string :as s]
+            [oph.ehoks.config :as config]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.dynamodb :as ddb]
@@ -651,3 +652,193 @@
             (is (= (str sending-date) (str (:voimassa-alkupvm palaute))))
             (is (= (str (.plusDays sending-date 29))
                    (str (:voimassa-loppupvm palaute))))))))))
+
+(deftest test-check-palaute-for-sms-sending
+  (let [sms-ctx (assoc-in esim-ctx [:hoks :puhelinnumero] "040 654 3210")]
+    (with-redefs [date/now-with-time (constantly business-hours-instant)]
+      (testing "returns go for example context"
+        (is (= [:odottaa-lahetysta nil :voimassa-alkupvm :viesti-lahetys]
+               (l/check-palaute-for-sms-sending sms-ctx))))
+      (testing "fails if phone number is missing"
+        (is (= [:lahetys-epaonnistunut nil :puhelinnumero :ei-ole]
+               (l/check-palaute-for-sms-sending esim-ctx))))
+      (testing "fails if phone number is not a Finnish mobile number"
+        (is (= [:lahetys-epaonnistunut nil :puhelinnumero :virheellinen]
+               (l/check-palaute-for-sms-sending
+                 (assoc-in sms-ctx [:hoks :puhelinnumero] "+1 517 987 5432")))))
+      (testing "don't send messages for overdue palautekysely"
+        (is (= [nil :vastausaika-loppunut :voimassa-loppupvm :arvo-paivitys]
+               (l/check-palaute-for-sms-sending
+                 (assoc sms-ctx :arvo-status
+                        (delay {:vastattu false
+                                :voimassa-loppupvm "2021-01-01T00:00:00Z"}))))))
+      (testing "don't send messages for already answered palautekysely"
+        (is (= [nil :vastattu :heratepvm :arvo-paivitys]
+               (l/check-palaute-for-sms-sending
+                 (assoc sms-ctx :arvo-status
+                        (delay {:vastattu true
+                                :voimassa-loppupvm "2051-01-01T00:00:00Z"})))))))
+    (with-redefs [date/now-with-time (constantly non-business-hours-instant)]
+      (testing "no action outside Finnish business hours"
+        (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
+               (l/check-palaute-for-sms-sending sms-ctx)))))))
+
+(defn- mock-arvo-status
+  [url _]
+  (when (s/ends-with? url "/vastauslinkki/v1/status/testivain")
+    {:status 200
+     :body {:tunnus "testivain"
+            :voimassa_loppupvm "2026-04-14"
+            :vastattu false}}))
+
+(defn- mock-elisa-response
+  [status sent-sms]
+  (fn [^String url options]
+    (when (s/starts-with? url "https://viestipalvelu-api.elisa.fi/")
+      (reset! sent-sms (:body options))
+      {:status 200
+       :body {:messages {:0406543210 {:status status
+                                      :converted "+358406543210"}}}})))
+
+(defn- sms-viestit
+  [palaute-id]
+  (->> {:viestityypit ["sms"] :palaute-id palaute-id}
+       (l/get-by-palaute-and-viestityypit! db/spec)
+       (map (juxt :tila :vastaanottaja))))
+
+(defn- valmistuneet-tilat
+  [hoks-id]
+  (->> {:hoks-id hoks-id :kyselytyypit ["valmistuneet"]}
+       (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+       (map :tila)))
+
+(defn- valmistuneet-ddb-item []
+  (ddb/get-item!
+    :amis
+    {:toimija_oppija "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"
+     :tyyppi_kausi "tutkinnon_suorittaneet/2022-2023"}))
+
+(deftest test-handle-palautteet-without-sms!
+  (testing "does nothing if eHOKS is not responsible for sending SMS's"
+    (is (nil? (l/handle-palautteet-without-sms! ["valmistuneet"]))))
+  (with-redefs [config/config (-> config/config
+                                  (update :heratepalvelu-responsibities
+                                          conj :send-initial-sms)
+                                  (assoc :elisa-sms-apikey "test-key"))
+                date/now (constantly (LocalDate/of 2023 4 18))
+                date/now-with-time (constantly business-hours-instant)
+                koski/get-oppija-opiskeluoikeudet
+                koski-test/mock-get-oppija-opiskeluoikeudet
+                koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw
+                onr/get-oppija-raw! mock-get-oppija-raw!
+                organisaatio/get-organisaatio!
+                (fn [oid]
+                  (assoc (organisaatio-test/mock-get-organisaatio! oid)
+                         :nimi {:fi "Testioppilaitos"}))]
+    (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
+    (let [ctx {:hoks (assoc hoks-test/hoks-1
+                            :puhelinnumero "0406543210"
+                            :osaamisen-saavuttamisen-pvm (LocalDate/of 2023 4 17))
+               :opiskeluoikeus oo-test/opiskeluoikeus-1}
+          hoks (hoks-handler/save-hoks-and-initiate-all-palautteet! ctx)
+          sent-sms (atom nil)
+          arvo-lahetys (atom nil)
+          mock-arvo-patch (fn [url options]
+                            (when (s/ends-with? url "/vastauslinkki/v1/testivain")
+                              (reset! arvo-lahetys (:form-params options))
+                              {:status 200 :body (:form-params options)}))]
+      (with-mock-responses
+        [(fn [_ __] {})
+         (fn [url _]
+           (when (s/ends-with? url "/api/vastauslinkki/v1")
+             {:status 200
+              :body {:tunnus "testivain"
+                     :kysely_linkki "https://arvovastaus.csc.fi/v/test"
+                     :voimassa_loppupvm "2024-10-10"}}))]
+        (->> {:kyselytyypit ["valmistuneet"]}
+             (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec)
+             (first)
+             (vt/create-vastaajatunnus!)))
+
+      (testing "SMS is not handled before email has been handled"
+        (is (empty? (palaute/get-palautteet-without-sms!
+                      db/spec {:kyselytyypit ["valmistuneet"]}))))
+
+      (with-mock-responses
+        [mock-arvo-status
+         (fn [^String url _]
+           (when (s/ends-with? url "/lahetys/v1/viestit")
+             {:status 200
+              :body {:viestiTunniste "email-id" :lahetysTunniste "email-id"}}))]
+        (->> {:kyselytyypit ["valmistuneet"] :viestityyppi "email"}
+             (palaute/get-unsent-palautteet! db/spec)
+             (first)
+             (l/handle-unsent-palaute!)))
+
+      (let [palaute (first (palaute/get-palautteet-without-sms!
+                             db/spec {:kyselytyypit ["valmistuneet"]}))]
+        (is (some? palaute))
+
+        (testing "nothing is done outside business hours"
+          (with-redefs [date/now-with-time
+                        (constantly non-business-hours-instant)]
+            (with-mock-responses
+              [mock-arvo-status (mock-elisa-response "CREATED" sent-sms)]
+              (is (= [nil] (l/handle-palautteet-without-sms!
+                             ["valmistuneet"])))))
+          (is (nil? @sent-sms))
+          (is (empty? (sms-viestit (:id palaute)))))
+
+        (testing "failed SMS is recorded and synced to Herätepalvelu"
+          (with-mock-responses
+            [mock-arvo-status
+             (mock-elisa-response "FAILED" sent-sms)
+             mock-arvo-patch]
+            (is (= [:lahetys-epaonnistunut]
+                   (l/handle-palautteet-without-sms! ["valmistuneet"]))))
+          (is (s/includes? @sent-sms "Testioppilaitos: P\u00e4\u00e4tt"))
+          (is (s/includes? @sent-sms "https://arvovastaus.csc.fi/v/test?t=s"))
+          (is (= [["lahetys_epaonnistunut" "+358406543210"]]
+                 (sms-viestit (:id palaute))))
+          (is (= ["kysely_muodostettu"] (valmistuneet-tilat (:id hoks))))
+          (testing "but not reported to Arvo while email is still pending"
+            (is (nil? @arvo-lahetys)))
+          (is (= "lahetys_epaonnistunut"
+                 (:sms-lahetystila (valmistuneet-ddb-item))))
+          (is (empty? (palaute/get-palautteet-without-sms!
+                        db/spec {:kyselytyypit ["valmistuneet"]}))))
+
+        (testing "failure is reported to Arvo when email also fails"
+          (with-mock-responses
+            [(fn [url _]
+               (when (s/ends-with? url "/lahetykset/email-id/vastaanottajat")
+                 {:status 200 :body {:vastaanottajat [{:tila "VIRHE"}]}}))
+             (fn [_ __] {})
+             mock-arvo-patch]
+            (->> {:viestityypit ["email"] :tila "odottaa_lahetysta"}
+                 (l/get-by-tila-and-viestityypit! db/spec)
+                 (first)
+                 (l/handle-palaute-waiting-for-sending-status!)))
+          (is (= {:metatiedot {:tila "lahetys_epaonnistunut"}}
+                 @arvo-lahetys)))
+
+        (db-ops/query
+          ["DELETE FROM palaute_viestit WHERE palaute_id=? AND viestityyppi='sms'
+            RETURNING id" (:id palaute)])
+        (reset! arvo-lahetys nil)
+
+        (testing "successful SMS marks palaute sent"
+          (with-mock-responses
+            [mock-arvo-status
+             (mock-elisa-response "CREATED" sent-sms)
+             mock-arvo-patch]
+            (is (= [:lahetetty]
+                   (l/handle-palautteet-without-sms! ["valmistuneet"]))))
+          (is (= [["lahetetty" "+358406543210"]]
+                 (sms-viestit (:id palaute))))
+          (is (= ["lahetetty"] (valmistuneet-tilat (:id hoks))))
+          (is (= "lahetetty" (get-in @arvo-lahetys [:metatiedot :tila])))
+          (is (= "lahetetty" (:sms-lahetystila (valmistuneet-ddb-item))))
+          (is (empty? (palaute/get-palautteet-without-sms!
+                        db/spec {:kyselytyypit ["valmistuneet"]}))))))))
