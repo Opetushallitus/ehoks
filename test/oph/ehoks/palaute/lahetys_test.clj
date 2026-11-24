@@ -5,6 +5,7 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.dynamodb :as ddb]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.hoks]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks-test :as hoks-test]
@@ -207,6 +208,45 @@
              (l/check-palaute-for-sending esim-ctx "email")))
       (is (= [nil nil :heratepvm :kasittely-odottaa-toimistoaikaa]
              (l/check-palaute-for-sending esim-sms-ctx "sms"))))))
+
+(deftest test-record-viesti-result!
+  (let [calls (atom [])
+        ctx {:existing-palaute {:id 1 :tila "kysely_muodostettu"
+                                :arvo-tunniste "tunnus"}}]
+    (with-redefs [l/sync-to-heratepalvelu! (fn [_] (swap! calls conj :sync))
+                  l/record-sending-to-db-hp-and-arvo!
+                  (fn [c] (swap! calls conj [:sent (:viesti-status c)]))
+                  arvo/update-kyselytunnus!
+                  (fn [_ tila _ _] (swap! calls conj [:arvo tila]))]
+      (testing "nothing is done while message is waiting to be sent"
+        (reset! calls [])
+        (l/record-viesti-result! ctx "email" :odottaa-lahetysta)
+        (is (= [] @calls)))
+      (testing "sent message marks palaute sent"
+        (reset! calls [])
+        (l/record-viesti-result! ctx "sms" :lahetetty)
+        (is (= [[:sent "sms"]] @calls)))
+      (testing "only sync if palaute has already been sent"
+        (reset! calls [])
+        (l/record-viesti-result!
+          (assoc-in ctx [:existing-palaute :tila] "lahetetty")
+          "sms" :lahetys-epaonnistunut)
+        (is (= [:sync] @calls)))
+      (testing "failure is reported to Arvo only when all messages failed"
+        (with-redefs [l/palauteviesti-tila (constantly nil)]
+          (reset! calls [])
+          (l/record-viesti-result! ctx "email" :lahetys-epaonnistunut)
+          (is (= [:sync] @calls)))
+        (with-redefs [l/palauteviesti-tila
+                      (fn [_ t] ({"sms" "lahetys_epaonnistunut"} t))]
+          (reset! calls [])
+          (l/record-viesti-result! ctx "email" :lahetys-epaonnistunut)
+          (is (= [[:arvo "lahetys_epaonnistunut"] :sync] @calls)))
+        (with-redefs [l/palauteviesti-tila
+                      (fn [_ t] ({"email" "lahetys_epaonnistunut"} t))]
+          (reset! calls [])
+          (l/record-viesti-result! ctx "sms" :lahetys-epaonnistunut)
+          (is (= [[:arvo "lahetys_epaonnistunut"] :sync] @calls)))))))
 
 (deftest test-handle-unsent-palaute!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
