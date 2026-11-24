@@ -1,11 +1,9 @@
-(ns oph.heratepalvelu.external.elisa-test
+(ns oph.ehoks.external.elisa-test
   (:require [cheshire.core :refer [generate-string]]
-            [clojure.test :refer :all]
-            [oph.heratepalvelu.external.elisa :as elisa]
-            [oph.heratepalvelu.test-util :as tu])
+            [clojure.test :refer [deftest is testing]]
+            [clojure.tools.logging.test :refer [logged? with-log]]
+            [oph.ehoks.external.elisa :as elisa])
   (:import (clojure.lang ExceptionInfo)))
-
-(use-fixtures :each tu/clear-logs-before-test)
 
 (def mock-tep-msg-body
   (str "Testilaitos, Testilaitos 2: Työpaikkaohjaajakysely - "
@@ -60,22 +58,22 @@
 
 (deftest test-send-sms-send-messages-disabled
   (testing "send-sms palauttaa oikean arvon, kun viestit eivät lähde"
-    (with-redefs [clojure.tools.logging/log* tu/mock-log*
-                  environ.core/env {:send-messages "false"}]
-      (let [number "12345"
-            message "Test message"
-            results {:body {:messages {:12345 {:converted "12345"
-                                               :status "mock-lahetys"}}}}]
-        (is (= (elisa/send-sms number message) results))
-        (is (tu/logs-contain? {:level :info :message message}))))))
+    (with-redefs [oph.ehoks.config/config {:elisa-sms-apikey ""}]
+      (with-log
+        (let [number "12345"
+              message "Test message"
+              results {:body {:messages {:12345 {:converted "12345"
+                                                 :status "mock-lahetys"}}}}]
+          (is (= (elisa/send-sms number message) results))
+          (is (logged? 'oph.ehoks.external.elisa :info
+                       #"(?s).*Test message.*")))))))
 
 (defn- mock-client-post [url options] {:url url :options options})
 
 (deftest test-send-sms-no-error
   (testing "Varmista, että send-sms kutsuu client/post oikein"
-    (with-redefs [environ.core/env {:send-messages "true"}
-                  oph.heratepalvelu.external.elisa/apikey (delay "asdf")
-                  oph.heratepalvelu.external.http-client/post mock-client-post]
+    (with-redefs [oph.ehoks.config/config {:elisa-sms-apikey "asdf"}
+                  oph.ehoks.external.http-client/post mock-client-post]
       (let [number "12345"
             message "Test message"
             results {:url "https://viestipalvelu-api.elisa.fi/api/v1/"
@@ -92,26 +90,25 @@
 
 (deftest test-send-sms-with-error
   (testing "Varmista, että send-sms käsittelee virheitä oikein"
-    (with-redefs [clojure.tools.logging/log* tu/mock-log*
-                  environ.core/env {:send-messages "true"}
-                  oph.heratepalvelu.external.elisa/apikey (delay "asdf")
-                  oph.heratepalvelu.external.http-client/post
+    (with-redefs [oph.ehoks.config/config {:elisa-sms-apikey "asdf"}
+                  oph.ehoks.external.http-client/post
                   mock-client-post-with-error]
-      (let [number "12345"
-            message "Test message"
-            expected-log-line "Virhe send-sms -funktiossa"]
-        (is (thrown? ExceptionInfo (elisa/send-sms number message)))
-        (is (tu/logs-contain? {:level :error :message expected-log-line}))
-        (is (tu/logs-contain-matching? :error #"(?s).*ABCDE.*"))))))
+      (with-log
+        (let [number "12345"
+              message "Test message"]
+          (is (thrown? ExceptionInfo (elisa/send-sms number message)))
+          (is (logged? 'oph.ehoks.external.elisa :error
+                       [ExceptionInfo #"ABCDE"]
+                       #"Virhe send-sms -funktiossa")))))))
 
 (deftest test-valid-finnish-number?
   (testing
     "Funktio valid-finnish-number? tunnistaa puhelinnumeroja oikein"
-    (is (valid-finnish-number? "040 654 3210"))
-    (is (valid-finnish-number? "+35840 654 3210"))
-    (is (valid-finnish-number? "+35845 333 377"))
-    (is (not (valid-finnish-number? "040")))
-    (is (not (valid-finnish-number? "+4144 123 4567")))
-    (is (not (valid-finnish-number? "+1 517 987 5432")))
-    (is (not (valid-finnish-number? "laksj fdaiu fd098098asdf")))
-    (is (not (valid-finnish-number? "+358 40 987 6543à")))))
+    (is (elisa/valid-finnish-number? "040 654 3210"))
+    (is (elisa/valid-finnish-number? "+35840 654 3210"))
+    (is (elisa/valid-finnish-number? "+35845 333 377"))
+    (is (not (elisa/valid-finnish-number? "040")))
+    (is (not (elisa/valid-finnish-number? "+4144 123 4567")))
+    (is (not (elisa/valid-finnish-number? "+1 517 987 5432")))
+    (is (not (elisa/valid-finnish-number? "laksj fdaiu fd098098asdf")))
+    (is (not (elisa/valid-finnish-number? "+358 40 987 6543à")))))

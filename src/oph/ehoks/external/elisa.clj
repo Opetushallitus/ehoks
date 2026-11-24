@@ -1,18 +1,21 @@
-(ns oph.heratepalvelu.external.elisa
+(ns oph.ehoks.external.elisa
   "Apufunktiot SMS-viestien luomiseen ja lähettämiseen."
   (:require [cheshire.core :refer [generate-string]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [environ.core :refer [env]]
-            [oph.heratepalvelu.external.aws-ssm :as ssm]
-            [oph.heratepalvelu.external.http-client :as client])
-  (:import (clojure.lang ExceptionInfo)))
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.http-client :as client])
+  (:import (clojure.lang ExceptionInfo)
+           (com.google.i18n.phonenumbers PhoneNumberUtil
+                                         NumberParseException)))
 
-(def ^:private apikey
-  "Elisan API key."
-  (delay
-    (ssm/get-secret
-      (str "/" (:stage env) "/services/heratepalvelu/elisa-sms-dialogi-key"))))
+(def elisa-url "https://viestipalvelu-api.elisa.fi/api/v1/")
+
+(defn apikey
+  "Elisan API key.  Jos sitä ei ole konfiguroitu, viestejä ei lähetetä
+  oikeasti vaan ne vain lokitetaan."
+  []
+  (not-empty (:elisa-sms-apikey config)))
 
 (defn tep-msg-body
   "Luo työpaikkaohjaajakyselyn viestin tekstin."
@@ -79,21 +82,20 @@
 (defn send-sms
   "Lähettää SMS-viestin viestintäpalveluun."
   [number message]
-  (if (= "true" (:send-messages env))
+  (if-let [apikey (apikey)]
     (try
-      (client/post "https://viestipalvelu-api.elisa.fi/api/v1/"
-                   {:headers {:Authorization  (str "apikey " @apikey)
+      (client/post elisa-url
+                   {:headers {:Authorization  (str "apikey " apikey)
                               :content-type "application/json"}
                     :body    (generate-string {:sender "OPH"
                                                :destination [number]
                                                :text message})
                     :as      :json})
       (catch ExceptionInfo e
-        (log/error "Virhe send-sms -funktiossa")
-        (log/error e)
+        (log/error e "Virhe send-sms -funktiossa")
         (throw e)))
     (do
-      (log/info message)
+      (log/info "Elisa API key not configured, not sending SMS:" message)
       {:body
        {:messages {(keyword number) {:converted number
                                      :status "mock-lahetys"}}}})))
@@ -115,6 +117,5 @@
            (= 358 (.getCountryCode numberobj))
            (smsable-phone-type? (str (.getNumberType pnutil numberobj)))))
     (catch NumberParseException e
-      (log/error "PhoneNumberUtils failed to parse phonenumber")
-      (log/error e)
+      (log/warn e "PhoneNumberUtils failed to parse phonenumber")
       false)))
