@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -360,6 +361,51 @@
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
+
+(deftest osaamisen-hankkimistapa-hoks-id-insert-test
+  (let [hoks-id (:id (db-hoks/insert-hoks! min-hoks-data))
+        saved (ha/save-osaamisen-hankkimistapa!
+                {:loppu (LocalDate/now)} :foo hoks-id)
+        stored (first (db-ops/query
+                        ["SELECT hoks_id FROM osaamisen_hankkimistavat
+                          WHERE id = ?" (:id saved)]))]
+    (is (= hoks-id (:hoks_id saved)))
+    (is (= hoks-id (:hoks_id stored)))))
+
+(deftest ammatillisen-tutkinnon-osan-oht-hoks-id-test
+  (let [hoks-id (:id (db-hoks/insert-hoks! min-hoks-data))
+        osa (ha/save-hankittava-ammat-tutkinnon-osa!
+              hoks-id {:osaamisen-hankkimistavat [{:loppu (LocalDate/now)}]})
+        saved (get-in osa [:osaamisen-hankkimistavat 0])
+        stored (first (db-ops/query
+                        ["SELECT hoks_id FROM osaamisen_hankkimistavat
+                          WHERE id = ?" (:id saved)]))]
+    (is (= hoks-id (:hoks_id saved)))
+    (is (= hoks-id (:hoks_id stored)))))
+
+(deftest paikallisen-tutkinnon-osan-oht-hoks-id-test
+  (let [hoks-id (:id (db-hoks/insert-hoks! min-hoks-data))
+        osa (ha/save-hankittava-paikallinen-tutkinnon-osa!
+              hoks-id {:osaamisen-hankkimistavat [{:loppu (LocalDate/now)}]})
+        saved (get-in osa [:osaamisen-hankkimistavat 0])
+        stored (first (db-ops/query
+                        ["SELECT hoks_id FROM osaamisen_hankkimistavat
+                          WHERE id = ?" (:id saved)]))]
+    (is (= hoks-id (:hoks_id saved)))
+    (is (= hoks-id (:hoks_id stored)))))
+
+(deftest yhteisen-tutkinnon-osan-osa-alueen-oht-hoks-id-test
+  (let [hoks-id (:id (db-hoks/insert-hoks! min-hoks-data))
+        osa (ha/save-hankittava-yhteinen-tutkinnon-osa!
+              hoks-id
+              {:osa-alueet
+               [{:osaamisen-hankkimistavat [{:loppu (LocalDate/now)}]}]})
+        saved (get-in osa [:osa-alueet 0 :osaamisen-hankkimistavat 0])
+        stored (first (db-ops/query
+                        ["SELECT hoks_id FROM osaamisen_hankkimistavat
+                          WHERE id = ?" (:id saved)]))]
+    (is (= hoks-id (:hoks_id saved)))
+    (is (= hoks-id (:hoks_id stored)))))
 
 (deftest hoks-schema-test
   (testing "Example HOKS passes schema checks"
