@@ -549,7 +549,8 @@
 (deftest set-tep-kasitelty-test
   (testing
    "If loppu is before today set tep_kasitelty to true"
-    (let [oh-data
+    (let [hoks-id (:id (db-hoks/insert-hoks! min-hoks-data))
+          oh-data
           {:jarjestajan-edustaja {:nimi "Ville Valvoja"
                                   :rooli "Valvojan apulainen"
                                   :oppilaitos-oid "1.2.246.562.10.54451211343"}
@@ -573,19 +574,19 @@
                   oh-data
                   :loppu (.plusDays (java.time.LocalDate/now) 1))
                 :hato
-                12345)
+                hoks-id)
           oh2 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
                   :loppu (.minusDays (java.time.LocalDate/now) 1))
                 :hato
-                12345)
+                hoks-id)
           oh3 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
                   :loppu (java.time.LocalDate/now))
                 :hato
-                12345)]
+                hoks-id)]
       (is (= false (:tep_kasitelty oh1)))
       (is (= true (:tep_kasitelty oh2)))
       (is (= true (:tep_kasitelty oh3))))))
