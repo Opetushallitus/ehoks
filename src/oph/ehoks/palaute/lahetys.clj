@@ -57,24 +57,24 @@
 
 (def yhteystietokentta
   "Mistä HOKSin kentästä kunkin viestityypin vastaanottaja löytyy."
-  {"email" :sahkoposti
-   "sms" :puhelinnumero})
+  {:email :sahkoposti
+   :sms :puhelinnumero})
 
 ;; this should be put into handlers if the logic is different for tep
 (defn check-palaute-for-sending
-  "Kertoo mihin tilaan palaute ja sen viesti (viestityyppi \"email\" tai
-  \"sms\") menee tilanteen perusteella.  Palauttaa seuraavat tiedot:
+  "Kertoo mihin tilaan palaute ja sen viesti menee tilanteen perusteella.
+  Palauttaa seuraavat tiedot:
   viestin uusi tila (nil = ei tehdä viestiä),
   palautteen uusi tila (nil = ei muutu),
   kenttä jonka perusteella päätös tehty,
   päätöksen syy -tagi."
   [{:keys [hoks existing-palaute existing-ddb-herate arvo-status] :as ctx}
    viestityyppi]
-  (let [sms? (= "sms" viestityyppi)
+  (let [sms? (= :sms viestityyppi)
         kentta (yhteystietokentta viestityyppi)]
     (cond
       (and sms? (not (palaute/ehoks-sends-sms?)))
-      [nil nil :viestityyppi :ei-ehoksin-vastuulla]
+      [nil nil kentta :ei-ehoksin-vastuulla]
 
       (and sms? (not (contains? sms-kyselytyypit
                                 (:kyselytyyppi existing-palaute))))
@@ -84,11 +84,11 @@
       ;; handled some message for it, so a Herätepalvelu record means
       ;; Herätepalvelu's responsibility only if there are no messages yet
       (and existing-ddb-herate (seq @existing-ddb-herate)
-           (not-any? #(palauteviesti-tila ctx %) ["email" "sms"]))
+           (not-any? #(palauteviesti-tila ctx %) [:email :sms]))
       [nil :heratepalvelussa :heratepvm :heratepalvelun-vastuulla]
 
       (some? (palauteviesti-tila ctx viestityyppi))
-      [nil nil :viestityyppi :jo-kasitelty]
+      [nil nil kentta :jo-kasitelty]
 
       (empty? (get hoks kentta))
       [:lahetys-epaonnistunut nil kentta :ei-ole]
@@ -122,7 +122,7 @@
             "and identifier" msg-id)
   (insert! tx {:palaute-id (:id existing-palaute)
                :vastaanottaja (str vastaanottaja)
-               :viestityyppi viestityyppi
+               :viestityyppi (name viestityyppi)
                :tila (utils/to-underscore-str msg-state)
                :ulkoinen-tunniste msg-id}))
 
@@ -159,13 +159,13 @@
   tunnisteen (:ulkoinen-tunniste)."
   [ctx viestityyppi]
   (case viestityyppi
-    "email" {:tila :odottaa-lahetysta
-             :ulkoinen-tunniste (send-palaute-initial-email! ctx)}
-    "sms" (send-palaute-initial-sms! ctx)))
+    :email {:tila :odottaa-lahetysta
+            :ulkoinen-tunniste (send-palaute-initial-email! ctx)}
+    :sms (send-palaute-initial-sms! ctx)))
 
 (defn palaute-check-send-and-save!
   "Tekee kaikki palautekutsun lähetyksen vaiheet annetulle viestityypille
-  (\"email\" tai \"sms\").  Palauttaa viestin ulkoisen tunnisteen tai,
+  (:email tai :sms).  Palauttaa viestin ulkoisen tunnisteen tai,
   jos sitä ei ole, viestin tilan."
   [{:keys [existing-palaute hoks] :as ctx} _ viestityyppi] ; no handlers yet
   (let [[msg-state state field reason]
@@ -219,7 +219,7 @@
   (log/info "Processing email survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
-    :lahetys #(palaute-check-send-and-save! %1 %2 "email") palaute))
+    :lahetys #(palaute-check-send-and-save! %1 %2 :email) palaute))
 
 (declare send-sms-invitation!)
 
@@ -291,12 +291,12 @@
    ["DELIVERYDELAY"] :odottaa-lahetysta})
 
 (defn palauteviesti-tila
-  "Palauttaa palautteen annetun tyyppisen viestin tilan, tai nil jos
-  sellaista viestiä ei ole."
+  "Palauttaa palautteen annetun tyyppisen (:email tai :sms) viestin
+  tilan, tai nil jos sellaista viestiä ei ole."
   [{:keys [existing-palaute tx]} viestityyppi]
   (->> (get-by-palaute-and-viestityypit!
          (or tx db/spec) {:palaute-id (:id existing-palaute)
-                          :viestityypit [viestityyppi]})
+                          :viestityypit [(name viestityyppi)]})
        (first)
        :tila))
 
@@ -326,7 +326,7 @@
       ;; already.  If eHOKS sends SMS's, we only report failure when
       ;; SMS sending has failed, too.
       (when (or (not (palaute/ehoks-sends-sms?))
-                (= "lahetys_epaonnistunut" (palauteviesti-tila ctx "sms")))
+                (= "lahetys_epaonnistunut" (palauteviesti-tila ctx :sms)))
         (arvo/update-kyselytunnus!
           (:arvo-tunniste existing-palaute) "lahetys_epaonnistunut" nil nil))
       (sync-to-heratepalvelu! ctx))))
@@ -401,7 +401,7 @@
       (assoc ctx :viesti-status viestityyppi))
 
     :else
-    (let [muu-viestityyppi (if (= "sms" viestityyppi) "email" "sms")]
+    (let [muu-viestityyppi (if (= :sms viestityyppi) :email :sms)]
       ;; failure is reported to Arvo only when all messages have failed
       (when (= "lahetys_epaonnistunut"
                (palauteviesti-tila ctx muu-viestityyppi))
@@ -416,7 +416,7 @@
   (log/info "Processing SMS survey invitation for" (:kyselytyyppi palaute)
             "palaute" (:id palaute))
   (handling/call-with-context-and-error-handling
-    :lahetys #(palaute-check-send-and-save! %1 %2 "sms") palaute))
+    :lahetys #(palaute-check-send-and-save! %1 %2 :sms) palaute))
 
 (defn handle-palautteet-without-sms!
   "Hakee ja lähettää tekstiviestit (kyselykutsut) kaikille palautteille,
