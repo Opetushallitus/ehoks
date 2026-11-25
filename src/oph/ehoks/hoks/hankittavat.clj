@@ -215,7 +215,7 @@
                                    oh-type
                                    hoks-id
                                    (db-ops/get-db-connection)))
-  ([oh _ __ db-conn]
+  ([oh _ hoks-id db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
       (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
@@ -223,6 +223,7 @@
             to-upsert (assoc (if (.isBefore (date/now) (:loppu oh))
                                oh
                                (assoc oh :tep_kasitelty true))
+                             :hoks-id hoks-id
                              :tyopaikalla-jarjestettava-koulutus-id
                              (:id tho))
             o-db (db/insert-osaamisen-hankkimistapa! to-upsert conn)]
