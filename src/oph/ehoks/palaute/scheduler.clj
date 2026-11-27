@@ -90,13 +90,14 @@
 
 (defn run-scheduler!
   "Run a given action periodically starting at start-time and repeating
-  at rate."
+  at rate. Skip times preceding scheduler startup."
   ^AutoCloseable [action start-time rate filter-fn]
   (log/info "Starting palaute scheduler with start time" start-time
             "and rate" rate)
   (let [scheduler
         (chime/chime-at
-          (cond->> (chime/periodic-seq start-time rate)
+          (cond->> (chime/without-past-times
+                     (chime/periodic-seq start-time rate))
             filter-fn (filter filter-fn))
           action
           {:on-finished (fn [] (log/info "Palaute scheduler stopped."))
